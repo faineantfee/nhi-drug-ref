@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Tamsulosin / Doxazosin｜健保藥物查詢</title>
+<style>
+:root{
+  --bg:#0f172a;--surface:#1e293b;--surface2:#263045;--border:#334155;
+  --accent:#38bdf8;--accent2:#818cf8;--text:#f1f5f9;--muted:#94a3b8;
+  --green:#4ade80;--red:#f87171;--yellow:#fbbf24;--orange:#fb923c;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+.topbar{background:#0c1a30;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--accent);text-decoration:none;font-size:.85rem;font-weight:500;padding:6px 12px;border:1px solid var(--border);border-radius:8px;transition:background .15s}
+.back-btn:hover{background:var(--surface2)}
+.topbar-title{font-size:.9rem;color:var(--muted)}
+.hero{background:linear-gradient(135deg,#0c1a30,#162032,#0c1a30);padding:36px 24px 28px;border-bottom:1px solid var(--border)}
+.hero-inner{max-width:900px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:#1e3a5f;color:var(--accent);font-size:.75rem;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:1.9rem;font-weight:800;letter-spacing:-.01em;margin-bottom:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:.95rem;color:var(--muted);margin-bottom:16px}
+.drug-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.meta-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:.78rem;color:var(--muted)}
+.meta-chip strong{color:var(--text)}
+.alert-bar{background:#422006;border:1px solid #92400e;border-radius:10px;padding:12px 16px;font-size:.83rem;color:#fcd34d;display:flex;gap:10px;align-items:flex-start;margin-top:14px}
+.alert-bar a{color:var(--accent)}
+.container{max-width:900px;margin:0 auto;padding:32px 24px 64px}
+.section{margin-bottom:40px}
+.section-title{font-size:1.15rem;font-weight:700;color:var(--accent);margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+.part-header{background:linear-gradient(90deg,var(--surface2),var(--surface));border:1px solid var(--border);border-left:4px solid var(--accent2);border-radius:8px;padding:14px 20px;margin:32px 0 20px;font-size:1.05rem;font-weight:700}
+.subsection{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:16px}
+.subsection-title{font-size:1rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.cond-block{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 16px;margin-bottom:12px}
+.cond-block.warn{border-left-color:var(--red)}
+.cond-block.success{border-left-color:var(--green)}
+.cond-block.note{border-left-color:var(--yellow)}
+.cond-label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+.cond-text{font-size:.9rem;line-height:1.65}
+ul.styled{padding-left:0;list-style:none;margin:10px 0}
+ul.styled li{padding:5px 0 5px 18px;position:relative;font-size:.9rem}
+ul.styled li::before{content:'▸';position:absolute;left:0;color:var(--accent)}
+ol.styled{padding-left:20px;margin:10px 0}
+ol.styled li{padding:5px 0;font-size:.9rem}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+thead{background:var(--surface2)}
+th{padding:11px 14px;text-align:left;font-weight:700;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid #1e293b;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#1a2540}
+.td-yes{color:var(--green);font-weight:600}
+.td-no{color:var(--red);font-weight:600}
+.td-warn{color:var(--yellow)}
+.highlight-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:12px 0}
+.highlight-box.blue{border-left:4px solid var(--accent)}
+.highlight-box.red{border-left:4px solid var(--red)}
+.highlight-box.green{border-left:4px solid var(--green)}
+.highlight-box.yellow{border-left:4px solid var(--yellow)}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:700;vertical-align:middle}
+.badge.red{background:#450a0a;color:#f87171}
+.badge.green{background:#14532d;color:#4ade80}
+.badge.blue{background:#1e3a5f;color:#7dd3fc}
+.badge.yellow{background:#422006;color:#fbbf24}
+.badge.orange{background:#431407;color:#fb923c}
+.flow-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:18px 20px;font-family:'Courier New',monospace;font-size:.83rem;line-height:1.9;color:var(--text);margin:14px 0;overflow-x:auto;white-space:pre}
+.notice-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:10px}
+.notice-num{width:26px;height:26px;background:var(--accent);color:#0f172a;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;margin-right:8px;flex-shrink:0;vertical-align:middle}
+footer{text-align:center;color:var(--muted);font-size:.78rem;padding:24px;border-top:1px solid var(--border);margin-top:20px}
+footer a{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="../健保藥物查詢.html" class="back-btn">← 返回首頁</a>
+  <span class="topbar-title">Tamsulosin ╳ Doxazosin — BPH・輸尿管結石 MET・高血壓・女性申報</span>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">🔬 泌尿科 ／ 腎臟科 ／ 一般內科</div>
+    <h1>Tamsulosin ╳ Doxazosin</h1>
+    <p class="hero-sub">Alpha-1 Blocker 臨床速查 — BPH ・ 輸尿管結石 MET ・ 高血壓 ・ 女性結石申報策略</p>
+    <div class="drug-meta">
+      <div class="meta-chip"><strong>Tamsulosin</strong> 活路利淨等 — α₁A/D 選擇性</div>
+      <div class="meta-chip"><strong>Doxazosin</strong> Doxaben 可迅 — α₁ 非選擇性</div>
+      <div class="meta-chip"><strong>指引</strong> AUA 2025 ／ EAU 2025</div>
+      <div class="meta-chip"><strong>特別收錄</strong> 女性輸尿管結石申報策略</div>
+    </div>
+    <div class="alert-bar">
+      ⚠️ 健保規範具時效性，申報前請至 <a href="https://www.nhi.gov.tw" target="_blank">https://www.nhi.gov.tw</a> 確認最新版本。
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 藥物快速對照 -->
+  <div class="section">
+    <div class="section-title">⚡ 藥物快速對照</div>
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>項目</th><th>Tamsulosin（活路利淨等）</th><th>Doxazosin（Doxaben 可迅）</th></tr></thead>
+          <tbody>
+            <tr><td>藥理分類</td><td>α₁A/D <strong>選擇性</strong> blocker（uro-selective）</td><td>α₁ <strong>非選擇性</strong> blocker</td></tr>
+            <tr><td>降血壓效果</td><td class="td-yes">極低（主作用於前列腺/輸尿管）</td><td class="td-warn">明顯（同時放鬆血管平滑肌）</td></tr>
+            <tr><td>健保給付 — BPH</td><td class="td-yes">✅ N40，限男性</td><td class="td-yes">✅ N40，限男性</td></tr>
+            <tr><td>健保給付 — 高血壓</td><td class="td-no">❌ 無此適應症</td><td class="td-yes">✅ I10，男女皆可</td></tr>
+            <tr><td>結石 MET（健保）</td><td class="td-warn">Off-label（無明文給付）</td><td class="td-warn">Off-label；高血壓女性→ I10 申報 ✅</td></tr>
+            <tr><td>女性可申報健保？</td><td class="td-no">❌ 無適用適應症，退件風險高</td><td class="td-yes">✅ 高血壓（I10）男女皆給付</td></tr>
+            <tr><td>IFIS 風險</td><td class="td-warn">有（眼科手術前需告知）</td><td class="td-warn">有（眼科手術前需告知）</td></tr>
+            <tr><td>首劑低血壓</td><td class="td-yes">輕微（選擇性較高）</td><td class="td-warn">明顯（需從低劑量起始）</td></tr>
+            <tr><td>常用劑量</td><td>0.4 mg QD</td><td>1–8 mg QD（高血壓）；1–8 mg QD（BPH）</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第一部分：Tamsulosin -->
+  <div class="part-header">💊 第一部分：Tamsulosin（活路利淨 / 漢洛欣 / Flomax 等）</div>
+
+  <!-- BPH 健保 -->
+  <div class="section">
+    <div class="section-title">🏥 一、BPH 健保規範</div>
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>項目</th><th>內容</th></tr></thead>
+          <tbody>
+            <tr><td>給付適應症</td><td>N40.0–N40.1 良性前列腺肥大伴排尿障礙（LUTS/BPH）</td></tr>
+            <tr><td>性別限制</td><td class="td-warn">限男性患者（女性不可以 BPH 適應症申報）</td></tr>
+            <tr><td>申請方式</td><td class="td-yes">一般給付（不需事前審查）</td></tr>
+            <tr><td>劑量規範</td><td>0.4 mg QD，餐後 30 分鐘服用</td></tr>
+            <tr><td>開立科別</td><td>無限制（泌尿科、一般內科、家醫科均可）</td></tr>
+            <tr><td>療程限制</td><td>無明定上限，需持續臨床評估</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 結石 MET -->
+  <div class="section">
+    <div class="section-title">🪨 二、輸尿管結石 MET（Off-label）</div>
+    <div class="subsection">
+      <div class="cond-block warn">
+        <div class="cond-label">⚠️ Off-label — 健保無明文給付</div>
+        <div class="cond-text">Tamsulosin 用於輸尿管結石排石（Medical Expulsive Therapy, MET）在台灣屬仿單外使用，健保無獨立適應症給付。</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>族群</th><th>申報策略</th><th>風險</th></tr></thead>
+          <tbody>
+            <tr><td>男性 + 合併 BPH</td><td class="td-yes">以 N40.1 申報（合法）</td><td>低</td></tr>
+            <tr><td>男性 + 無 BPH</td><td class="td-warn">以 N20.1 申報，需詳細病歷說明</td><td>灰色地帶</td></tr>
+            <tr><td>女性（任何情況）</td><td class="td-no">❌ 無任何合法申報途徑</td><td class="td-no">高（必退件）</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">結石條件與病歷記錄要求</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>結石大小 ≤10 mm，影像確認（CT 或超音波）</li>
+            <li>位置：遠端輸尿管效益最佳</li>
+            <li>建議療程約 30 天；超過需重新評估記錄</li>
+            <li>病歷需明確記載：結石大小、位置、使用目的（促進排石）</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tamsulosin FDA -->
+  <div class="section">
+    <div class="section-title">🇺🇸 三、FDA 規範</div>
+    <div class="subsection">
+      <div class="cond-block">
+        <div class="cond-label">核准適應症</div>
+        <div class="cond-text">BPH 伴排尿障礙（LUTS）— 僅限男性；結石 MET 為 off-label（但 AUA 2025 Strong Recommendation Grade A）</div>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">重要警語（無 Black Box Warning）</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li><strong>IFIS（術中虹膜鬆弛症候群）：</strong>眼科手術（白內障）前務必告知患者正在服用 alpha-blocker，並告知眼科醫師</li>
+            <li><strong>直立性低血壓：</strong>合併 PDE5 抑制劑（Sildenafil/Tadalafil）使用時風險增加</li>
+            <li>磺胺結構成分，對磺胺類過敏者需注意</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">劑量</div>
+        <div class="cond-text">起始 0.4 mg QD，餐後 30 分鐘；療效不足可增至 0.8 mg QD</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tamsulosin 指引 -->
+  <div class="section">
+    <div class="section-title">📚 四、最新臨床指引（BPH + MET）</div>
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>指引</th><th>年份</th><th>建議內容</th><th>等級</th></tr></thead>
+          <tbody>
+            <tr><td>AUA/SUFU BPH 指引</td><td>2023</td><td>Alpha-1 blockers（含 tamsulosin）為中重度 LUTS/BPH 首選藥物治療</td><td class="td-yes">Strong, Grade A</td></tr>
+            <tr><td>EAU LUTS 指引</td><td>2024</td><td>Tamsulosin 為 alpha-blocker 代表藥物，推薦用於有症狀 BPH</td><td class="td-yes">Grade A</td></tr>
+            <tr><td>AUA 輸尿管結石指引</td><td>2025</td><td>≤10 mm 遠端輸尿管結石，應提供 alpha-blockers MET 約 30 天</td><td class="td-yes">Strong, Grade A</td></tr>
+            <tr><td>AUA 輸尿管結石指引</td><td>2025</td><td>≤10 mm 中段/近端輸尿管結石，可考慮 MET（30 天）</td><td>Conditional, Grade B</td></tr>
+            <tr><td>EAU Urolithiasis</td><td>2025</td><td>Alpha-blockers 對 &gt;5 mm 遠端輸尿管結石排石率有顯著幫助；class effect 已證實</td><td class="td-yes">Grade A</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="highlight-box blue">
+        <p style="font-size:.88rem"><strong>Meta-analysis 2025（Urology Annals）：</strong>29 項 RCT，4,256 名患者 — alpha-blockers 顯著提升排石率（70.9% vs 56.5%，RR 1.25，<strong>NNT=7</strong>）；對遠端輸尿管結石效果最佳（RR 1.52，NNT=4）；5–10 mm 結石效益最大；不良事件發生率低（NNH=38）。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第二部分：Doxazosin -->
+  <div class="part-header">💊 第二部分：Doxazosin（Doxaben® 可迅 / 立安 / 多迅等）</div>
+
+  <!-- Doxazosin 高血壓 -->
+  <div class="section">
+    <div class="section-title">🏥 五、高血壓健保規範</div>
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>項目</th><th>內容</th></tr></thead>
+          <tbody>
+            <tr><td>給付適應症</td><td>高血壓（ICD-10: <strong>I10</strong>）</td></tr>
+            <tr><td>性別限制</td><td class="td-yes">無限制（男性、女性均可申報）</td></tr>
+            <tr><td>申請方式</td><td class="td-yes">一般給付</td></tr>
+            <tr><td>起始劑量</td><td>1 mg QD（睡前）；一般維持 2–4 mg QD；最高 16 mg QD</td></tr>
+            <tr><td>科別限制</td><td>無限制</td></tr>
+            <tr><td>ALLHAT 警示</td><td class="td-warn">合併心臟危險因子的高血壓患者：單藥比其他降血壓藥更容易引發鬱血性心衰竭，建議與心臟科共同評估</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Doxazosin BPH -->
+  <div class="section">
+    <div class="section-title">🏥 六、BPH 健保規範</div>
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>項目</th><th>內容</th></tr></thead>
+          <tbody>
+            <tr><td>給付適應症</td><td>有臨床症狀之 BPH 及因 BPH 所引起的尿流阻塞（N40.0–N40.1）</td></tr>
+            <tr><td>性別限制</td><td class="td-warn">限男性（BPH 為男性特有疾病）</td></tr>
+            <tr><td>申請方式</td><td class="td-yes">一般給付</td></tr>
+            <tr><td>起始劑量</td><td>1 mg QD（睡前）；維持 1–8 mg QD</td></tr>
+            <tr><td>雙重效益</td><td class="td-yes">同時有高血壓的 BPH 患者，可單一藥物治療兩種病症（I10 + N40）</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Doxazosin FDA -->
+  <div class="section">
+    <div class="section-title">🇺🇸 七、FDA 規範</div>
+    <div class="subsection">
+      <div class="cond-block success">
+        <div class="cond-label">核准適應症（兩個）</div>
+        <div class="cond-text">① 高血壓（Hypertension）— 男女皆可；② BPH 伴排尿障礙 — 限男性</div>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">重要警語</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>首劑低血壓效應：初次用藥建議睡前服用，緩慢起身</li>
+            <li>直立性低血壓：合併 PDE5 抑制劑使用須特別小心（暈厥風險）</li>
+            <li>IFIS：所有 alpha-blockers 均有此風險，眼科手術前需告知</li>
+            <li><strong>ALLHAT 警示：</strong>高血壓合併心臟危險因子者，單用 doxazosin 比其他降血壓藥心衰竭風險更高</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">劑型差異（重要！）</div>
+        <div class="cond-text"><strong>普通錠（Doxaben® 2 mg）：</strong>可壓碎，可剝半；<strong>長效錠（Doxaben® XL 4 mg）：</strong>不可磨碎、剝半或咀嚼。申報時劑型需與處方一致。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第三部分：女性結石申報 -->
+  <div class="part-header">🚺 第三部分：女性輸尿管結石 MET — 申報策略完整解析</div>
+
+  <div class="section">
+    <div class="section-title">🔑 八、女性結石申報核心問題</div>
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>問題</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>臨床上能否使用 alpha-blocker？</td>
+              <td class="td-yes">✅ 可以。輸尿管有 alpha-1 受體，機制上男女相同。AUA 2025 並未限制性別，僅限結石大小（≤10 mm）及位置。</td>
+            </tr>
+            <tr>
+              <td>Tamsulosin 女性健保申報</td>
+              <td class="td-no">❌ 退件風險極高。台灣健保 Tamsulosin 僅有 BPH 適應症（N40，男性特有），女性患者無任何合法健保給付途徑。</td>
+            </tr>
+            <tr>
+              <td>Doxazosin 女性健保申報</td>
+              <td class="td-yes">✅ 合法途徑存在。若女性結石患者同時有高血壓（I10），可以高血壓適應症申報 Doxazosin。Alpha-blocker MET 為 class effect，doxazosin 與 tamsulosin 效果相仿。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">📋 女性輸尿管結石用藥申報決策流程</div>
+      <div class="flow-box">女性輸尿管結石患者，需使用 Alpha-blocker MET
+                   ↓
+        患者是否有高血壓（I10）？
+             ↙                    ↘
+        ✅ 有高血壓               ❌ 無高血壓（血壓正常）
+            ↓                            ↓
+選用 Doxazosin（Doxaben）         Tamsulosin 或 Doxazosin
+以 I10（高血壓）申報              均為 off-label
+→ 合法健保給付，無退件風險         以 N20.1（輸尿管結石）申報
+                                  → 灰色地帶，各院核刪標準不同
+
+病歷需記錄：                      病歷需詳細記錄：
+血壓數值及用藥理由                 結石大小、位置（≤10 mm）
+                                  及使用目的（促進排石）</div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">📊 三種 Alpha-Blocker 女性結石申報比較</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>藥物</th><th>BPH 健保（男性）</th><th>高血壓健保（男女）</th><th>女性結石 MET 申報</th><th>建議</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Tamsulosin</strong></td>
+              <td class="td-yes">✅</td>
+              <td class="td-no">❌</td>
+              <td class="td-no">❌ 退件風險高</td>
+              <td>女性結石不建議申報健保</td>
+            </tr>
+            <tr>
+              <td><strong>Doxazosin</strong></td>
+              <td class="td-yes">✅（限男性）</td>
+              <td class="td-yes">✅（男女均可）</td>
+              <td class="td-yes">✅ 合併高血壓者可以 I10 申報</td>
+              <td>女性結石首選（前提需有高血壓）</td>
+            </tr>
+            <tr>
+              <td><strong>Silodosin（Urief）</strong></td>
+              <td class="td-yes">✅</td>
+              <td class="td-no">❌</td>
+              <td class="td-no">❌ 退件風險高</td>
+              <td>女性結石不建議申報健保</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alpha-blocker MET 實證 -->
+  <div class="section">
+    <div class="section-title">🔬 九、Alpha-Blocker MET 關鍵實證</div>
+    <div class="subsection">
+      <div class="highlight-box green">
+        <p style="font-size:.88rem;font-weight:700;margin-bottom:8px">Class Effect — AUA 2025 明確聲明</p>
+        <p style="font-size:.88rem">alpha-blockers 的 MET 效益為 class effect，不限特定藥物。Tamsulosin、doxazosin、terazosin、silodosin 效果相仿（Strong Recommendation, Grade A）。</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>研究 / 指引</th><th>年份</th><th>結論重點</th></tr></thead>
+          <tbody>
+            <tr><td>AUA 腎/輸尿管結石指引</td><td>2025</td><td class="td-yes">≤10 mm 遠端輸尿管結石 alpha-blockers MET：Strong Recommendation Grade A；任何 alpha-blocker 均可</td></tr>
+            <tr><td>EAU Urolithiasis 指引</td><td>2025</td><td class="td-yes">&gt;5 mm 遠端輸尿管結石 alpha-blocker 排石益處已確立；class effect 已被證實</td></tr>
+            <tr><td>Meta-analysis（Urology Annals）</td><td>2025</td><td class="td-yes">29 RCT 4,256 患者：alpha-blockers 排石率↑（RR 1.25），排石時間縮短約 3 天，不良反應低（NNH=38）</td></tr>
+            <tr><td>SUSPEND Trial（Lancet）</td><td>2015</td><td class="td-warn">大型 RCT：未發現 tamsulosin 顯著降低手術介入需求（爭議），但可減少疼痛及縮短排石天數</td></tr>
+            <tr><td>BMJ Meta-analysis</td><td>2016</td><td class="td-yes">整合分析支持 alpha-blocker MET，尤其對 5–10 mm 結石效益顯著</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 申報 10 大重點 -->
+  <div class="section">
+    <div class="section-title">⚠️ 十、實務申報 10 大關鍵提醒</div>
+
+    <div class="notice-item">
+      <span class="notice-num">1</span>
+      <strong>Tamsulosin BPH 申報：限男性（N40.1）</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">病歷需有排尿障礙症狀；建議記錄 IPSS 評分；長期使用需定期追蹤記錄。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">2</span>
+      <strong>Tamsulosin 結石 MET：off-label，男性灰色地帶，女性必退件</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">男性以 N20.1 申報需詳細病歷說明；女性以任何碼申報均無適用適應症，退件風險極高。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">3</span>
+      <strong>Doxazosin 高血壓（I10）：男女均可，病歷需有血壓數值</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">合併心臟危險因子或心衰竭患者需特別記錄評估過程（ALLHAT 警示），建議與心臟科共同評估。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">4</span>
+      <strong>Doxazosin BPH：限男性（N40.1），劑型申報須一致</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">普通錠（2 mg）vs 長效錠（XL 4 mg）申報碼不同，不可混用。長效錠不可磨碎或剝半。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">5</span>
+      <strong>女性輸尿管結石 alpha-blocker：有高血壓 → 選 Doxazosin 以 I10 申報</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">此為目前唯一合法的女性結石 alpha-blocker 健保申報路徑。需記錄血壓數值、用藥理由。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">6</span>
+      <strong>Alpha-blocker MET 有 class effect（AUA 2025）</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">不限 tamsulosin；doxazosin、silodosin 效果相仿。選藥可依患者合併症（是否需降血壓）決定。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">7</span>
+      <strong>結石 MET 申報（任何適應症）：病歷必附影像及結石資訊</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">結石大小（≤10 mm）、位置（遠端輸尿管效益最佳）、影像確認（CT/超音波）均需記載於病歷。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">8</span>
+      <strong>IFIS 警示：所有 alpha-blockers 均需提醒患者</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">眼科手術（白內障等）前需主動詢問是否服用 alpha-blocker，並將服藥史告知眼科醫師。術前停藥並不一定能逆轉 IFIS，術前告知才是關鍵。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">9</span>
+      <strong>Doxazosin 首劑效應：建議睡前低劑量起始</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">起始 1 mg 睡前，2 週後評估再加量。合併 PDE5 抑制劑使用時需特別小心暈厥風險，需告知患者。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">10</span>
+      <strong>健保規範時效性：申報前務必確認最新版本</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">健保給付規定異動頻繁，本資料僅供參考。申報前請至 <a href="https://www.nhi.gov.tw" target="_blank" style="color:var(--accent)">https://www.nhi.gov.tw</a> 確認最新版本。</span>
+    </div>
+  </div>
+
+  <!-- 健保 vs 指引落差 -->
+  <div class="section">
+    <div class="section-title">📊 健保 vs 國際指引落差</div>
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>比較面向</th><th>台灣健保規範</th><th>國際指引（AUA/EAU 2025）</th></tr></thead>
+          <tbody>
+            <tr><td>Alpha-blocker BPH</td><td>限男性（N40），一般給付</td><td>同，限有 LUTS 症狀的男性，首選一線治療</td></tr>
+            <tr><td>Alpha-blocker 結石 MET</td><td class="td-warn">無明文給付（off-label）</td><td class="td-yes">Strong Recommendation Grade A（≤10 mm 遠端輸尿管），不限性別</td></tr>
+            <tr><td>結石 MET 性別限制</td><td class="td-warn">健保無給付；女性需藉高血壓適應症申報 Doxazosin</td><td class="td-yes">無性別限制；任何 ≤10 mm 輸尿管結石均可考慮 MET</td></tr>
+            <tr><td>Alpha-blocker 藥物選擇</td><td>健保無指定特定藥物</td><td class="td-yes">明確 class effect，tamsulosin/doxazosin/silodosin 效果相仿</td></tr>
+            <tr><td>Doxazosin 高血壓地位</td><td>一般給付（I10），男女均可</td><td class="td-warn">非一線首選（ALLHAT 後），但 BPH 合併高血壓時具雙重效益</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+<footer>
+  資料依據：AUA 2025 Kidney/Ureteral Stone Guidelines、EAU 2025 Urolithiasis Guidelines、AUA/SUFU BPH 2023、FDA Flomax/Cardura PI。<br>
+  僅供臨床參考，最終申報與用藥決策由主治醫師負責。申報前請至 <a href="https://www.nhi.gov.tw" target="_blank">https://www.nhi.gov.tw</a> 確認最新版本。
+</footer>
+</body>
+</html>

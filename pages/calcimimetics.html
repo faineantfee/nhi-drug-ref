@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>擬鈣劑｜健保藥物查詢</title>
+<style>
+:root{
+  --bg:#0f172a;--surface:#1e293b;--surface2:#263045;--border:#334155;
+  --accent:#38bdf8;--accent2:#818cf8;--text:#f1f5f9;--muted:#94a3b8;
+  --green:#4ade80;--red:#f87171;--yellow:#fbbf24;--orange:#fb923c;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+.topbar{background:#0c1a30;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--accent);text-decoration:none;font-size:.85rem;font-weight:500;padding:6px 12px;border:1px solid var(--border);border-radius:8px;transition:background .15s}
+.back-btn:hover{background:var(--surface2)}
+.topbar-title{font-size:.9rem;color:var(--muted)}
+.hero{background:linear-gradient(135deg,#0c1a30,#162032,#0c1a30);padding:36px 24px 28px;border-bottom:1px solid var(--border)}
+.hero-inner{max-width:860px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:#1e3a5f;color:var(--accent);font-size:.75rem;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:1.9rem;font-weight:800;letter-spacing:-.01em;margin-bottom:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:.95rem;color:var(--muted);margin-bottom:16px}
+.drug-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.meta-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:.78rem;color:var(--muted)}
+.meta-chip strong{color:var(--text)}
+.alert-bar{background:#422006;border:1px solid #92400e;border-radius:10px;padding:12px 16px;font-size:.83rem;color:#fcd34d;display:flex;gap:10px;align-items:flex-start;margin-top:14px}
+.alert-bar a{color:var(--accent)}
+.container{max-width:860px;margin:0 auto;padding:32px 24px 64px}
+.section{margin-bottom:40px}
+.section-title{font-size:1.15rem;font-weight:700;color:var(--accent);margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+.subsection{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:16px}
+.subsection-title{font-size:1rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.cond-block{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 16px;margin-bottom:12px}
+.cond-block.warn{border-left-color:var(--red)}
+.cond-block.success{border-left-color:var(--green)}
+.cond-block.note{border-left-color:var(--yellow)}
+.cond-label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+.cond-text{font-size:.9rem;line-height:1.65}
+ul.styled{padding-left:0;list-style:none;margin:10px 0}
+ul.styled li{padding:5px 0 5px 18px;position:relative;font-size:.9rem}
+ul.styled li::before{content:'▸';position:absolute;left:0;color:var(--accent)}
+ol.styled{padding-left:20px;margin:10px 0}
+ol.styled li{padding:5px 0;font-size:.9rem}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+thead{background:var(--surface2)}
+th{padding:11px 14px;text-align:left;font-weight:700;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid #1e293b;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#1a2540}
+.td-yes{color:var(--green);font-weight:600}
+.td-no{color:var(--red);font-weight:600}
+.td-warn{color:var(--yellow)}
+.highlight-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:12px 0}
+.highlight-box.blue{border-left:4px solid var(--accent)}
+.highlight-box.red{border-left:4px solid var(--red)}
+.highlight-box.green{border-left:4px solid var(--green)}
+.highlight-box.yellow{border-left:4px solid var(--yellow)}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:700;vertical-align:middle}
+.badge.red{background:#450a0a;color:#f87171}
+.badge.green{background:#14532d;color:#4ade80}
+.badge.blue{background:#1e3a5f;color:#7dd3fc}
+.badge.yellow{background:#422006;color:#fbbf24}
+.badge.orange{background:#431407;color:#fb923c}
+.drug-compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0}
+@media(max-width:640px){.drug-compare{grid-template-columns:1fr}}
+.drug-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px}
+.drug-card-title{font-weight:700;margin-bottom:12px;font-size:.95rem;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.notice-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:10px}
+.notice-num{width:26px;height:26px;background:var(--accent);color:#0f172a;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;margin-right:8px;flex-shrink:0;vertical-align:middle}
+footer{text-align:center;color:var(--muted);font-size:.78rem;padding:24px;border-top:1px solid var(--border);margin-top:20px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="../健保藥物查詢.html" class="back-btn">← 返回首頁</a>
+  <span class="topbar-title">擬鈣劑（Calcimimetics）— Cinacalcet / Etelcalcetide</span>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">🫘 腎臟科 ／ 透析</div>
+    <h1>擬鈣劑（Calcimimetics）</h1>
+    <p class="hero-sub">Cinacalcet（Mimpara / Regpara / Cinaca FC）＆ Etelcalcetide（Parsabiv 旁必福）— 透析 sHPT 治療</p>
+    <div class="drug-meta">
+      <div class="meta-chip"><strong>Cinacalcet</strong> 口服，每日一次 — 健保事前審查</div>
+      <div class="meta-chip"><strong>Etelcalcetide</strong> IV，每週三次（洗腎後）— 給付狀態待確認</div>
+      <div class="meta-chip"><strong>適應症</strong> 次發性副甲狀腺機能亢進（sHPT）</div>
+      <div class="meta-chip"><strong>指引</strong> KDIGO 2017 / 2025 Controversies</div>
+    </div>
+    <div class="alert-bar">
+      ⚠️ Etelcalcetide（Parsabiv）健保給付狀態需至 <a href="https://info.nhi.gov.tw/INAE3000/INAE3000S01" target="_blank">健保藥品品項查詢</a> 確認。申報前請至 <a href="https://www.nhi.gov.tw" target="_blank">https://www.nhi.gov.tw</a> 確認最新版本。
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 一、兩種擬鈣劑快速比較 -->
+  <div class="section">
+    <div class="section-title">⚡ 一、兩種擬鈣劑快速比較</div>
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>比較項目</th>
+              <th>Cinacalcet（口服）</th>
+              <th>Etelcalcetide / Parsabiv（靜脈）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>給藥途徑</td><td>口服，每日一次</td><td class="td-yes">靜脈注射，每週三次（洗腎後推注）</td></tr>
+            <tr><td>台灣健保</td><td class="td-yes">✅ 已給付（事前審查）</td><td class="td-warn">⚠️ 給付狀態待確認（多為自費）</td></tr>
+            <tr><td>FDA 適應症</td><td>HD + PD sHPT、副甲狀腺癌、原發性 HPT 高血鈣</td><td>HD 透析 sHPT（僅限血液透析）</td></tr>
+            <tr><td>PTH 降低效果</td><td>有效</td><td class="td-yes">優於 Cinacalcet（約多降 10%）</td></tr>
+            <tr><td>低血鈣發生率</td><td class="td-warn">59.8%</td><td class="td-warn">68.9%（較高，需更密切監測）</td></tr>
+            <tr><td>腸胃副作用</td><td class="td-warn">較多（噁心/嘔吐 46.7%）</td><td class="td-yes">較少（37.8%）</td></tr>
+            <tr><td>服藥依從性</td><td class="td-warn">較差（口服自行服用）</td><td class="td-yes">較佳（醫護給藥，確保用藥）</td></tr>
+            <tr><td>腹膜透析適用</td><td class="td-yes">✅ 可用</td><td class="td-no">❌ 不建議（無足夠研究）</td></tr>
+            <tr><td>換藥注意</td><td>—</td><td class="td-warn">由 Cinacalcet 換藥須先停藥 ≥ 7 天</td></tr>
+            <tr><td>兩者同時使用</td><td colspan="2" style="text-align:center" class="td-no">❌ 嚴格禁止——可能引發嚴重危及生命之低血鈣</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 二、台灣健保規範 -->
+  <div class="section">
+    <div class="section-title">🏥 二、台灣健保規範</div>
+
+    <div class="drug-compare">
+      <!-- Cinacalcet -->
+      <div class="drug-card">
+        <div class="drug-card-title">💊 Cinacalcet（Mimpara / Regpara / Cinaca FC）</div>
+        <div class="cond-block success" style="margin-bottom:10px">
+          <div class="cond-label">給付狀態</div>
+          <div class="cond-text">✅ <strong>健保給付</strong>（事前審查）</div>
+        </div>
+        <div class="cond-block" style="margin-bottom:10px">
+          <div class="cond-label">給付條件</div>
+          <div class="cond-text">
+            <ul class="styled">
+              <li>透析病人（HD 或 PD）之 sHPT</li>
+              <li>iPTH &gt; 300 pg/mL</li>
+              <li>已先使用活性維生素 D（calcitriol 或類似物）療效不佳或不耐受</li>
+              <li>開始用藥前校正血鈣 ≥ 正常值下限</li>
+            </ul>
+          </div>
+        </div>
+        <div class="cond-block note" style="margin-bottom:0">
+          <div class="cond-label">劑量</div>
+          <div class="cond-text">起始 30 mg/天，每 2–4 週調整，最高 180 mg/天</div>
+        </div>
+      </div>
+
+      <!-- Etelcalcetide -->
+      <div class="drug-card">
+        <div class="drug-card-title">💉 Etelcalcetide（Parsabiv 旁必福）</div>
+        <div class="cond-block warn" style="margin-bottom:10px">
+          <div class="cond-label">⚠️ 給付狀態待確認</div>
+          <div class="cond-text">台灣 2019 年下半年上市，目前主要以<strong>自費</strong>使用為主。給付狀態請至<br><a href="https://info.nhi.gov.tw/INAE3000/INAE3000S01" target="_blank" style="color:var(--accent)">健保藥品品項查詢</a> 確認是否已收載。</div>
+        </div>
+        <div class="cond-block" style="margin-bottom:10px">
+          <div class="cond-label">給藥方式</div>
+          <div class="cond-text">
+            <ul class="styled">
+              <li>起始劑量：每週三次 <strong>5 mg IV</strong>（血液透析結束時推注）</li>
+              <li>最低維持劑量：每週三次 2.5 mg</li>
+              <li>最高劑量：每週三次 15 mg</li>
+            </ul>
+          </div>
+        </div>
+        <div class="cond-block warn" style="margin-bottom:0">
+          <div class="cond-label">限制</div>
+          <div class="cond-text">僅適用血液透析（HD），腹膜透析患者無足夠數據</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 三、FDA 規範 -->
+  <div class="section">
+    <div class="section-title">🇺🇸 三、FDA 規範</div>
+
+    <div class="subsection">
+      <div class="subsection-title">Cinacalcet（Sensipar®）</div>
+      <div class="cond-block success">
+        <div class="cond-label">FDA 核准適應症（三個）</div>
+        <div class="cond-text">
+          <ol class="styled">
+            <li>CKD <strong>透析</strong>患者之次發性副甲狀腺機能亢進（sHPT）</li>
+            <li>副甲狀腺癌引起之高血鈣症</li>
+            <li>無法手術之原發性副甲狀腺機能亢進患者的高血鈣症</li>
+          </ol>
+          <p style="font-size:.83rem;color:var(--muted);margin-top:8px">⚠️ 台灣健保僅給付第①項（透析 sHPT），第②③項不給付。非透析 CKD 高 PTH 亦不給付。</p>
+        </div>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">重要安全警語</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>低血鈣：血鈣低於正常值下限時<strong>禁止開始使用</strong></li>
+            <li>上消化道出血：注意腹痛、黑便症狀</li>
+            <li>低血壓、心衰竭惡化、心律不整：監測</li>
+            <li><strong>禁止與 Parsabiv（Etelcalcetide）同時使用</strong>——嚴重低血鈣風險</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Etelcalcetide（Parsabiv®）</div>
+      <div class="cond-block">
+        <div class="cond-label">FDA 核准適應症</div>
+        <div class="cond-text">成人 CKD <strong>血液透析</strong>患者之次發性副甲狀腺機能亢進（不適用 PD、非透析 CKD）</div>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">⚠️ 嚴重安全警語（近 Black Box 等級）</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li><strong>低血鈣（Hypocalcemia）：</strong>顯著低血鈣可造成 QT 延長及室性心律不整，甚至致命</li>
+            <li><strong>禁止與 Cinacalcet 同時使用</strong>（可能導致嚴重危及生命之低血鈣）</li>
+            <li>由 Cinacalcet 換藥 → <strong>須先停藥至少 7 天</strong>再開始 Parsabiv</li>
+            <li>心衰竭惡化、低血壓：臨床試驗中有案例</li>
+            <li>過敏反應：臉部水腫、過敏性休克（罕見）</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">血鈣監測時程</div>
+        <div class="cond-text">啟用前確認校正血鈣 ≥ 正常值下限 → 開始/調整劑量後<strong>第 1 週內</strong>監測校正血鈣 → 之後每 4 週定期監測 → 劑量調整後 4 週追蹤 iPTH</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 四、KDIGO 指引 -->
+  <div class="section">
+    <div class="section-title">📚 四、KDIGO 2017 / 2025 臨床指引</div>
+
+    <div class="subsection">
+      <div class="subsection-title">PTH 目標與擬鈣劑定位</div>
+      <div class="cond-block">
+        <div class="cond-label">PTH 目標（CKD G5D 透析患者）</div>
+        <div class="cond-text">維持 iPTH 在<strong>正常值上限的 2–9 倍</strong>（2C 等級）。以常見 assay ULN = 65 pg/mL 為例：目標範圍約 <strong>130–585 pg/mL</strong>。PTH 單獨數值不可靠，需結合趨勢判讀。</div>
+      </div>
+      <div class="cond-block success">
+        <div class="cond-label">擬鈣劑使用時機（2B 等級）</div>
+        <div class="cond-text">CKD G5D 患者需降低 PTH 時，建議可使用<strong>擬鈣劑、calcitriol 或維生素 D 類似物，或兩者組合</strong>。藥物選擇應根據血鈣、血磷及其他 CKD-MBD 特性決定。</div>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">Etelcalcetide 地位（KDIGO 2025 Controversies）</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>對 PTH 降低效果不劣於或<strong>優於</strong> Cinacalcet</li>
+            <li>目前<strong>無數據顯示</strong>任何擬鈣劑能改善透析患者存活率</li>
+            <li>靜脈劑型可降低口服藥物負擔，提高依從性，但半衰期較短</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">低血鈣處理原則（KDIGO 2017 重要更新）</div>
+      <div class="highlight-box yellow">
+        <p style="font-size:.88rem">KDIGO 2017 不再建議常規將透析患者血鈣維持於正常範圍，而是建議<strong>避免高血鈣</strong>，並可容忍輕微無症狀的擬鈣劑相關低血鈣，以避免不當鈣負荷造成血管鈣化。</p>
+      </div>
+      <div class="highlight-box blue">
+        <p style="font-size:.88rem"><strong>📌 治療排序思路：</strong>血磷控制（磷結合劑優化）→ 視血鈣/磷選擇擬鈣劑或活性維生素 D → 若 PTH 仍高且血鈣偏高，擬鈣劑優先；若 PTH 高且血鈣偏低，活性維生素 D 優先。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 五、健保 vs 指引落差 -->
+  <div class="section">
+    <div class="section-title">📊 五、台灣健保 vs KDIGO 落差</div>
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>面向</th><th>台灣健保</th><th>KDIGO 2017/2025</th></tr></thead>
+          <tbody>
+            <tr><td>前置治療要求</td><td>需先使用活性維生素 D 失效</td><td class="td-warn">擬鈣劑與維生素 D 類似物可為並列選擇（依血鈣/磷決定）</td></tr>
+            <tr><td>非透析 CKD sHPT</td><td class="td-no">不給付</td><td class="td-warn">FDA 有核准（高血鈣合併高 PTH 時可用）</td></tr>
+            <tr><td>Etelcalcetide</td><td class="td-warn">給付狀態待確認</td><td class="td-warn">KDIGO 已納入選項，但無存活率改善證據</td></tr>
+            <tr><td>PTH 目標</td><td>無明確健保數值規範</td><td>2–9× ULN（約 130–585 pg/mL）</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 六、退件風險與申報重點 -->
+  <div class="section">
+    <div class="section-title">⚠️ 六、Cinacalcet 退件風險與申報重點</div>
+
+    <div class="notice-item">
+      <span class="notice-num">1</span>
+      <strong>必附 iPTH 數值（&gt;300 pg/mL）</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">近期（建議 3 個月內）iPTH 報告是申請的核心文件，數值低於 300 pg/mL 不符給付門檻。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">2</span>
+      <strong>記錄活性維生素 D 前置治療史</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">須在病歷記錄 calcitriol（rocaltrol）或 paricalcitol 等活性維生素 D 使用的劑量、時間，以及療效不足（PTH 未降至目標）或不耐受（如持續高血鈣）的原因。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">3</span>
+      <strong>確認校正血鈣在正常範圍</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">啟用前校正血鈣需 ≥ 正常值下限（通常 ≥8.4 mg/dL）。開藥時附血鈣報告，避免在低血鈣狀態下給藥。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">4</span>
+      <strong>資格限透析病人，需記錄透析狀態</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">確認病人目前在接受血液透析或腹膜透析，並在申請文件中附透析確認。非透析 CKD 患者不得申報。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">5</span>
+      <strong>定期再評估維持給付</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">需每 3–6 個月追蹤 iPTH、血鈣、血磷，記錄療效。若 PTH 已達標（接近或低於 KDIGO 目標範圍下限），評估是否繼續使用或減量。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">6</span>
+      <strong>嚴禁兩種擬鈣劑同時申報</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">Cinacalcet 與 Etelcalcetide 不可同時使用，由一種切換至另一種需停藥 ≥7 天。同時開立兩者屬嚴重藥物交互作用，且會退件。</span>
+    </div>
+
+    <div class="highlight-box red" style="margin-top:20px">
+      <p style="font-size:.88rem"><strong>⚠️ Etelcalcetide（Parsabiv）申報提醒：</strong>若給付狀態尚未明確，請勿嘗試以健保申報。使用前必須先至健保藥品品項查詢系統確認已收載，並了解給付條件後再行申請。</p>
+    </div>
+  </div>
+
+</div>
+<footer>
+  資料依據：KDIGO 2017/2025 CKD-MBD 指引、FDA Sensipar / Parsabiv Prescribing Information。<br>
+  Parsabiv 健保給付狀態請至 https://info.nhi.gov.tw/INAE3000/INAE3000S01 確認。僅供臨床參考，申報前請至健保署官網確認最新版本。
+</footer>
+</body>
+</html>

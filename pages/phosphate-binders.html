@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>磷結合劑｜健保藥物查詢</title>
+<style>
+:root{
+  --bg:#0f172a;--surface:#1e293b;--surface2:#263045;--border:#334155;
+  --accent:#38bdf8;--accent2:#818cf8;--text:#f1f5f9;--muted:#94a3b8;
+  --green:#4ade80;--red:#f87171;--yellow:#fbbf24;--orange:#fb923c;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+.topbar{background:#0c1a30;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--accent);text-decoration:none;font-size:.85rem;font-weight:500;padding:6px 12px;border:1px solid var(--border);border-radius:8px;transition:background .15s}
+.back-btn:hover{background:var(--surface2)}
+.topbar-title{font-size:.9rem;color:var(--muted)}
+.hero{background:linear-gradient(135deg,#0c1a30,#162032,#0c1a30);padding:36px 24px 28px;border-bottom:1px solid var(--border)}
+.hero-inner{max-width:860px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:#1e3a5f;color:var(--accent);font-size:.75rem;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:1.9rem;font-weight:800;letter-spacing:-.01em;margin-bottom:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:.95rem;color:var(--muted);margin-bottom:16px}
+.drug-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.meta-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:.78rem;color:var(--muted)}
+.meta-chip strong{color:var(--text)}
+.alert-bar{background:#422006;border:1px solid #92400e;border-radius:10px;padding:12px 16px;font-size:.83rem;color:#fcd34d;display:flex;gap:10px;align-items:flex-start;margin-top:14px}
+.alert-bar a{color:var(--accent)}
+.container{max-width:860px;margin:0 auto;padding:32px 24px 64px}
+.section{margin-bottom:40px}
+.section-title{font-size:1.15rem;font-weight:700;color:var(--accent);margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+.subsection{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:16px}
+.subsection-title{font-size:1rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.cond-block{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 16px;margin-bottom:12px}
+.cond-block.warn{border-left-color:var(--red)}
+.cond-block.success{border-left-color:var(--green)}
+.cond-block.note{border-left-color:var(--yellow)}
+.cond-label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+.cond-text{font-size:.9rem;line-height:1.65}
+ul.styled{padding-left:0;list-style:none;margin:10px 0}
+ul.styled li{padding:5px 0 5px 18px;position:relative;font-size:.9rem}
+ul.styled li::before{content:'▸';position:absolute;left:0;color:var(--accent)}
+ol.styled{padding-left:20px;margin:10px 0}
+ol.styled li{padding:5px 0;font-size:.9rem}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+thead{background:var(--surface2)}
+th{padding:11px 14px;text-align:left;font-weight:700;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid #1e293b;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#1a2540}
+.td-yes{color:var(--green);font-weight:600}
+.td-no{color:var(--red);font-weight:600}
+.td-warn{color:var(--yellow)}
+.highlight-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:12px 0}
+.highlight-box.blue{border-left:4px solid var(--accent)}
+.highlight-box.red{border-left:4px solid var(--red)}
+.highlight-box.green{border-left:4px solid var(--green)}
+.highlight-box.yellow{border-left:4px solid var(--yellow)}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:700;vertical-align:middle}
+.badge.red{background:#450a0a;color:#f87171}
+.badge.green{background:#14532d;color:#4ade80}
+.badge.blue{background:#1e3a5f;color:#7dd3fc}
+.badge.yellow{background:#422006;color:#fbbf24}
+.badge.orange{background:#431407;color:#fb923c}
+.notice-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:10px}
+.notice-num{width:26px;height:26px;background:var(--accent);color:#0f172a;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;margin-right:8px;flex-shrink:0;vertical-align:middle}
+footer{text-align:center;color:var(--muted);font-size:.78rem;padding:24px;border-top:1px solid var(--border);margin-top:20px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="../健保藥物查詢.html" class="back-btn">← 返回首頁</a>
+  <span class="topbar-title">磷結合劑 — 透析病人高血磷症臨床參考</span>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">🫘 腎臟科 ／ 透析</div>
+    <h1>磷結合劑（Phosphate Binders）</h1>
+    <p class="hero-sub">透析病人高血磷症 — Ca片 ／ Sevelamer（Renvela）／ Lanthanum Carbonate（Lanclean／Fosrenol）</p>
+    <div class="drug-meta">
+      <div class="meta-chip"><strong>鈣鹽</strong> CaCO₃ / Ca Acetate — 健保一般給付</div>
+      <div class="meta-chip"><strong>Sevelamer</strong> Renvela / Renagel — 健保事前審查</div>
+      <div class="meta-chip"><strong>Lanthanum</strong> Lanclean / Fosrenol — 自費</div>
+      <div class="meta-chip"><strong>指引</strong> KDIGO 2017 / 2025 Controversies</div>
+    </div>
+    <div class="alert-bar">
+      ⚠️ 健保規範具時效性，申報前請至 <a href="https://www.nhi.gov.tw" target="_blank">https://www.nhi.gov.tw</a> 確認最新版本。
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 一、四種磷結合劑總比較 -->
+  <div class="section">
+    <div class="section-title">📊 一、磷結合劑總比較</div>
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>藥物</th>
+              <th>類型</th>
+              <th>台灣健保</th>
+              <th>FDA 核准</th>
+              <th>含鈣</th>
+              <th>特點</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Calcium Carbonate（鈣片）</strong></td>
+              <td>含鈣磷結合劑</td>
+              <td class="td-yes">✅ 一般給付</td>
+              <td class="td-yes">✅ 核准</td>
+              <td class="td-warn">含鈣</td>
+              <td>第一線、便宜；長期高血鈣/鈣化風險</td>
+            </tr>
+            <tr>
+              <td><strong>Calcium Acetate（醋酸鈣）</strong></td>
+              <td>含鈣磷結合劑</td>
+              <td class="td-yes">✅ 一般給付</td>
+              <td class="td-yes">✅ 核准</td>
+              <td class="td-warn">含鈣</td>
+              <td>降磷效率略優於 CaCO₃；仍含鈣</td>
+            </tr>
+            <tr>
+              <td><strong>Sevelamer（Renvela / Renagel）</strong></td>
+              <td>陽離子交換樹脂</td>
+              <td class="td-warn">⚠️ 事前審查</td>
+              <td class="td-yes">✅ 核准</td>
+              <td class="td-yes">不含鈣</td>
+              <td>需先使用鈣鹽失效/不耐受；另有降 LDL-C 效果</td>
+            </tr>
+            <tr>
+              <td><strong>Lanthanum Carbonate（Lanclean / Fosrenol）</strong></td>
+              <td>稀土金屬磷結合劑</td>
+              <td class="td-no">❌ 自費</td>
+              <td class="td-yes">✅ 核准（2004）</td>
+              <td class="td-yes">不含鈣</td>
+              <td>嚼碎服用；較少藥錠負擔；不含鈣；台灣自費</td>
+            </tr>
+            <tr>
+              <td><strong>Ferric Citrate（Nephoxil 拿百磷）</strong></td>
+              <td>含鐵磷結合劑</td>
+              <td class="td-yes">✅ 健保給付</td>
+              <td class="td-yes">✅ 核准</td>
+              <td class="td-yes">不含鈣（含鐵）</td>
+              <td>同時補充鐵；副作用：黑便、GI 不適</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 二、台灣健保規範 -->
+  <div class="section">
+    <div class="section-title">🏥 二、台灣健保規範</div>
+
+    <!-- 鈣鹽 -->
+    <div class="subsection">
+      <div class="subsection-title">1. 含鈣磷結合劑（CaCO₃ / Ca Acetate）</div>
+      <div class="cond-block success">
+        <div class="cond-label">給付方式</div>
+        <div class="cond-text">一般給付，<strong>不需事前審查</strong>。透析病人高血磷症第一線用藥，退件風險低。</div>
+      </div>
+      <div class="cond-block">
+        <div class="cond-label">劑量參考</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>碳酸鈣：一般每餐 1–2 g（元素鈣約 400–800 mg/餐），隨餐嚼碎服用</li>
+            <li>醋酸鈣（PhosLo）667 mg/顆：每餐 2–3 顆，隨餐服用</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">臨床注意</div>
+        <div class="cond-text">長期使用需監測血鈣。有血管鈣化證據、持續高血鈣（校正鈣 &gt;10.2 mg/dL）者，KDIGO 建議<strong>限制含鈣磷結合劑劑量</strong>，考慮轉換非含鈣磷結合劑。</div>
+      </div>
+    </div>
+
+    <!-- Sevelamer -->
+    <div class="subsection">
+      <div class="subsection-title">2. Sevelamer（Renvela 磷減樂 / Renagel 磷能解）</div>
+      <div class="cond-block warn">
+        <div class="cond-label">⚠️ 給付方式：事前審查</div>
+        <div class="cond-text">需先使用含鈣磷結合劑治療<strong>失效或不耐受</strong>後，才可申請 Sevelamer 健保給付。</div>
+      </div>
+      <div class="cond-block">
+        <div class="cond-label">申請所需文件</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>近期（3–6 個月內）血磷數值（需 &gt;5.5 mg/dL）</li>
+            <li>血鈣數值及校正鈣值</li>
+            <li>先前含鈣磷結合劑（CaCO₃/Ca Acetate）使用的劑量、持續時間記錄</li>
+            <li>失效佐證：血磷仍高；或不耐受佐證：高血鈣（Ca &gt;10.2 mg/dL）或血管鈣化影像</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">劑量</div>
+        <div class="cond-text">起始每餐 0.8–1.6 g（400/800 mg 錠），每 2 週依血磷調整；平均日劑量約 7.2 g/天（最高研究劑量 14 g/天）</div>
+      </div>
+    </div>
+
+    <!-- Lanthanum -->
+    <div class="subsection">
+      <div class="subsection-title">3. Lanthanum Carbonate（碳酸鑭）— Lanclean 朗潔 / Fosrenol 福斯利諾</div>
+      <div class="cond-block warn">
+        <div class="cond-label">🔴 台灣健保現況：完全自費</div>
+        <div class="cond-text">碳酸鑭於 2006 年在台上市，但健保<strong>目前完全未給付</strong>，無健保代碼。臨床使用需全額自費，無事前審查申請路徑。<br>自費參考：約 NT$30–60/顆（500 mg/顆），每日需 3–6 顆（1,500–3,000 mg/日）。</div>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">臨床定位</div>
+        <div class="cond-text">適用於 Sevelamer 不耐受、pill burden 需求低（嚼碎服用，錠數少）、或有 CaCO₃ 和 Sevelamer 禁忌者。Pill count 優於 sevelamer（通常每餐 1–2 顆 vs sevelamer 3–4 顆）。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 三、FDA 規範 -->
+  <div class="section">
+    <div class="section-title">🇺🇸 三、FDA 規範</div>
+
+    <div class="subsection">
+      <div class="subsection-title">Sevelamer Carbonate（Renvela）</div>
+      <div class="cond-block">
+        <div class="cond-label">核准適應症</div>
+        <div class="cond-text">成人及 ≥6 歲兒童 CKD 透析患者的血磷控制。<strong>FDA 不要求先使用鈣片失效</strong>，可直接作為第一線選擇。</div>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">重要警語（無 Black Box Warning）</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>嚴重個案報告：吞嚥困難、腸阻塞、腸穿孔（部分需住院及手術）</li>
+            <li>有腸胃道手術史、吞嚥障礙者應謹慎</li>
+            <li>禁忌：腸阻塞、藥物過敏</li>
+          </ul>
+        </div>
+      </div>
+      <div class="highlight-box yellow">
+        <p style="font-size:.88rem"><strong>台灣 vs FDA 主要落差：</strong>FDA 核准可直接使用於透析患者；台灣健保要求「鈣片失效/不耐受」後才能申請，屬強制階梯治療。此為最大政策落差。</p>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Lanthanum Carbonate（Fosrenol）</div>
+      <div class="cond-block">
+        <div class="cond-label">核准適應症</div>
+        <div class="cond-text">ESRD 病人血磷降低（2004 年核准）。起始每日總劑量 1,500 mg，分次隨餐嚼碎服用，每 2–3 週調整。劑型：咀嚼錠（500/750/1,000 mg）及口服散劑（750/1,000 mg）。</div>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">重要警語</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>腸阻塞、腸梗阻、糞便嵌塞風險（咀嚼錠務必嚼碎）</li>
+            <li>動物實驗：鑭元素沉積於發育中骨骼（骨骺板）→ <strong>不建議用於兒童</strong></li>
+            <li>孕婦：建議改用不含鑭的磷結合劑</li>
+            <li>藥物交互作用：與 quinolone 抗生素、甲狀腺素需<strong>間隔 ≥2 小時</strong>服用</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 四、最新臨床指引 -->
+  <div class="section">
+    <div class="section-title">📚 四、最新臨床指引（KDIGO）</div>
+
+    <div class="subsection">
+      <div class="subsection-title">KDIGO 2017 CKD-MBD 指引（目前仍為最新正式版本）</div>
+
+      <div class="cond-block success">
+        <div class="cond-label">Guideline 4.1.2（2C）— 血磷目標</div>
+        <div class="cond-text">CKD G3a–G5D 患者，建議將升高的血磷降至正常範圍方向（目標值依各實驗室正常範圍，透析患者通常目標 3.5–5.5 mg/dL）</div>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">Guideline 4.1.6（2B）— 重要！限制含鈣磷結合劑</div>
+        <div class="cond-text">CKD G3a–G5D 成人接受降磷治療時，<strong>建議限制含鈣磷結合劑的劑量</strong>（2017 版從 2D 升至 2B，反映更多 RCT 支持鈣負擔與血管鈣化/死亡率的關聯）。</div>
+      </div>
+      <div class="cond-block">
+        <div class="cond-label">PTH 目標 — Guideline 4.2.3（2C）</div>
+        <div class="cond-text">CKD G5D 透析患者，建議維持 iPTH 在<strong>檢驗正常值上限的 2–9 倍</strong>（以常見 assay ULN = 65 pg/mL 為例：目標範圍約 130–585 pg/mL）。PTH 單獨數值不可靠，需結合趨勢判讀。</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">2025 KDIGO CKD-MBD Controversies Conference（最新共識）</div>
+      <div class="cond-block note">
+        <div class="cond-label">2023 年 10 月會議結論</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>2017 版指引建議與現有證據大致一致，不需大幅修訂</li>
+            <li>新共識：應避免<strong>過高的累積鈣負荷</strong>，而非完全禁止含鈣磷結合劑</li>
+            <li>UK Renal Association：含鈣磷結合劑仍有角色，但「不再建議作為大多數病患的第一線用藥」，因非含鈣替代品的學名藥已越來越容易取得</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">2025 Cochrane SR（最新系統性回顧，文獻至 2024/12）</div>
+        <div class="cond-text">非含鈣磷結合劑與含鈣磷結合劑相比，可減少高血鈣風險；但對全因死亡率的差異在統計上仍不完全確定（證據強度有限）。</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">PTH 控制策略</div>
+      <div class="cond-block">
+        <div class="cond-label">Guideline 4.2.4（2B）— 降 PTH 藥物</div>
+        <div class="cond-text">CKD G5D 需降 PTH 治療者，建議使用 calcimimetics（cinacalcet）、calcitriol 或維生素 D 類似物、或組合。KDIGO 目前不優先推薦任一種。</div>
+      </div>
+      <div class="highlight-box yellow">
+        <p style="font-size:.88rem"><strong>📌 重要：</strong>高血磷會刺激 PTH 分泌。控制血磷是治療繼發性副甲狀腺機能亢進（SHPT）的基礎，建議在開始 cinacalcet 或活性維他命 D 前，<strong>先確認磷結合劑已優化</strong>。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 五、健保 vs 指引落差 -->
+  <div class="section">
+    <div class="section-title">📊 五、台灣健保 vs KDIGO 落差</div>
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>面向</th><th>台灣健保</th><th>KDIGO 2017/2025</th></tr></thead>
+          <tbody>
+            <tr><td>含鈣 Pi Binder 定位</td><td>第一線（必須先用）</td><td class="td-warn">建議限制使用（2B），不再優先推薦</td></tr>
+            <tr><td>Sevelamer 使用時機</td><td>需事前審查，限鈣片失效/不耐受後</td><td class="td-warn">可直接作為一線選擇（不要求先試鈣片）</td></tr>
+            <tr><td>Lanthanum（碳酸鑭）</td><td class="td-no">完全不給付（自費）</td><td class="td-warn">與 Sevelamer 同列為非含鈣選項</td></tr>
+            <tr><td>PTH 目標</td><td>無明確健保規範</td><td>2–9× ULN（CKD G5D）</td></tr>
+            <tr><td>血磷目標</td><td>無明確健保數值規範</td><td>建議降至正常範圍方向（目標 3.5–5.5 mg/dL）</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 六、退件風險與申報注意 -->
+  <div class="section">
+    <div class="section-title">⚠️ 六、Sevelamer 退件風險與申報重點</div>
+
+    <div class="notice-item">
+      <span class="notice-num">1</span>
+      <strong>病歷務必記載鈣片前置治療</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">記錄內容：「先前使用 CaCO₃/Ca Acetate XX mg/day 持續 X 週/月，血磷仍 X.X mg/dL（高於目標）」或「出現高血鈣（Ca X.X mg/dL）/ 血管鈣化佐證」。缺此記錄為最常見退件原因。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">2</span>
+      <strong>附齊完整血脂套組</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">申請文件需包含近期（3–6 個月內）血磷數值（需 &gt;5.5 mg/dL）、血鈣數值及校正鈣值。數值不全即退件。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">3</span>
+      <strong>資格限透析病人</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">Sevelamer 健保給付限透析（HD 或 PD）病人。CKD 非透析患者若高血磷，Sevelamer 不在健保給付範疇，需自費或選用含鈣磷結合劑。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">4</span>
+      <strong>Lanthanum（碳酸鑭）：純自費，勿誤申健保</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">目前無健保給付，開立即為完全自費。需清楚告知病人費用。建議追蹤健保署是否有新的收載公告。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">5</span>
+      <strong>Lanthanum 服用注意：嚼碎 + 藥物分開</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">必須隨餐嚼碎後服用。Quinolone 抗生素（如 Ciprofloxacin）、甲狀腺素（Levothyroxine）需與 Lanthanum 間隔 ≥2 小時，否則吸收受影響。</span>
+    </div>
+  </div>
+
+</div>
+<footer>
+  資料依據：KDIGO 2017/2025 CKD-MBD 指引、FDA Renvela/Fosrenol Prescribing Information、2025 Cochrane SR。<br>
+  僅供臨床參考，申報前請至健保署官網確認最新版本。
+</footer>
+</body>
+</html>

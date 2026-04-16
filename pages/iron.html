@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>鐵劑臨床整理｜健保藥物查詢</title>
+<style>
+:root{
+  --bg:#0f172a;--surface:#1e293b;--surface2:#263045;--border:#334155;
+  --accent:#38bdf8;--accent2:#818cf8;--text:#f1f5f9;--muted:#94a3b8;
+  --green:#4ade80;--red:#f87171;--yellow:#fbbf24;--orange:#fb923c;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+.topbar{background:#0c1a30;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--accent);text-decoration:none;font-size:.85rem;font-weight:500;padding:6px 12px;border:1px solid var(--border);border-radius:8px;transition:background .15s}
+.back-btn:hover{background:var(--surface2)}
+.topbar-title{font-size:.9rem;color:var(--muted)}
+.hero{background:linear-gradient(135deg,#0c1a30,#162032,#0c1a30);padding:36px 24px 28px;border-bottom:1px solid var(--border)}
+.hero-inner{max-width:860px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:#1e3a5f;color:var(--accent);font-size:.75rem;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:1.9rem;font-weight:800;letter-spacing:-.01em;margin-bottom:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:.95rem;color:var(--muted);margin-bottom:16px}
+.drug-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.meta-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:.78rem;color:var(--muted)}
+.meta-chip strong{color:var(--text)}
+.alert-bar{background:#422006;border:1px solid #92400e;border-radius:10px;padding:12px 16px;font-size:.83rem;color:#fcd34d;display:flex;gap:10px;align-items:flex-start;margin-top:14px}
+.alert-bar a{color:var(--accent)}
+.container{max-width:860px;margin:0 auto;padding:32px 24px 64px}
+.section{margin-bottom:40px}
+.section-title{font-size:1.15rem;font-weight:700;color:var(--accent);margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+.subsection{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:16px}
+.subsection-title{font-size:1rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.cond-block{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 16px;margin-bottom:12px}
+.cond-block.warn{border-left-color:var(--red)}
+.cond-block.success{border-left-color:var(--green)}
+.cond-block.note{border-left-color:var(--yellow)}
+.cond-label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+.cond-text{font-size:.9rem;line-height:1.65}
+ul.styled{padding-left:0;list-style:none;margin:10px 0}
+ul.styled li{padding:5px 0 5px 18px;position:relative;font-size:.9rem}
+ul.styled li::before{content:'▸';position:absolute;left:0;color:var(--accent)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+thead{background:var(--surface2)}
+th{padding:11px 14px;text-align:left;font-weight:700;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid #1e293b;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#1a2540}
+.td-yes{color:var(--green);font-weight:600}
+.td-no{color:var(--red);font-weight:600}
+.td-warn{color:var(--yellow)}
+.highlight-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:12px 0}
+.highlight-box.blue{border-left:4px solid var(--accent)}
+.highlight-box.red{border-left:4px solid var(--red)}
+.highlight-box.green{border-left:4px solid var(--green)}
+.highlight-box.yellow{border-left:4px solid var(--yellow)}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:700;vertical-align:middle}
+.badge.red{background:#450a0a;color:#f87171}
+.badge.green{background:#14532d;color:#4ade80}
+.badge.blue{background:#1e3a5f;color:#7dd3fc}
+.badge.yellow{background:#422006;color:#fbbf24}
+.notice-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:10px}
+.notice-num{width:26px;height:26px;background:var(--accent);color:#0f172a;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;margin-right:8px;flex-shrink:0;vertical-align:middle}
+footer{text-align:center;color:var(--muted);font-size:.78rem;padding:24px;border-top:1px solid var(--border);margin-top:20px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="../健保藥物查詢.html" class="back-btn">← 返回首頁</a>
+  <span class="topbar-title">鐵劑臨床整理 — Fe-Back / Hote Chewable / Ferrous Gluco-B</span>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">🩸 腎臟科 ／ 血液科 ／ 內科</div>
+    <h1>鐵劑臨床整理</h1>
+    <p class="hero-sub">Fe-Back IV（Iron Sucrose）／ Hote Chewable PO（IPC）／ Ferrous Gluco-B PO — CKD 透析 &amp; Non-CKD IDA</p>
+    <div class="drug-meta">
+      <div class="meta-chip"><strong>Fe-Back IV</strong> Iron Sucrose 100mg/5mL — 健保 AC45362212</div>
+      <div class="meta-chip"><strong>Hote Chewable</strong> IPC 100mg Fe³⁺ — 口服咀嚼</div>
+      <div class="meta-chip"><strong>Ferrous Gluco-B</strong> 38mg Fe²⁺ + Vit C — 健保 NC01822100</div>
+      <div class="meta-chip"><strong>KDIGO 2026</strong> 最新貧血指引</div>
+    </div>
+    <div class="alert-bar">
+      ⚠️ 健保規範具時效性，最後更新查閱 2026 年 4 月。申報前請至 <a href="https://www.nhi.gov.tw" target="_blank">https://www.nhi.gov.tw</a> 確認最新版本。
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 一、三種製劑比較 -->
+  <div class="section">
+    <div class="section-title">💊 一、三種製劑比較</div>
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>項目</th><th>Fe-Back IV</th><th>Hote Chewable PO</th><th>Ferrous Gluco-B PO</th></tr></thead>
+          <tbody>
+            <tr><td>鐵型態</td><td>Fe³⁺ sucrose complex</td><td>Fe³⁺ polymaltose complex（IPC）</td><td>Fe²⁺ gluconate</td></tr>
+            <tr><td>每單位含鐵量</td><td>100 mg / 5 mL</td><td>100 mg / 錠</td><td>38 mg / 錠</td></tr>
+            <tr><td>給藥途徑</td><td>IV only</td><td>口服咀嚼</td><td>口服糖衣錠</td></tr>
+            <tr><td>CKD 透析</td><td class="td-yes">HD 首選（KDIGO 2026 建議 IV 鐵）</td><td>非HD/PD可用</td><td>非HD/PD可用</td></tr>
+            <tr><td>Non-CKD IDA</td><td>口服失敗/禁忌時使用</td><td class="td-yes">輕中度 IDA、門診慢性補鐵</td><td class="td-yes">輕中度 IDA、妊娠貧血</td></tr>
+            <tr><td>GI 副作用</td><td>無（但有低血壓、過敏風險）</td><td class="td-yes">較二價鐵低</td><td class="td-warn">可能有（噁心、便祕、黑便）</td></tr>
+            <tr><td>吸收特性</td><td>直接進入血循環</td><td>三價鐵須還原後吸收，吸收率較低</td><td class="td-yes">二價鐵吸收較佳，含Vit C輔助</td></tr>
+            <tr><td>健保給付</td><td class="td-yes">一般給付</td><td class="td-yes">一般給付</td><td class="td-yes">一般給付</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 二、IDA 診斷標準 -->
+  <div class="section">
+    <div class="section-title">🔍 二、IDA 診斷標準</div>
+    <div class="subsection">
+      <div class="subsection-title">貧血定義（WHO）</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>族群</th><th>Hb 門檻</th></tr></thead>
+          <tbody>
+            <tr><td>成年男性</td><td>&lt;13 g/dL</td></tr>
+            <tr><td>非孕女性</td><td>&lt;12 g/dL</td></tr>
+            <tr><td>孕婦</td><td>&lt;11 g/dL（第二孕期 &lt;10.5 g/dL）</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="subsection">
+      <div class="subsection-title">缺鐵診斷門檻（依族群）</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>族群</th><th>Ferritin 門檻</th><th>TSAT</th><th>來源</th></tr></thead>
+          <tbody>
+            <tr><td>一般成人（無發炎）</td><td>&lt;30 µg/L</td><td>&lt;20%</td><td>Iolascon 2024 HemaSphere</td></tr>
+            <tr><td>ASH 2025 草案 — 一般成人</td><td>≤20 ng/mL</td><td>—</td><td>ASH Draft 2025</td></tr>
+            <tr><td>ASH 2025 草案 — 月經女性/孕婦</td><td>≤30 ng/mL</td><td>—</td><td>ASH Draft 2025</td></tr>
+            <tr><td>合併發炎（CKD/CHF/IBD/癌症）</td><td>&lt;100 µg/L + TSAT 合併判讀</td><td>&lt;20%</td><td>Iolascon 2024 / KDIGO 2026</td></tr>
+            <tr><td><strong>CKD G5 HD</strong></td><td>≤500 ng/mL</td><td>≤30%</td><td class="td-yes">KDIGO 2026</td></tr>
+            <tr><td><strong>CKD non-HD / PD</strong></td><td>&lt;100 且 TSAT &lt;40%；或 100–300 且 TSAT &lt;25%</td><td>見左列</td><td class="td-yes">KDIGO 2026</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 三、治療策略：CKD 透析 -->
+  <div class="section">
+    <div class="section-title">🏥 三、CKD 透析病人治療策略（KDIGO 2026）</div>
+
+    <div class="subsection">
+      <div class="subsection-title">鐵劑啟動條件 &amp; 途徑</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>族群</th><th>啟動條件</th><th>途徑</th><th>證據等級</th></tr></thead>
+          <tbody>
+            <tr><td>CKD G5 HD</td><td>Ferritin ≤500 ng/mL 且 TSAT ≤30%</td><td class="td-yes">IV 鐵優於口服鐵</td><td>2D</td></tr>
+            <tr><td>CKD HD — 策略</td><td>採 proactive approach 維持穩定鐵狀態（PIVOTAL trial）</td><td>IV</td><td>Practice Point</td></tr>
+            <tr><td>CKD non-HD / PD</td><td>Ferritin &lt;100 且 TSAT &lt;40%；或 Ferritin 100–300 且 TSAT &lt;25%</td><td>口服或IV皆可</td><td>2D</td></tr>
+            <tr><td>非HD — 口服失敗</td><td>口服鐵 3 個月內無反應，應轉 IV 鐵</td><td>IV</td><td>Practice Point</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Fe-Back（Iron Sucrose）在 CKD 的標準劑量</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>CKD 分群</th><th>劑量</th><th>療程</th></tr></thead>
+          <tbody>
+            <tr><td>HDD-CKD（血液透析）</td><td>100 mg IV/次，每次透析給予（slow push 2–5 min 或 NS 100 mL drip ≥15 min），透析第一小時內</td><td>總劑量 1000 mg（10 次透析）</td></tr>
+            <tr><td>NDD-CKD（非透析）</td><td>200 mg IV/次，共 5 次，間隔 ≥14 天</td><td>總劑量 1000 mg</td></tr>
+            <tr><td>PDD-CKD（腹膜透析）</td><td>300 mg × 2 次（間隔 14 天）→ 400 mg × 1 次（再隔 14 天）</td><td>總劑量 1000 mg</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">停鐵時機（CKD）</div>
+      <div class="cond-block warn">
+        <div class="cond-label">停鐵條件</div>
+        <div class="cond-text">Ferritin &gt;700 ng/mL 或 TSAT ≥40% → 暫停常規鐵劑補充；全身性感染期間 → 暫停鐵劑（感染未控制前不補鐵）</div>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">KDIGO 2026 術語更新</div>
+        <div class="cond-text">「Absolute iron deficiency」→ 改稱 <strong>Systemic iron deficiency</strong>；「Functional iron deficiency」→ 改稱 <strong>Iron-restricted erythropoiesis</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 四、治療策略：Non-CKD IDA -->
+  <div class="section">
+    <div class="section-title">💊 四、Non-CKD IDA 治療策略</div>
+
+    <div class="subsection">
+      <div class="subsection-title">口服鐵劑（第一線）— AGA 2024 Best Practice Advice</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>BPA</th><th>建議</th></tr></thead>
+          <tbody>
+            <tr><td>BPA 1：配方選擇</td><td>各種口服鐵配方療效無顯著差異；Ferrous sulfate 最便宜優先（台灣對應 Ferrous Gluco-B 類）</td></tr>
+            <tr><td>BPA 2：劑量與頻率</td><td>每日 elemental iron 約 30–65 mg，<strong>每天最多一次</strong>；隔日給藥可改善耐受性，吸收率與每日相當</td></tr>
+            <tr><td>BPA 3：Vitamin C</td><td>加入約 80 mg Vit C，空腹服用效果最佳（Ferrous Gluco-B 已含 Vit C）</td></tr>
+            <tr><td>BPA 4：轉 IV 鐵</td><td>口服不耐受/失敗/吸收障礙 → 改 IV 鐵</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">Hepcidin 機轉</div>
+        <div class="cond-text">口服鐵後血清 hepcidin 上升持續約 48 小時，抑制後續鐵吸收。因此每天超過一次給藥不會增加吸收，反而增加副作用。隔日給藥可避開此效應。</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">轉用 IV 鐵的條件（Non-CKD）</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>條件</th><th>具體說明</th></tr></thead>
+          <tbody>
+            <tr><td>口服鐵不耐受</td><td>調整劑量/隔日給藥/換配方仍有嚴重 GI 副作用</td></tr>
+            <tr><td>口服鐵治療無效</td><td>口服鐵 <strong>4–6 週後 Hb 未上升 ≥1 g/dL</strong></td></tr>
+            <tr><td>吸收障礙</td><td>乳糜瀉、Crohn's disease、胃切除/減重手術後、長期 PPI</td></tr>
+            <tr><td>慢性發炎</td><td>IBD、CHF、癌症化療相關貧血</td></tr>
+            <tr><td>持續出血</td><td>出血速度超過口服鐵補充速度（活動性 GI bleeding、heavy menstrual bleeding）</td></tr>
+            <tr><td>妊娠 IDA</td><td>第二、三孕期嚴重 IDA（Hb &lt;10 g/dL）或口服鐵失敗</td></tr>
+            <tr><td>術前貧血</td><td>手術時間緊迫，口服鐵無法在術前足夠時間內矯正</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">Fe-Back（Iron Sucrose）Non-CKD IDA 劑量</div>
+      <div class="cond-block success">
+        <div class="cond-label">台灣 vs FDA 差異</div>
+        <div class="cond-text">FDA 核准 Venofer® 僅限 CKD 適應症。但台灣 Fe-Back 的 TFDA 許可適應症較寬（含一般貧血），用於 non-CKD IDA <strong>非屬 off-label</strong>。</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>方案</th><th>劑量</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr><td>常規</td><td>200 mg IV/次（NS 100–250 mL 稀釋，drip ≥15–30 min）</td><td>每週 1–2 次</td></tr>
+            <tr><td>總劑量估算</td><td>依缺鐵程度，通常 500–1000 mg</td><td>—</td></tr>
+            <tr><td>Ganzoni formula</td><td><strong>鐵缺乏量(mg) = 體重(kg) × (目標Hb − 實際Hb) × 2.4 + 500</strong></td><td>估算總需求量</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 五、追蹤方式 -->
+  <div class="section">
+    <div class="section-title">📊 五、追蹤方式</div>
+
+    <div class="subsection">
+      <div class="subsection-title">A. Non-CKD IDA — 口服鐵追蹤</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>時間點</th><th>追蹤項目</th><th>判讀重點</th></tr></thead>
+          <tbody>
+            <tr><td>治療前（baseline）</td><td>CBC、reticulocyte、ferritin、TSAT、iron/TIBC</td><td>確認 IDA 診斷；排除其他貧血原因</td></tr>
+            <tr><td>2 週（選擇性）</td><td>Reticulocyte count</td><td>早期反應指標，應見上升</td></tr>
+            <tr><td><strong>4 週（關鍵）</strong></td><td><strong>Hb、ferritin</strong></td><td class="td-yes"><strong>Hb 應上升 ≥1 g/dL</strong>；未達標需重新評估</td></tr>
+            <tr><td>8–12 週</td><td>Hb、ferritin、TSAT</td><td>是否接近目標；ferritin 是否回升</td></tr>
+            <tr><td>Hb 正常化後</td><td>Ferritin</td><td><strong>繼續補鐵至 ferritin &gt;50–100 ng/mL</strong></td></tr>
+            <tr><td>儲鐵補足後</td><td>每 3–6 個月 ferritin</td><td>監測復發（月經女性、持續出血者）</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">4 週 Hb 未上升 ≥1 g/dL 的鑑別</div>
+        <div class="cond-text">① 順從性不佳；② 持續出血；③ 吸收障礙（乳糜瀉/PPI/胃切除）；④ 診斷錯誤（地中海貧血、慢性病貧血）→ 考慮轉 IV 鐵</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">B. Non-CKD IDA — IV 鐵追蹤</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>時間點</th><th>追蹤項目</th><th>注意事項</th></tr></thead>
+          <tbody>
+            <tr><td>給藥前</td><td>CBC、ferritin、TSAT</td><td>確認缺鐵</td></tr>
+            <tr><td>給藥後 48 小時內</td><td class="td-warn">⚠️ 不宜抽 serum iron / TSAT</td><td>數值會假性升高</td></tr>
+            <tr><td><strong>4–8 週後（關鍵）</strong></td><td><strong>Hb、ferritin、TSAT</strong></td><td>IV 鐵後 ferritin 暫時升高，需等此時才有意義</td></tr>
+            <tr><td>之後視需要</td><td>每 3 個月</td><td>持續出血或慢性病因者定期追蹤</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">C. CKD 透析病人追蹤（KDIGO 2026）</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>時間點</th><th>追蹤項目</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr><td>常規</td><td>每 <strong>3 個月</strong> Hb、ferritin、TSAT</td><td>KDIGO 2026 Practice Point</td></tr>
+            <tr><td>IV 鐵給藥後</td><td><strong>至少 48 小時後</strong>再抽 serum iron</td><td>避免假性升高</td></tr>
+            <tr><td>停鐵指標</td><td>Ferritin &gt;700 或 TSAT ≥40%</td><td>暫停鐵劑</td></tr>
+            <tr><td>ESA 合併使用</td><td>Hb 目標 ≤11.5 g/dL</td><td>避免過度矯正</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 六、台灣健保規範 -->
+  <div class="section">
+    <div class="section-title">🏥 六、台灣健保規範</div>
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>藥品</th><th>申請方式</th><th>科別限制</th><th>給付條件</th></tr></thead>
+          <tbody>
+            <tr><td>Fe-Back IV（iron sucrose）</td><td>一般給付（非事前審查）</td><td>無</td><td>限缺鐵性貧血或急慢性失血</td></tr>
+            <tr><td>Hote Chewable（IPC）</td><td>一般給付</td><td>無</td><td>限缺鐵性貧血</td></tr>
+            <tr><td>Ferrous Gluco-B</td><td>一般給付</td><td>無</td><td>限鐵缺乏性貧血</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cond-block success">
+        <div class="cond-label">台灣健保特點</div>
+        <div class="cond-text">台灣健保對一般口服鐵劑及 iron sucrose 的給付，未如 ESA、SGLT2i 等設定嚴格事前審查門檻，屬基本給付項目，臨床申報相對寬鬆。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 七、退件風險 -->
+  <div class="section">
+    <div class="section-title">⚠️ 七、退件風險提醒</div>
+
+    <div class="notice-item">
+      <span class="notice-num">1</span>
+      <strong>文件面：未附佐證檢驗數值</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">缺 Hb、ferritin、TSAT 等數值；ICD-10 診斷碼與適應症不符；檢驗報告日期過舊。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">2</span>
+      <strong>IV 鐵：未記錄口服鐵不耐受或失敗原因</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">Non-CKD 病人使用 IV 鐵，必須在病歷記錄轉用 IV 的理由（口服不耐受/4–6 週 Hb 未升 ≥1 g/dL/吸收障礙/持續出血）。此為最常見核刪原因。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">3</span>
+      <strong>數值面：無缺鐵客觀證據仍開鐵劑</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">Ferritin 已正常或偏高仍持續開立；HD 患者 ferritin 持續 &gt;700 ng/mL 未停藥 → 退件。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">4</span>
+      <strong>療程面：未做病因評估</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">IDA 未進一步鑑別病因（消化道出血/月經過多/惡性腫瘤），單純開鐵劑無評估記錄，可能遭核刪。</span>
+    </div>
+  </div>
+
+  <!-- 八、臨床重點摘要 -->
+  <div class="section">
+    <div class="section-title">📋 八、臨床實務重點</div>
+    <div class="subsection">
+      <div class="highlight-box blue">
+        <p style="font-weight:700;margin-bottom:10px">七大重點</p>
+        <ol style="padding-left:20px;font-size:.9rem;line-height:2">
+          <li>口服鐵：首選每日或隔日一次，搭配 Vitamin C（空腹最佳）</li>
+          <li><strong>4 週追蹤 Hb 是關鍵時間點</strong>（期待 ≥1 g/dL 上升）</li>
+          <li><strong>Hb 正常化後繼續補鐵 3–6 個月</strong>至 ferritin &gt;50–100 ng/mL</li>
+          <li><strong>使用 IV 鐵時，病歷務必記錄轉用理由</strong></li>
+          <li><strong>IV 鐵給藥後 48 小時內不查 serum iron/TSAT</strong>（假性升高）</li>
+          <li>IV 鐵療效評估在 4–8 週後的 ferritin 才有意義</li>
+          <li><strong>CKD HD 病人：</strong>每 3 個月追蹤，ferritin &gt;700 / TSAT ≥40% 暫停</li>
+        </ol>
+      </div>
+      <div class="cond-block warn" style="margin-top:16px">
+        <div class="cond-label">⚠️ 重要提醒</div>
+        <div class="cond-text">Hb 正常化 ≠ 鐵儲備已補滿。Non-CKD IDA 患者 Hb 恢復後需繼續口服鐵 3–6 個月至 ferritin 充足，否則容易短期內復發。</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">健保 vs 國際指引落差</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>面向</th><th>國際指引</th><th>台灣健保</th></tr></thead>
+          <tbody>
+            <tr><td>口服轉 IV 鐵時機</td><td>AGA 2024：口服 4 週 Hb 未升 ≥1 g/dL 即考慮轉 IV</td><td>未明確規範時機</td></tr>
+            <tr><td>IV iron sucrose 適應症</td><td>FDA 僅限 CKD</td><td class="td-yes">TFDA 涵蓋一般貧血，non-CKD 使用非 off-label</td></tr>
+            <tr><td>CKD 鐵劑啟動門檻</td><td>KDIGO 2026：HD ferritin ≤500 + TSAT ≤30%</td><td>未設定具體門檻</td></tr>
+            <tr><td>CKD 停鐵門檻</td><td>KDIGO 2026：ferritin &gt;700 或 TSAT ≥40%</td><td>未明確規範</td></tr>
+            <tr><td>隔日給藥</td><td>AGA 2024 建議可用</td><td class="td-yes">無限制，可直接採用</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+<footer>
+  資料依據：KDIGO 2026 Anemia in CKD、AGA 2024 IDA、JAMA 2025 Iron Deficiency Review、Lancet Haematology 2025 Iron Consortium。
+  僅供臨床參考，申報前請至健保署官網確認最新版本。
+</footer>
+</body>
+</html>

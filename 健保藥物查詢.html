@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>腰子科常用藥物查詢</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface2: #263045;
+      --border: #334155;
+      --accent: #38bdf8;
+      --accent2: #818cf8;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --tag-bg: #1e3a5f;
+      --tag-text: #7dd3fc;
+      --hover: #2d3f5a;
+      --shadow: rgba(0,0,0,0.5);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', 'Noto Sans TC', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    header {
+      background: linear-gradient(135deg, #0c1a30 0%, #162032 50%, #0c1a30 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 28px 32px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+    }
+    .header-inner { max-width: 1200px; margin: 0 auto; }
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .logo-icon {
+      width: 42px; height: 42px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    h1 {
+      font-size: 1.6rem; font-weight: 700; letter-spacing: .01em;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .subtitle { font-size: .82rem; color: var(--muted); margin-top: 2px; }
+    .search-wrap { position: relative; }
+    .search-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      color: var(--muted); font-size: 16px; pointer-events: none;
+    }
+    #search {
+      width: 100%; padding: 11px 16px 11px 42px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; color: var(--text); font-size: .95rem;
+      outline: none; transition: border-color .2s, box-shadow .2s;
+    }
+    #search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(56,189,248,.15); }
+    #search::placeholder { color: var(--muted); }
+    main { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+    .stats-row { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .count-badge { font-size: .82rem; color: var(--muted); }
+    .count-badge span { color: var(--accent); font-weight: 600; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 18px;
+    }
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 22px 22px 18px;
+      cursor: pointer;
+      transition: transform .18s, box-shadow .18s, border-color .18s, background .18s;
+      display: flex; flex-direction: column; gap: 12px;
+      position: relative; overflow: hidden;
+      text-decoration: none; color: inherit;
+    }
+    .card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      opacity: 0; transition: opacity .2s;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px var(--shadow);
+      border-color: var(--accent);
+      background: var(--hover);
+    }
+    .card:hover::before { opacity: 1; }
+    .card.pending { opacity: .7; }
+    .card-icon {
+      width: 44px; height: 44px;
+      background: var(--tag-bg); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .card-name { font-size: 1rem; font-weight: 600; line-height: 1.45; color: var(--text); }
+    .card-zh   { font-size: .8rem; color: #7dd3fc; font-weight: 500; margin-top: 2px; line-height: 1.4; }
+    .card-sub  { font-size: .78rem; color: var(--muted); line-height: 1.5; margin-top: 3px; }
+    .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+    .tag {
+      font-size: .72rem; padding: 3px 10px;
+      background: var(--tag-bg); color: var(--tag-text);
+      border-radius: 20px; font-weight: 500;
+    }
+    .tag.pending-tag { background: #2a2a3a; color: #64748b; }
+    .open-btn {
+      font-size: .78rem; color: var(--accent);
+      display: flex; align-items: center; gap: 4px;
+      font-weight: 500; opacity: 0; transition: opacity .2s;
+    }
+    .card:hover .open-btn { opacity: 1; }
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent); flex-shrink: 0;
+    }
+    .status-dot.pending { background: #475569; }
+    .no-result { grid-column: 1/-1; text-align: center; padding: 60px 20px; color: var(--muted); }
+    .no-result .emoji { font-size: 2.5rem; margin-bottom: 12px; }
+    /* Modal */
+    .overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.75); z-index: 200;
+      backdrop-filter: blur(4px);
+      align-items: center; justify-content: center;
+    }
+    .overlay.open { display: flex; }
+    .modal {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; width: min(92vw, 1000px); height: min(90vh, 820px);
+      display: flex; flex-direction: column; overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,.6);
+    }
+    .modal-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+      background: var(--surface2); flex-shrink: 0;
+    }
+    .modal-title { font-size: 1rem; font-weight: 600; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .modal-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .btn {
+      padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg); color: var(--text); font-size: .82rem;
+      cursor: pointer; transition: background .15s, border-color .15s;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
+    }
+    .btn:hover { background: var(--hover); border-color: var(--accent); }
+    .btn-primary { background: var(--accent); color: #0f172a; border-color: var(--accent); font-weight: 600; }
+    .btn-primary:hover { background: #7dd3fc; }
+    .btn-close { background: transparent; border: none; color: var(--muted); font-size: 1.2rem; cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: color .15s, background .15s; }
+    .btn-close:hover { color: var(--text); background: var(--hover); }
+    .pdf-frame { flex: 1; width: 100%; border: none; background: #1a1a2e; }
+    footer { text-align: center; padding: 24px; color: var(--muted); font-size: .78rem; border-top: 1px solid var(--border); margin-top: 40px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo-row">
+      <div class="logo-icon">💊</div>
+      <div>
+        <h1>腰子科常用藥物查詢</h1>
+        <div class="subtitle">NHI Drug Reference · 臨床指引 &amp; 給付規範</div>
+      </div>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input id="search" type="text" placeholder="搜尋藥物名稱或分類..." autocomplete="off" />
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="stats-row">
+    <div class="count-badge">共 <span id="count">0</span> 筆資料</div>
+  </div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<footer>
+  僅供醫療專業人員臨床參考，健保規範具時效性，申報前請至健保署官網確認最新版本。
+  <div style="margin-top:8px; color:#7dd3fc; font-weight:500;">by 常常被核刪的壞腰子</div>
+</footer>
+
+<!-- Modal (for pending Google Drive items) -->
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span style="font-size:20px">📄</span>
+      <div class="modal-title" id="modal-title">-</div>
+      <div class="modal-actions">
+        <a id="modal-link" class="btn btn-primary" href="#" target="_blank">↗ 在 Google Drive 開啟</a>
+        <button class="btn-close" onclick="closeModal()">✕</button>
+      </div>
+    </div>
+    <iframe id="pdf-frame" class="pdf-frame" src="" allowfullscreen></iframe>
+  </div>
+</div>
+
+<script>
+const files = [
+  // ── 已完成 HTML 頁面 ──
+  { name: "SGLT2i",           zh: "SGLT-2 抑制劑",                   sub: "114/3/1 心腎保護擴大給付",            tag: "糖尿病",  icon: "💊", page: "pages/sglt2i.html" },
+  { name: "GLP-1 RA",         zh: "GLP-1 受體促效劑",                sub: "T2DM ／ CKD 保腎適應症",              tag: "糖尿病",  icon: "💉", page: "pages/glp1-ra.html" },
+  { name: "Finerenone",       zh: "非類固醇礦皮素受體拮抗劑",        sub: "Kerendia 可申達 — CKD+T2DM ／ HFpEF", tag: "心腎保護", icon: "🫀", page: "pages/finerenone.html" },
+  { name: "Ketosteril",       zh: "酮酸胺基酸",                      sub: "CKD 低蛋白飲食補充",                  tag: "腎臟科",  icon: "🫘", page: "pages/ketosteril.html" },
+  { name: "Statin",           zh: "他汀類降膽固醇藥",                sub: "健保給付分層 ＋ 2026 ACC/AHA 指引",   tag: "血脂",    icon: "❤️", page: "pages/statin.html" },
+  { name: "非 Statin 降血脂", zh: "Fibrate / Ezetimibe / Omega-3",   sub: "Omacor / Linicor / ATOzet 給付規範",  tag: "血脂",    icon: "❤️", page: "pages/non-statin.html" },
+  { name: "Qtern / Glyxambi", zh: "固定劑量 DPP-4i + SGLT2i 複方",  sub: "Dapa+Saxa vs Empa+Lina 給付比較",     tag: "糖尿病",  icon: "💊", page: "pages/qtern-glyxambi.html" },
+  { name: "Soliqua",          zh: "爽胰達",                          sub: "iGlarLixi — 基礎胰島素 + GLP-1 RA",  tag: "糖尿病",  icon: "💉", page: "pages/soliqua.html" },
+  { name: "Pentoxifylline",   zh: "己酮可可鹼",                      sub: "Trental — Off-label CKD 蛋白尿 ／ PVD", tag: "腎臟科", icon: "🩸", page: "pages/pentoxifylline.html" },
+  { name: "鐵劑",             zh: "Iron Supplements",                sub: "Fe-Back IV ／ Hote Chewable ／ Ferrous Gluco-B", tag: "貧血", icon: "🩸", page: "pages/iron.html" },
+  { name: "磷結合劑",         zh: "Phosphate Binders",               sub: "Ca片 / Sevelamer / Lanthanum — 透析高血磷", tag: "腎臟科", icon: "🫘", page: "pages/phosphate-binders.html" },
+  { name: "擬鈣劑",           zh: "Calcimimetics",                   sub: "Cinacalcet / Etelcalcetide — 透析 sHPT",   tag: "腎臟科", icon: "🫘", page: "pages/calcimimetics.html" },
+  { name: "Tamsulosin / Doxazosin", zh: "α₁ 腎上腺素受體阻斷劑",   sub: "BPH・輸尿管結石 MET・高血壓・女性結石申報", tag: "泌尿科", icon: "🔬", page: "pages/tamsulosin-doxazosin.html" },
+];
+
+const grid = document.getElementById('grid');
+const countEl = document.getElementById('count');
+
+function renderCards(list) {
+  grid.innerHTML = '';
+  if (!list.length) {
+    grid.innerHTML = `<div class="no-result"><div class="emoji">🔍</div>找不到相關藥物資料</div>`;
+    countEl.textContent = '0';
+    return;
+  }
+  countEl.textContent = list.length;
+  list.forEach(f => {
+    const isPending = !!f.driveId;
+    const card = document.createElement(isPending ? 'div' : 'a');
+    card.className = 'card' + (isPending ? ' pending' : '');
+    if (!isPending) {
+      card.href = f.page;
+    }
+    card.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="card-icon">${f.icon}</div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="status-dot ${isPending ? 'pending' : ''}"></div>
+        </div>
+      </div>
+      <div class="card-name">${f.name}</div>
+      ${f.zh ? `<div class="card-zh">${f.zh}</div>` : ''}
+      <div class="card-sub">${f.sub}</div>
+      <div class="card-footer">
+        <span class="tag ${isPending ? 'pending-tag' : ''}">${f.tag}</span>
+        <span class="open-btn">${isPending ? '暫時查看 ›' : '查看 ›'}</span>
+      </div>`;
+    if (isPending) {
+      card.addEventListener('click', () => openModal(f));
+    }
+    grid.appendChild(card);
+  });
+}
+
+function openModal(f) {
+  document.getElementById('modal-title').textContent = f.name;
+  document.getElementById('modal-link').href = `https://drive.google.com/file/d/${f.driveId}/view`;
+  document.getElementById('pdf-frame').src = `https://drive.google.com/file/d/${f.driveId}/preview`;
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('overlay')) return;
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('pdf-frame').src = '';
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('overlay').classList.remove('open');
+    document.getElementById('pdf-frame').src = '';
+    document.body.style.overflow = '';
+  }
+});
+
+document.getElementById('search').addEventListener('input', function() {
+  const q = this.value.trim().toLowerCase();
+  const filtered = q ? files.filter(f =>
+    f.name.toLowerCase().includes(q) ||
+    f.sub.toLowerCase().includes(q) ||
+    f.tag.includes(q)
+  ) : files;
+  renderCards(filtered);
+});
+
+renderCards(files);
+</script>
+</body>
+</html>

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Finerenone｜健保藥物查詢</title>
+<style>
+:root{
+  --bg:#0f172a;--surface:#1e293b;--surface2:#263045;--border:#334155;
+  --accent:#38bdf8;--accent2:#818cf8;--text:#f1f5f9;--muted:#94a3b8;
+  --green:#4ade80;--red:#f87171;--yellow:#fbbf24;--orange:#fb923c;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+.topbar{background:#0c1a30;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--accent);text-decoration:none;font-size:.85rem;font-weight:500;padding:6px 12px;border:1px solid var(--border);border-radius:8px;transition:background .15s}
+.back-btn:hover{background:var(--surface2)}
+.topbar-title{font-size:.9rem;color:var(--muted)}
+.hero{background:linear-gradient(135deg,#0c1a30,#162032,#0c1a30);padding:36px 24px 28px;border-bottom:1px solid var(--border)}
+.hero-inner{max-width:860px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:#1e3a5f;color:var(--accent);font-size:.75rem;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:1.9rem;font-weight:800;letter-spacing:-.01em;margin-bottom:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:.95rem;color:var(--muted);margin-bottom:16px}
+.drug-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.meta-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:.78rem;color:var(--muted)}
+.meta-chip strong{color:var(--text)}
+.alert-bar{background:#422006;border:1px solid #92400e;border-radius:10px;padding:12px 16px;font-size:.83rem;color:#fcd34d;display:flex;gap:10px;align-items:flex-start;margin-top:14px}
+.alert-bar a{color:var(--accent)}
+.container{max-width:860px;margin:0 auto;padding:32px 24px 64px}
+.section{margin-bottom:40px}
+.section-title{font-size:1.15rem;font-weight:700;color:var(--accent);margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+.subsection{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:16px}
+.subsection-title{font-size:1rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.cond-block{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 16px;margin-bottom:12px}
+.cond-block.warn{border-left-color:var(--red)}
+.cond-block.success{border-left-color:var(--green)}
+.cond-block.note{border-left-color:var(--yellow)}
+.cond-label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+.cond-text{font-size:.9rem;line-height:1.65}
+ul.styled{padding-left:0;list-style:none;margin:10px 0}
+ul.styled li{padding:5px 0 5px 18px;position:relative;font-size:.9rem}
+ul.styled li::before{content:'▸';position:absolute;left:0;color:var(--accent)}
+ol.styled{padding-left:20px;margin:10px 0}
+ol.styled li{padding:5px 0;font-size:.9rem}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+thead{background:var(--surface2)}
+th{padding:11px 14px;text-align:left;font-weight:700;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid #1e293b;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#1a2540}
+.td-yes{color:var(--green);font-weight:600}
+.td-no{color:var(--red);font-weight:600}
+.td-warn{color:var(--yellow)}
+.highlight-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:12px 0}
+.highlight-box.blue{border-left:4px solid var(--accent)}
+.highlight-box.red{border-left:4px solid var(--red)}
+.highlight-box.green{border-left:4px solid var(--green)}
+.highlight-box.yellow{border-left:4px solid var(--yellow)}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:700;vertical-align:middle}
+.badge.red{background:#450a0a;color:#f87171}
+.badge.green{background:#14532d;color:#4ade80}
+.badge.blue{background:#1e3a5f;color:#7dd3fc}
+.badge.yellow{background:#422006;color:#fbbf24}
+.badge.orange{background:#431407;color:#fb923c}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin:14px 0}
+.stat-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center}
+.stat-val{font-size:1.5rem;font-weight:800;color:var(--accent)}
+.stat-label{font-size:.75rem;color:var(--muted);margin-top:4px}
+.notice-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:10px}
+.notice-num{width:26px;height:26px;background:var(--accent);color:#0f172a;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;margin-right:8px;flex-shrink:0;vertical-align:middle}
+footer{text-align:center;color:var(--muted);font-size:.78rem;padding:24px;border-top:1px solid var(--border);margin-top:20px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="../健保藥物查詢.html" class="back-btn">← 返回首頁</a>
+  <span class="topbar-title">Finerenone (Kerendia) — 臨床參考資料</span>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">🔬 腎臟科 ／ 心臟科 ／ 糖尿病科</div>
+    <h1>Finerenone（可申達）</h1>
+    <p class="hero-sub">Kerendia® — 非類固醇礦物皮質素受體拮抗劑（ns-MRA）｜CKD + T2DM ／ 心臟衰竭</p>
+    <div class="drug-meta">
+      <div class="meta-chip"><strong>學名</strong> Finerenone</div>
+      <div class="meta-chip"><strong>商品名</strong> Kerendia® / 可申達</div>
+      <div class="meta-chip"><strong>劑型</strong> 10 mg / 20 mg 口服錠</div>
+      <div class="meta-chip"><strong>分類</strong> 非類固醇 MRA（ns-MRA）</div>
+      <div class="meta-chip"><strong>台灣健保</strong> <span style="color:var(--red)">目前自費</span>（草案審議中）</div>
+      <div class="meta-chip"><strong>FDA</strong> CKD+T2DM（2021）＋ HFmrEF/HFpEF（2025）</div>
+    </div>
+    <div class="alert-bar">
+      ⚠️ 台灣目前<strong>自費使用</strong>，健保草案條件尚在審議。資料整理至 2025 年，請至
+      <a href="https://www.nhi.gov.tw" target="_blank">https://www.nhi.gov.tw</a> 確認最新給付狀態。
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 一、藥理機轉：ns-MRA vs 傳統 MRA -->
+  <div class="section">
+    <div class="section-title">⚙️ 一、藥理機轉：ns-MRA vs 傳統 MRA</div>
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>特性</th><th>Finerenone（ns-MRA）</th><th>Spironolactone（類固醇 MRA）</th><th>Eplerenone（類固醇 MRA）</th></tr></thead>
+          <tbody>
+            <tr><td>受體選擇性</td><td class="td-yes">高選擇性（無雄激素/孕激素活性）</td><td>低（抗雄、抗孕激素副作用）</td><td>中等</td></tr>
+            <tr><td>組織分布</td><td class="td-yes">腎臟 + 心臟均高分布</td><td>腎臟為主</td><td>腎臟為主</td></tr>
+            <tr><td>性激素副作用</td><td class="td-yes">無（男性乳房發育、性功能障礙不常見）</td><td>常見（男性乳房發育）</td><td>少</td></tr>
+            <tr><td>高鉀血症風險</td><td class="td-warn">存在但低於傳統 MRA</td><td>較高</td><td>中等</td></tr>
+            <tr><td>主要臨床定位</td><td>CKD + T2DM、HFmrEF/HFpEF</td><td>心衰竭（HFrEF）、原醛症</td><td>心衰竭（HFrEF）、高血壓</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cond-block success">
+        <div class="cond-label">心腎保護機轉</div>
+        <div class="cond-text">拮抗醛固酮受體過度活化 → 抑制腎臟纖維化（TGF-β、collagen 沉積）、減少心肌間質纖維化、降低白蛋白尿、改善腎小球血流動力學</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 二、台灣健保現況 -->
+  <div class="section">
+    <div class="section-title">🏥 二、台灣健保現況</div>
+    <div class="subsection">
+      <div class="cond-block warn">
+        <div class="cond-label">🔴 現況：自費用藥</div>
+        <div class="cond-text">截至 2025 年，Finerenone 在台灣<strong>尚無健保給付</strong>，需完全自費。</div>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">📋 健保草案（審議中）</div>
+        <div class="cond-text">
+          健保署已進入草案審議階段，預期給付條件（草案，尚未正式公告）：
+          <ul class="styled" style="margin-top:8px">
+            <li>適應症：成人 T2DM 合併 CKD（蛋白尿 UACR ≥300 mg/g）</li>
+            <li>前置條件：已使用最大耐受劑量之 ACEI 或 ARB</li>
+            <li>eGFR 範圍：≥25 mL/min/1.73m²（依 FIDELIO-DKD 入組標準）</li>
+            <li>鉀離子條件：血清鉀 ≤4.8 mEq/L（起始前）</li>
+            <li>申請方式：事前審查（草案）</li>
+          </ul>
+          <p style="font-size:.82rem;color:var(--red);margin-top:8px">⚠️ 以上草案條件尚未正式定案，請持續追蹤健保署公告</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 三、FDA 規範 -->
+  <div class="section">
+    <div class="section-title">🇺🇸 三、FDA 規範</div>
+
+    <div class="subsection">
+      <div class="subsection-title">✅ FDA 核准適應症（兩個）</div>
+      <div class="cond-block success">
+        <div class="cond-label">適應症一：CKD + T2DM（2021 年核准）</div>
+        <div class="cond-text">降低成人第二型糖尿病合併慢性腎臟病患者的腎臟疾病持續性下降、腎衰竭（ESRD）、心血管死亡及非致命性心肌梗塞的複合事件風險</div>
+      </div>
+      <div class="cond-block success">
+        <div class="cond-label">適應症二：HFmrEF / HFpEF（2025 年 7 月核准）</div>
+        <div class="cond-text">降低射出分率保留或輕度降低的心臟衰竭（EF ≥40%）成人患者的心血管死亡及心衰竭住院複合風險（基於 FINEARTS-HF 試驗）</div>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">⚠️ 重要警語</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>高鉀血症（Hyperkalemia）：最重要的安全顧慮，需定期監測血鉀</li>
+            <li>禁忌：合用強效 CYP3A4 抑制劑（如 itraconazole、ketoconazole）</li>
+            <li>禁忌：合用 potassium-sparing diuretics（如 spironolactone）</li>
+            <li>懷孕：可能造成胎兒傷害（FDA 警告）</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 四、關鍵臨床試驗 -->
+  <div class="section">
+    <div class="section-title">🔬 四、關鍵臨床試驗</div>
+
+    <div class="subsection">
+      <div class="subsection-title">FIDELIO-DKD（腎臟結局，2020 NEJM）</div>
+      <div class="highlight-box blue">
+        <p style="font-size:.85rem;margin-bottom:10px">族群：T2DM + CKD（eGFR 25–75，UACR 30–5000 mg/g），已用最大耐受 ACEI/ARB</p>
+        <div class="stat-grid" style="margin:10px 0">
+          <div class="stat-card">
+            <div class="stat-val">18%</div>
+            <div class="stat-label">主要腎臟複合事件 RRR（p&lt;0.001）</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val">−31%</div>
+            <div class="stat-label">UACR 下降（vs 安慰劑）</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val">14%</div>
+            <div class="stat-label">心血管複合事件 RRR</div>
+          </div>
+        </div>
+        <p style="font-size:.82rem;color:var(--muted)">主要終點：腎臟疾病進展（eGFR 持續下降 ≥40%、ESRD 或腎臟死亡）</p>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">FIGARO-DKD（心血管結局，2021 NEJM）</div>
+      <div class="highlight-box blue">
+        <p style="font-size:.85rem;margin-bottom:10px">族群：T2DM + CKD（較 FIDELIO 更早期 CKD；eGFR ≥25），已用最大耐受 ACEI/ARB</p>
+        <div class="stat-grid" style="margin:10px 0">
+          <div class="stat-card">
+            <div class="stat-val">13%</div>
+            <div class="stat-label">心血管複合事件 RRR（p=0.026）</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val">−38%</div>
+            <div class="stat-label">新發心衰竭住院減少</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val">−23%</div>
+            <div class="stat-label">UACR 下降（vs 安慰劑）</div>
+          </div>
+        </div>
+        <p style="font-size:.82rem;color:var(--muted)">主要終點：心血管死亡、非致命心肌梗塞、非致命腦中風、心衰竭住院</p>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">FINEARTS-HF（HFmrEF/HFpEF，2024 NEJM → 2025 FDA 核准）</div>
+      <div class="highlight-box blue">
+        <p style="font-size:.85rem;margin-bottom:10px">族群：HFmrEF/HFpEF（EF ≥40%），NYHA II–IV，NT-proBNP 升高</p>
+        <div class="stat-grid" style="margin:10px 0">
+          <div class="stat-card">
+            <div class="stat-val">16%</div>
+            <div class="stat-label">心衰竭惡化 + 心血管死亡 RRR（p=0.007）</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val">18%</div>
+            <div class="stat-label">心衰竭住院 RRR</div>
+          </div>
+        </div>
+        <p style="font-size:.82rem;color:var(--muted)">此試驗促成 FDA 2025 年 7 月核准 HFmrEF/HFpEF 新適應症</p>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">FIDELITY（FIDELIO + FIGARO 合併分析）</div>
+      <div class="highlight-box green">
+        <p style="font-size:.88rem">合併 13,026 人的 pooled analysis 顯示：腎臟及心臟複合終點均有顯著改善，且在不同 CKD 分期（G2–G4）、不同 UACR 層級均一致獲益。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 五、與指引及治療位置 -->
+  <div class="section">
+    <div class="section-title">📚 五、國際指引地位與治療排序</div>
+
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>指引</th><th>Finerenone 建議</th><th>等級</th></tr></thead>
+          <tbody>
+            <tr><td>KDIGO 2024 CKD 指引</td><td class="td-yes">T2DM + CKD（UACR ≥200 mg/g）在 ACEI/ARB + SGLT2i 基礎上加用 Finerenone</td><td>1B</td></tr>
+            <tr><td>ADA 2025 Standards of Care</td><td class="td-yes">T2DM + CKD（UACR ≥30 mg/g + eGFR ≥25）加用 Finerenone，與 SGLT2i 合用</td><td>強烈建議 A</td></tr>
+            <tr><td>ESC 2023 心衰竭指引</td><td class="td-yes">HFmrEF/HFpEF 症狀緩解及預後改善（基於 FINEARTS-HF）</td><td>IIa/B</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="highlight-box blue">
+        <p style="font-size:.88rem"><strong>📌 四大支柱治療（T2DM + CKD）：</strong>ACEI/ARB + SGLT2i + GLP-1 RA + Finerenone。Finerenone 是四大支柱之一，補足 SGLT2i 未完全涵蓋的纖維化和醛固酮突破效應。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 六、劑量與監測 -->
+  <div class="section">
+    <div class="section-title">💊 六、劑量與監測</div>
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>項目</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr><td>起始劑量</td><td>eGFR ≥60：起始 20 mg QD；eGFR 25–60：起始 10 mg QD</td></tr>
+            <tr><td>目標劑量</td><td>起始後 4 週評估血鉀，若 ≤4.8 mEq/L → 升至 20 mg QD</td></tr>
+            <tr><td>停藥條件</td><td>血清鉀 &gt;5.5 mEq/L → 停藥，血鉀恢復正常後可考慮重啟 10 mg</td></tr>
+            <tr><td>血鉀監測</td><td>起始前、起始後 4 週、劑量調整後 4 週，之後每 3 個月一次</td></tr>
+            <tr><td>腎功能 eGFR &lt;25</td><td class="td-warn">不建議使用</td></tr>
+            <tr><td>服藥方式</td><td>可與食物一起或空腹服用，避免葡萄柚汁（CYP3A4 抑制）</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 七、臨床重點提示 -->
+  <div class="section">
+    <div class="section-title">⚠️ 七、臨床重點提示</div>
+
+    <div class="notice-item">
+      <span class="notice-num">1</span>
+      <strong>台灣目前自費，費用考量</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">每月藥費約 3,000–5,000 元（依劑量）。與患者充分溝通效益/費用比，並追蹤健保草案進展。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">2</span>
+      <strong>高鉀血症是最重要安全顧慮</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">起始前確認血鉀 ≤4.8 mEq/L。CKD 患者腎臟排鉀能力下降，合併 ACEI/ARB 時高鉀風險更高。需定期追蹤血鉀（前 4 週後每 3 個月）。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">3</span>
+      <strong>禁止合用 Spironolactone / Eplerenone</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">不可與其他 MRA（spironolactone、eplerenone、esaxerenone）同時使用，會大幅增加高鉀血症風險。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">4</span>
+      <strong>CYP3A4 交互作用</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">禁止合用強效 CYP3A4 抑制劑（itraconazole、ketoconazole、clarithromycin）。強效 CYP3A4 誘導劑（rifampin、carbamazepine）會降低 Finerenone 暴露量，應避免。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">5</span>
+      <strong>不降血壓，但協同 ACEI/ARB 保腎</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">Finerenone 對血壓影響輕微（−1 至 −3 mmHg），其腎心保護主要透過抗纖維化機轉，非血壓控制，可安全與 ACEI/ARB 合用。</span>
+    </div>
+
+    <div class="highlight-box yellow" style="margin-top:20px">
+      <p style="font-size:.88rem"><strong>📌 健保給付追蹤：</strong>台灣健保草案審議中，預計以 CKD + T2DM + 高蛋白尿（UACR ≥300 mg/g）、已用最大耐受 ACEI/ARB 為給付條件。建議密切追蹤健保署公告，一旦納入給付將大幅擴展使用族群。</p>
+    </div>
+  </div>
+
+</div>
+<footer>資料整理至 2025 年，僅供臨床參考，最終決策由醫師負責。申報前請至健保署官網確認最新版本。</footer>
+</body>
+</html>

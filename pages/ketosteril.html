@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Ketosteril｜健保藥物查詢</title>
+<style>
+:root{
+  --bg:#0f172a;--surface:#1e293b;--surface2:#263045;--border:#334155;
+  --accent:#38bdf8;--accent2:#818cf8;--text:#f1f5f9;--muted:#94a3b8;
+  --green:#4ade80;--red:#f87171;--yellow:#fbbf24;--orange:#fb923c;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+.topbar{background:#0c1a30;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--accent);text-decoration:none;font-size:.85rem;font-weight:500;padding:6px 12px;border:1px solid var(--border);border-radius:8px;transition:background .15s}
+.back-btn:hover{background:var(--surface2)}
+.topbar-title{font-size:.9rem;color:var(--muted)}
+.hero{background:linear-gradient(135deg,#0c1a30,#162032,#0c1a30);padding:36px 24px 28px;border-bottom:1px solid var(--border)}
+.hero-inner{max-width:860px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:#1e3a5f;color:var(--accent);font-size:.75rem;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:1.9rem;font-weight:800;letter-spacing:-.01em;margin-bottom:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:.95rem;color:var(--muted);margin-bottom:16px}
+.drug-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.meta-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:.78rem;color:var(--muted)}
+.meta-chip strong{color:var(--text)}
+.alert-bar{background:#422006;border:1px solid #92400e;border-radius:10px;padding:12px 16px;font-size:.83rem;color:#fcd34d;display:flex;gap:10px;align-items:flex-start;margin-top:14px}
+.alert-bar a{color:var(--accent)}
+.container{max-width:860px;margin:0 auto;padding:32px 24px 64px}
+.section{margin-bottom:40px}
+.section-title{font-size:1.15rem;font-weight:700;color:var(--accent);margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+.subsection{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:16px}
+.subsection-title{font-size:1rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.cond-block{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 16px;margin-bottom:12px}
+.cond-block.warn{border-left-color:var(--red)}
+.cond-block.success{border-left-color:var(--green)}
+.cond-block.note{border-left-color:var(--yellow)}
+.cond-label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+.cond-text{font-size:.9rem;line-height:1.65}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin:12px 0}
+.info-item{background:var(--surface2);border-radius:8px;padding:12px 14px}
+.info-label{font-size:.73rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.info-value{font-size:.92rem;font-weight:600}
+.info-value.green{color:var(--green)}
+.info-value.red{color:var(--red)}
+.info-value.yellow{color:var(--yellow)}
+ul.styled{padding-left:0;list-style:none;margin:10px 0}
+ul.styled li{padding:5px 0 5px 18px;position:relative;font-size:.9rem}
+ul.styled li::before{content:'▸';position:absolute;left:0;color:var(--accent)}
+ol.styled{padding-left:20px;margin:10px 0}
+ol.styled li{padding:5px 0;font-size:.9rem}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+thead{background:var(--surface2)}
+th{padding:11px 14px;text-align:left;font-weight:700;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid #1e293b;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#1a2540}
+.td-yes{color:var(--green);font-weight:600}
+.td-no{color:var(--red);font-weight:600}
+.td-warn{color:var(--yellow)}
+.highlight-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:12px 0}
+.highlight-box.blue{border-left:4px solid var(--accent)}
+.highlight-box.red{border-left:4px solid var(--red)}
+.highlight-box.green{border-left:4px solid var(--green)}
+.highlight-box.yellow{border-left:4px solid var(--yellow)}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:700;vertical-align:middle}
+.badge.red{background:#450a0a;color:#f87171}
+.badge.green{background:#14532d;color:#4ade80}
+.badge.blue{background:#1e3a5f;color:#7dd3fc}
+.badge.yellow{background:#422006;color:#fbbf24}
+.notice-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:10px}
+.notice-num{width:26px;height:26px;background:var(--accent);color:#0f172a;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;margin-right:8px;flex-shrink:0;vertical-align:middle}
+footer{text-align:center;color:var(--muted);font-size:.78rem;padding:24px;border-top:1px solid var(--border);margin-top:20px}
+footer a{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-btn" href="../健保藥物查詢.html">← 返回首頁</a>
+  <span class="topbar-title">健保藥物查詢</span>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">🫘 CKD 腎臟科</div>
+    <h1>Ketosteril</h1>
+    <div class="hero-sub">α-酮酸胺基酸製劑｜慢性腎臟病（CKD）低蛋白飲食補充</div>
+    <div class="drug-meta">
+      <div class="meta-chip">健保碼 <strong>BC18273100</strong></div>
+      <div class="meta-chip">學名 <strong>Amino acids + calcium 630mg/50mg/Tab</strong></div>
+      <div class="meta-chip">製造 <strong>Fresenius Kabi（葡萄牙）</strong></div>
+    </div>
+    <div class="alert-bar">⚠️ <span>本資訊僅供臨床參考，最終申報與用藥決策由醫師負責。健保規範具時效性，請至<a href="https://www.nhi.gov.tw" target="_blank"> 健保署官網</a>確認最新版本（路徑：給付規定 &gt; 第六編第83條 &gt; 3.3.2）</span></div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ══ SECTION 1: 台灣健保規範 ══ -->
+  <div class="section">
+    <div class="section-title">🏥 一、台灣健保規範</div>
+
+    <div class="subsection">
+      <div class="subsection-title">給付適應症與條件</div>
+
+      <div class="cond-block success">
+        <div class="cond-label">給付適應症</div>
+        <div class="cond-text">限慢性腎衰竭病患行<strong>低蛋白飲食治療</strong>，連續三個月，每個月之 <strong>eGFR ≦ 15 mL/min/1.73 m²</strong> 且<strong>尚未接受透析治療</strong>。</div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">eGFR 門檻</div>
+          <div class="info-value yellow">≦ 15 mL/min/1.73m²</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">每日劑量上限</div>
+          <div class="info-value">最多 6 顆/天</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">申請方式</div>
+          <div class="info-value green">一般給付（無需事前審查）</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">TFDA 適應症</div>
+          <div class="info-value">慢性腎不全胺基酸補給</div>
+        </div>
+      </div>
+
+      <div style="font-size:.87rem;font-weight:600;margin:16px 0 10px">限制條件（完整版）</div>
+
+      <div class="cond-block warn">
+        <div class="cond-label">停藥條件（每 2 個月複查一次）</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>eGFR 回升至 <strong>≥ 25 mL/min/1.73 m²</strong></li>
+            <li>使用期間體重減輕 <strong>&gt; 5%</strong></li>
+            <li>血清白蛋白降低 <strong>&gt; 5%</strong></li>
+            <li>病人<strong>不遵守低蛋白飲食</strong></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cond-block warn">
+        <div class="cond-label">禁用情形</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li><strong>不得用於透析及換腎病患</strong></li>
+            <li>不得作為一般營養補充劑</li>
+            <li>使用本品時<strong>不得與同類製劑（如 Amiyu 等）</strong>同時處方</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="highlight-box blue" style="margin-top:14px;font-size:.87rem">
+        📋 ICD-10 建議填寫：<strong>N18.5</strong>（慢性腎臟病第5期）
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 2: FDA/國際法規 ══ -->
+  <div class="section">
+    <div class="section-title">🇺🇸 二、FDA / 國際法規狀態</div>
+
+    <div class="subsection">
+      <div class="cond-block warn">
+        <div class="cond-label">FDA 核准狀態</div>
+        <div class="cond-text">Ketosteril 在美國<strong>並無 FDA 正式核准</strong>，主要在歐洲及亞洲廣泛使用；在美國若需使用，通常為進口或特殊調製（compounded）方式取得。</div>
+      </div>
+
+      <div class="cond-block success">
+        <div class="cond-label">歐洲核准適應症／原廠說明書</div>
+        <div class="cond-text">
+          使用時機：<strong>eGFR 介於 5–15 mL/min</strong>，且食物攝取含蛋白質 ≦ 40 g/day（極低蛋白飲食）。<br><br>
+          成人標準劑量：<strong>一次 4–8 錠，一天三次（餐中服用）</strong>，以 70 公斤成人為基準。
+        </div>
+      </div>
+
+      <div class="cond-block warn">
+        <div class="cond-label">禁忌症（重要）</div>
+        <div class="cond-text">無 Black Box Warning，但禁用於<strong>高血鈣症</strong>（每錠含鈣 50 mg）；此外禁用於<strong>胺基酸代謝障礙</strong>患者。</div>
+      </div>
+    </div>
+
+    <div style="font-size:.87rem;font-weight:600;margin:4px 0 10px;color:var(--muted)">台灣健保 vs 歐洲原廠/文獻 差異比較</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>比較項目</th><th>台灣健保</th><th>歐洲原廠/文獻</th></tr></thead>
+        <tbody>
+          <tr><td>eGFR 門檻</td><td class="td-warn">≦ 15</td><td>&lt; 25 mL/min/1.73 m²</td></tr>
+          <tr><td>每日劑量上限</td><td class="td-warn">6 顆（最多）</td><td>依體重：1錠/5–10 kg/day（60kg→6–12顆）</td></tr>
+          <tr><td>搭配蛋白攝取</td><td>低蛋白飲食（LPD）</td><td>可配合 VLPD（≦ 0.4 g/kg/day）</td></tr>
+          <tr><td>透析患者</td><td class="td-no">不給付</td><td>部分文獻支持用於有殘餘腎功能者</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 3: 臨床指引 ══ -->
+  <div class="section">
+    <div class="section-title">📚 三、最新臨床指引</div>
+
+    <div class="subsection">
+      <div class="subsection-title">KDIGO 2024 CKD 指引</div>
+      <div class="cond-block">
+        <div class="cond-label">Practice Point 3.3.1.2</div>
+        <div class="cond-text">對於願意且能夠配合、且有腎衰竭風險的成年 CKD 患者，在密切監測下，可考慮給予<strong>極低蛋白飲食（0.3–0.4 g/kg/day）</strong>並補充必需胺基酸或<strong>酮酸類似物</strong>（至多 0.6 g/kg/day）。</div>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">Practice Point 3.3.1.3</div>
+        <div class="cond-text"><strong>代謝不穩定</strong>的 CKD 患者，不應處方低蛋白或極低蛋白飲食。</div>
+      </div>
+      <div class="highlight-box yellow" style="font-size:.83rem;margin-top:10px">
+        📌 證據等級：<strong>Practice Point</strong>（非正式 Recommendation，為專家共識層級）
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">KDOQI 2020 營養指引（美國腎臟基金會）</div>
+      <div class="cond-text" style="font-size:.9rem">針對代謝穩定的 CKD 3–5 期非透析患者，建議在密切臨床監督下進行蛋白質限制：</div>
+      <ul class="styled" style="margin-top:8px">
+        <li>降低進展至 ESKD 或死亡的風險 <span style="color:var(--green);font-weight:700">（建議等級 1A）</span></li>
+        <li>改善生活品質 <span style="color:var(--muted)">（2C）</span></li>
+      </ul>
+      <div class="cond-block success" style="margin-top:12px">
+        <div class="cond-label">具體方案</div>
+        <div class="cond-text">極低蛋白飲食 <strong>0.28–0.43 g/kg/day</strong>，加上酮酸/胺基酸類似物，使總蛋白需求達 <strong>0.55–0.60 g/kg/day</strong>。</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">📊 最新實證摘要（2024–2025）</div>
+      <div class="cond-block success">
+        <div class="cond-label">Meta-analysis｜延緩 CKD 進展</div>
+        <div class="cond-text">限蛋白飲食配合酮酸類似物（RPKA）可<strong>顯著延緩 CKD 進展</strong>（p = 0.008），尤其在 <strong>eGFR &gt; 18 mL/min/1.73 m²</strong> 的患者效果更明顯（p &lt; 0.0001）。<br><br>
+        此外 RPKA 顯著<strong>降低血磷</strong>（p = 0.001）並<strong>升高血鈣</strong>（p = 0.04），且未導致營養不良（白蛋白及膽固醇無顯著變化）。</div>
+      </div>
+      <div class="cond-block">
+        <div class="cond-label">台灣全民健保大型資料庫研究（PLOS ONE, 2017）</div>
+        <div class="cond-text">KA 補充可能大幅降低進入長期透析的風險。重要發現：<strong>每日劑量 &gt; 5.5 顆時，才能顯現保護效果</strong>；6 顆以下（台灣健保給付上限）的療效存疑。</div>
+      </div>
+      <div class="cond-block">
+        <div class="cond-label">CKD Stage 4 研究（台灣長庚資料庫, 2022）</div>
+        <div class="cond-text">持續使用 Ketosteril <strong>超過 3 個月</strong>者（搭配 LPD 0.6 g/kg/day），顯著降低 CKD Stage 4 患者短期透析風險；然而台灣健保在 <strong>eGFR &lt; 15 前不給付</strong>，CKD Stage 4–5 初期患者只能自費。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 4: 臨床重點提示 ══ -->
+  <div class="section">
+    <div class="section-title">⚠️ 四、臨床重點提示</div>
+
+    <div style="font-size:.87rem;font-weight:600;margin-bottom:10px;color:var(--muted)">🔴 健保 vs 指引的關鍵落差</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>議題</th><th>健保規範</th><th>國際指引/實證</th><th>臨床影響</th></tr></thead>
+        <tbody>
+          <tr><td>eGFR 給付門檻</td><td class="td-warn">≦ 15（CKD Stage 5）</td><td>&lt; 25（KDIGO）可考慮用</td><td>大量 Stage 4（eGFR 15–29）患者無健保給付，需自費</td></tr>
+          <tr><td>每日劑量</td><td class="td-warn">最多 6 顆</td><td>研究劑量 1錠/5 kg/day（60 kg 患者需 12 顆）</td><td>健保給付劑量可能低於有效治療劑量</td></tr>
+          <tr><td>配合飲食</td><td>LPD（低蛋白）</td><td>VLPD（0.3–0.4 g/kg/day）搭配 KA 效果最佳</td><td>健保給付劑量設計對應 LPD 而非 VLPD</td></tr>
+          <tr><td>透析患者</td><td class="td-no">不給付</td><td>有殘餘腎功能的透析早期患者文獻有支持</td><td>台灣規範較嚴格</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="font-size:.87rem;font-weight:600;margin:20px 0 10px">📋 實務申報注意事項</div>
+
+    <div class="notice-item">
+      <span class="notice-num">1</span> <strong>停藥條件需主動監測：</strong>eGFR 若回升至 ≥ 25，需停藥，每 2 個月複查一次
+    </div>
+    <div class="notice-item">
+      <span class="notice-num">2</span> <strong>營養狀況監測：</strong>體重減輕 &gt; 5% 或白蛋白下降 &gt; 5%，需<strong>立即停藥</strong>
+    </div>
+    <div class="notice-item">
+      <span class="notice-num">3</span> <strong>血鈣監測：</strong>每錠含鈣 50 mg，長期使用需注意高血鈣，尤其合併活性維他命 D 使用時
+    </div>
+    <div class="notice-item">
+      <span class="notice-num">4</span> <strong>不得同時開立同類品：</strong>Amiyu 等類似製劑不得同時申報
+    </div>
+    <div class="notice-item">
+      <span class="notice-num">5</span> <strong>ICD-10：</strong>建議填寫 <code style="background:var(--surface2);padding:2px 6px;border-radius:4px">N18.5</code>（慢性腎臟病第5期）
+    </div>
+
+    <div class="highlight-box yellow" style="margin-top:20px;font-size:.85rem">
+      <strong>🟡 需進一步確認：</strong>
+      <ul class="styled" style="margin-top:8px">
+        <li><strong>自費使用情境（Stage 3–4）：</strong>指引支持，但需向病患說明無健保給付，並評估依從性及營養狀態</li>
+        <li><strong>劑量策略：</strong>健保最多 6 顆，若臨床判斷需更高劑量（如 VLPD 12 顆方案），超出部分需自費</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  資料僅供臨床參考｜實際申報以健保署公告為準｜<a href="https://www.nhi.gov.tw" target="_blank">健保署藥品給付規定查詢系統</a>
+</footer>
+</body>
+</html>

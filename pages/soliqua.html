@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Soliqua｜健保藥物查詢</title>
+<style>
+:root{
+  --bg:#0f172a;--surface:#1e293b;--surface2:#263045;--border:#334155;
+  --accent:#38bdf8;--accent2:#818cf8;--text:#f1f5f9;--muted:#94a3b8;
+  --green:#4ade80;--red:#f87171;--yellow:#fbbf24;--orange:#fb923c;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+.topbar{background:#0c1a30;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--accent);text-decoration:none;font-size:.85rem;font-weight:500;padding:6px 12px;border:1px solid var(--border);border-radius:8px;transition:background .15s}
+.back-btn:hover{background:var(--surface2)}
+.topbar-title{font-size:.9rem;color:var(--muted)}
+.hero{background:linear-gradient(135deg,#0c1a30,#162032,#0c1a30);padding:36px 24px 28px;border-bottom:1px solid var(--border)}
+.hero-inner{max-width:860px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:#1e3a5f;color:var(--accent);font-size:.75rem;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:1.9rem;font-weight:800;letter-spacing:-.01em;margin-bottom:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:.95rem;color:var(--muted);margin-bottom:16px}
+.drug-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.meta-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:.78rem;color:var(--muted)}
+.meta-chip strong{color:var(--text)}
+.alert-bar{background:#422006;border:1px solid #92400e;border-radius:10px;padding:12px 16px;font-size:.83rem;color:#fcd34d;display:flex;gap:10px;align-items:flex-start;margin-top:14px}
+.alert-bar a{color:var(--accent)}
+.container{max-width:860px;margin:0 auto;padding:32px 24px 64px}
+.section{margin-bottom:40px}
+.section-title{font-size:1.15rem;font-weight:700;color:var(--accent);margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+.subsection{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:16px}
+.subsection-title{font-size:1rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.cond-block{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 16px;margin-bottom:12px}
+.cond-block.warn{border-left-color:var(--red)}
+.cond-block.success{border-left-color:var(--green)}
+.cond-block.note{border-left-color:var(--yellow)}
+.cond-label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+.cond-text{font-size:.9rem;line-height:1.65}
+ul.styled{padding-left:0;list-style:none;margin:10px 0}
+ul.styled li{padding:5px 0 5px 18px;position:relative;font-size:.9rem}
+ul.styled li::before{content:'▸';position:absolute;left:0;color:var(--accent)}
+ol.styled{padding-left:20px;margin:10px 0}
+ol.styled li{padding:5px 0;font-size:.9rem}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+thead{background:var(--surface2)}
+th{padding:11px 14px;text-align:left;font-weight:700;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid #1e293b;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#1a2540}
+.td-yes{color:var(--green);font-weight:600}
+.td-no{color:var(--red);font-weight:600}
+.td-warn{color:var(--yellow)}
+.highlight-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:12px 0}
+.highlight-box.blue{border-left:4px solid var(--accent)}
+.highlight-box.red{border-left:4px solid var(--red)}
+.highlight-box.green{border-left:4px solid var(--green)}
+.highlight-box.yellow{border-left:4px solid var(--yellow)}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:700;vertical-align:middle}
+.badge.red{background:#450a0a;color:#f87171}
+.badge.green{background:#14532d;color:#4ade80}
+.badge.blue{background:#1e3a5f;color:#7dd3fc}
+.badge.yellow{background:#422006;color:#fbbf24}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin:14px 0}
+.stat-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center}
+.stat-val{font-size:1.5rem;font-weight:800;color:var(--accent)}
+.stat-label{font-size:.75rem;color:var(--muted);margin-top:4px}
+.notice-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:10px}
+.notice-num{width:26px;height:26px;background:var(--accent);color:#0f172a;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;margin-right:8px;flex-shrink:0;vertical-align:middle}
+footer{text-align:center;color:var(--muted);font-size:.78rem;padding:24px;border-top:1px solid var(--border);margin-top:20px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="../健保藥物查詢.html" class="back-btn">← 返回首頁</a>
+  <span class="topbar-title">Soliqua (iGlarLixi) — 健保給付參考資料</span>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">💉 糖尿病科 ／ 新陳代謝科</div>
+    <h1>Soliqua（爽胰達）</h1>
+    <p class="hero-sub">iGlarLixi — Insulin Glargine 100U/mL + Lixisenatide 33 mcg/mL 固定比例複方注射劑</p>
+    <div class="drug-meta">
+      <div class="meta-chip"><strong>學名</strong> Insulin glargine / Lixisenatide</div>
+      <div class="meta-chip"><strong>商品名</strong> Soliqua® 爽胰達</div>
+      <div class="meta-chip"><strong>劑型</strong> 預填充注射筆（SoloStar pen）</div>
+      <div class="meta-chip"><strong>比例</strong> Gla-100 1U : Lixi 0.33 mcg</div>
+      <div class="meta-chip"><strong>健保章節</strong> 5.1.3.3</div>
+      <div class="meta-chip"><strong>給付生效</strong> 2019年</div>
+    </div>
+    <div class="alert-bar">
+      ⚠️ 資料整理至 2025 年，健保規範具時效性，申報前請至
+      <a href="https://www.nhi.gov.tw" target="_blank">https://www.nhi.gov.tw</a> 確認最新版本。
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 一、藥品基本概念 -->
+  <div class="section">
+    <div class="section-title">⚙️ 一、藥品基本概念</div>
+    <div class="subsection">
+      <p style="font-size:.9rem;margin-bottom:16px">Soliqua 是全球第一個基礎胰島素 + GLP-1 RA 的<strong>固定比例複方注射劑（Fixed-Ratio Combination, FRC）</strong>，整合兩種作用機制：</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>成分</th><th>類別</th><th>主要作用</th><th>作用時間</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Insulin Glargine 100U/mL</strong>（Lantus® 成分）</td><td>基礎胰島素</td><td>提供穩定的 24 小時基礎胰島素覆蓋，降低空腹血糖</td><td>長效（~24hr）</td></tr>
+            <tr><td><strong>Lixisenatide 33 mcg/mL</strong>（Lyxumia® 成分）</td><td>GLP-1 RA（短效）</td><td>抑制胰升糖素、延緩胃排空、促進餐後胰島素分泌 → 控制餐後血糖</td><td>短效（餐後~2–4hr）</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cond-block success">
+        <div class="cond-label">複方優勢</div>
+        <div class="cond-text">胰島素的空腹血糖控制 + GLP-1 RA 的餐後血糖控制，同時 GLP-1 RA 成分抵消胰島素可能帶來的體重增加，整體 HbA1c 控制優於單一組分，注射次數不增加（每日一針）。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 二、台灣健保規範 -->
+  <div class="section">
+    <div class="section-title">🏥 二、台灣健保規範</div>
+
+    <div class="subsection">
+      <div class="subsection-title">✅ 給付條件（健保章節 5.1.3.3）</div>
+      <div class="cond-block">
+        <div class="cond-label">適用對象</div>
+        <div class="cond-text">第二型糖尿病（T2DM）患者</div>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">🔴 HbA1c 門檻</div>
+        <div class="cond-text"><strong>HbA1c ≥ 8.0%</strong>（注意：比一般 GLP-1 RA 單方的 8.5% 門檻低）</div>
+      </div>
+      <div class="cond-block">
+        <div class="cond-label">前置用藥條件</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>已使用基礎胰島素（Basal Insulin）至少 3 個月，合併口服降血糖藥，血糖仍未達控制目標者</li>
+            <li>或：已使用 GLP-1 RA 單方治療，欲轉換為 iGlarLixi 複方者</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">申請方式</div>
+        <div class="cond-text">事前審查（需附最近 3 個月內 HbA1c 報告及前置用藥記錄）</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">📋 給付上下限</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>項目</th><th>規定</th></tr></thead>
+          <tbody>
+            <tr><td>每日最大劑量</td><td>60 Units（Gla 60U + Lixi 20 mcg）</td></tr>
+            <tr><td>起始劑量</td><td>每日 10–15 Units，每次餐前主餐（lixisenatide 短效，建議主餐前使用）</td></tr>
+            <tr><td>合併禁忌</td><td class="td-warn">不得與其他 GLP-1 RA 製劑同時健保申報；不得與基礎胰島素另計費</td></tr>
+            <tr><td>eGFR 限制</td><td>eGFR &lt;15 mL/min（透析或末期腎病）：Lixisenatide 成分不建議使用</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 三、FDA 規範 -->
+  <div class="section">
+    <div class="section-title">🇺🇸 三、FDA 規範</div>
+    <div class="subsection">
+      <div class="cond-block">
+        <div class="cond-label">FDA 核准適應症</div>
+        <div class="cond-text">成人第二型糖尿病，作為飲食與運動的輔助，改善血糖控制（2016 年核准）</div>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">⚠️ Black Box Warning（同 GLP-1 RA 通用）</div>
+        <div class="cond-text">甲狀腺 C 細胞腫瘤風險（囓齒動物數據）。有甲狀腺髓質癌（MTC）個人或家族史、或第 2 型多發性內分泌腫瘤綜合症（MEN 2）患者<strong>禁用</strong>。</div>
+      </div>
+      <div class="cond-block">
+        <div class="cond-label">FDA 核准劑量範圍</div>
+        <div class="cond-text">每日 15–60 Units（Gla 15–60U / Lixi 5–20 mcg），每日一次，主餐前 1 小時內注射</div>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">台灣 vs FDA 主要差異</div>
+        <div class="cond-text">FDA 無 HbA1c 門檻限制；台灣健保要求 HbA1c ≥ 8.0% 且有前置用藥記錄。FDA 核准從基礎胰島素或 GLP-1 RA 轉換均可。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 四、LixiLan 臨床試驗 -->
+  <div class="section">
+    <div class="section-title">🔬 四、LixiLan 關鍵臨床試驗</div>
+
+    <div class="subsection">
+      <div class="subsection-title">LixiLan-O（從口服藥轉換）</div>
+      <div class="highlight-box blue">
+        <div class="table-wrap" style="margin:0">
+          <table>
+            <thead><tr><th>項目</th><th>iGlarLixi</th><th>iGlar 單方</th><th>Lixi 單方</th></tr></thead>
+            <tbody>
+              <tr><td>HbA1c 下降</td><td class="td-yes">−1.6%</td><td>−1.3%</td><td>−0.9%</td></tr>
+              <tr><td>目標達成率（&lt;7%）</td><td class="td-yes">74%</td><td>59%</td><td>33%</td></tr>
+              <tr><td>體重變化</td><td class="td-yes">−0.3 kg</td><td>+1.1 kg</td><td>−2.3 kg</td></tr>
+              <tr><td>低血糖事件</td><td>與 iGlar 相近</td><td>—</td><td>更低</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:.8rem;color:var(--muted);margin-top:8px">族群：T2DM，HbA1c 7.2–10%，基礎胰島素未使用者（口服藥不足控制）</p>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">LixiLan-L（從基礎胰島素轉換）</div>
+      <div class="highlight-box blue">
+        <div class="table-wrap" style="margin:0">
+          <table>
+            <thead><tr><th>項目</th><th>iGlarLixi</th><th>iGlar 單方</th></tr></thead>
+            <tbody>
+              <tr><td>HbA1c 下降</td><td class="td-yes">−1.1%</td><td>−0.6%</td></tr>
+              <tr><td>目標達成率（&lt;7%）</td><td class="td-yes">55%</td><td>30%</td></tr>
+              <tr><td>體重變化</td><td class="td-yes">−0.7 kg</td><td>+0.7 kg</td></tr>
+              <tr><td>餐後血糖改善</td><td class="td-yes">顯著優於 iGlar</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:.8rem;color:var(--muted);margin-top:8px">族群：T2DM，已使用基礎胰島素但血糖未達標（HbA1c 7.2–10%）</p>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-val">−1.6%</div>
+        <div class="stat-label">LixiLan-O HbA1c 降幅</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">74%</div>
+        <div class="stat-label">LixiLan-O HbA1c &lt;7% 達成率</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">−0.7 kg</div>
+        <div class="stat-label">LixiLan-L 體重變化（vs +0.7 kg）</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 五、臨床定位與使用時機 -->
+  <div class="section">
+    <div class="section-title">📌 五、臨床定位與使用時機</div>
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>情境</th><th>Soliqua 適合性</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr><td>基礎胰島素使用中，空腹血糖控制但 HbA1c 仍高</td><td class="td-yes">✅ 最佳適應</td><td>lixisenatide 成分可補充餐後血糖控制，轉換方便</td></tr>
+            <tr><td>想減少注射次數（由 Basal+GLP-1 RA 簡化）</td><td class="td-yes">✅ 適合</td><td>整合為一支筆，簡化療程</td></tr>
+            <tr><td>胰島素用量大、需要 &gt;60U/天</td><td class="td-warn">⚠️ 限制</td><td>Soliqua 最高 60U，超過需考慮其他方案</td></tr>
+            <tr><td>希望 GLP-1 RA 有心腎保護效果</td><td class="td-warn">⚠️ 次佳</td><td>Lixisenatide 短效，心血管結局試驗（ELIXA）中性結果，不如長效 GLP-1 RA（Sema/Dula）的心腎保護</td></tr>
+            <tr><td>eGFR &lt;15 / 透析患者</td><td class="td-no">❌ 不建議</td><td>Lixisenatide 在嚴重腎衰竭不建議使用</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="highlight-box yellow">
+        <p style="font-size:.88rem"><strong>📌 注意：</strong>與其他長效 GLP-1 RA（如 Semaglutide、Dulaglutide）相比，Lixisenatide 為短效 GLP-1 RA，主要優勢在餐後血糖及體重，<strong>尚無心血管或腎臟保護的 Class I 建議</strong>（ELIXA 試驗中性）。若追求心腎保護，長效 GLP-1 RA 應優先。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 六、臨床重點提示 -->
+  <div class="section">
+    <div class="section-title">⚠️ 六、臨床重點提示</div>
+
+    <div class="notice-item">
+      <span class="notice-num">1</span>
+      <strong>健保申報：備齊前置用藥與 HbA1c 記錄</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">需有基礎胰島素使用 ≥3 個月的記錄，加上最近 3 個月 HbA1c ≥ 8.0%。事前審查，請備妥病歷。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">2</span>
+      <strong>注射時機：主餐前 60 分鐘內</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">因 Lixisenatide 短效，每日選定一次主餐前注射（通常早餐前）。若忘記，不可在餐後補注（GLP-1 RA 成分需餐前發揮作用）。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">3</span>
+      <strong>劑量調整上限：60U</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">健保核准最高 60U。若患者基礎胰島素需求超過 60U，需改為基礎胰島素 + 獨立 GLP-1 RA 注射，無法以 Soliqua 單獨涵蓋。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">4</span>
+      <strong>GI 副作用</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">噁心為最常見副作用（約 10–25%，多在前 4 週緩解）。建議起始劑量低（10U），每週調升 2–4U，讓患者適應 GLP-1 RA 成分。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">5</span>
+      <strong>胰島素低血糖監測</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">從基礎胰島素轉換時，起始 iGlarLixi 劑量可比原基礎胰島素劑量減少 20%，避免初期低血糖。</span>
+    </div>
+  </div>
+
+</div>
+<footer>資料整理至 2025 年，僅供臨床參考，最終決策由醫師負責。申報前請至健保署官網確認最新版本。</footer>
+</body>
+</html>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SGLT2i｜健保藥物查詢</title>
+<style>
+:root{
+  --bg:#0f172a;--surface:#1e293b;--surface2:#263045;--border:#334155;
+  --accent:#38bdf8;--accent2:#818cf8;--text:#f1f5f9;--muted:#94a3b8;
+  --green:#4ade80;--red:#f87171;--yellow:#fbbf24;--orange:#fb923c;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+.topbar{background:#0c1a30;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--accent);text-decoration:none;font-size:.85rem;font-weight:500;padding:6px 12px;border:1px solid var(--border);border-radius:8px;transition:background .15s}
+.back-btn:hover{background:var(--surface2)}
+.topbar-title{font-size:.9rem;color:var(--muted)}
+.hero{background:linear-gradient(135deg,#0c1a30,#162032,#0c1a30);padding:36px 24px 28px;border-bottom:1px solid var(--border)}
+.hero-inner{max-width:960px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:#1e3a5f;color:var(--accent);font-size:.75rem;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:1.9rem;font-weight:800;letter-spacing:-.01em;margin-bottom:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:.95rem;color:var(--muted);margin-bottom:14px}
+.update-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.update-chip{background:#14532d;color:#4ade80;border-radius:20px;padding:4px 12px;font-size:.75rem;font-weight:600}
+.alert-bar{background:#422006;border:1px solid #92400e;border-radius:10px;padding:12px 16px;font-size:.83rem;color:#fcd34d;display:flex;gap:10px;align-items:flex-start}
+.alert-bar a{color:var(--accent)}
+.container{max-width:960px;margin:0 auto;padding:32px 24px 64px}
+.section{margin-bottom:40px}
+.section-title{font-size:1.15rem;font-weight:700;color:var(--accent);margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+.subsection{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:16px}
+.subsection-title{font-size:1rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cond-block{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 16px;margin-bottom:12px}
+.cond-block.warn{border-left-color:var(--red)}
+.cond-block.success{border-left-color:var(--green)}
+.cond-block.note{border-left-color:var(--yellow)}
+.cond-label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+.cond-text{font-size:.9rem;line-height:1.65}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin:12px 0}
+.info-item{background:var(--surface2);border-radius:8px;padding:12px 14px}
+.info-label{font-size:.73rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.info-value{font-size:.92rem;font-weight:600}
+.info-value.green{color:var(--green)}
+.info-value.red{color:var(--red)}
+.info-value.yellow{color:var(--yellow)}
+ul.styled{padding-left:0;list-style:none;margin:10px 0}
+ul.styled li{padding:5px 0 5px 18px;position:relative;font-size:.9rem}
+ul.styled li::before{content:'▸';position:absolute;left:0;color:var(--accent)}
+ol.styled{padding-left:20px;margin:10px 0}
+ol.styled li{padding:5px 0;font-size:.9rem}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.83rem}
+thead{background:var(--surface2)}
+th{padding:10px 12px;text-align:left;font-weight:700;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:9px 12px;border-bottom:1px solid #1e293b;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#1a2540}
+.td-yes{color:var(--green);font-weight:600}
+.td-no{color:var(--red);font-weight:600}
+.td-warn{color:var(--yellow);font-weight:600}
+.highlight-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:12px 0}
+.highlight-box.blue{border-left:4px solid var(--accent)}
+.highlight-box.red{border-left:4px solid var(--red)}
+.highlight-box.green{border-left:4px solid var(--green)}
+.highlight-box.yellow{border-left:4px solid var(--yellow)}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:700;vertical-align:middle}
+.badge.red{background:#450a0a;color:#f87171}
+.badge.green{background:#14532d;color:#4ade80}
+.badge.blue{background:#1e3a5f;color:#7dd3fc}
+.badge.yellow{background:#422006;color:#fbbf24}
+.badge.new{background:#1e3a5f;color:#818cf8}
+.notice-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:10px}
+.notice-num{width:26px;height:26px;background:var(--accent);color:#0f172a;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;margin-right:8px;flex-shrink:0;vertical-align:middle}
+.indication-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin:14px 0}
+.indication-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px}
+.indication-card.active{border-color:var(--green)}
+.indication-card.inactive{border-color:var(--red);opacity:.8}
+.indication-card h4{font-size:.92rem;font-weight:700;margin-bottom:8px}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:12px 0}
+.stat-card{background:var(--surface2);border-radius:10px;padding:12px;text-align:center}
+.stat-number{font-size:1.4rem;font-weight:800;color:var(--accent)}
+.stat-label{font-size:.73rem;color:var(--muted);margin-top:4px;line-height:1.3}
+footer{text-align:center;color:var(--muted);font-size:.78rem;padding:24px;border-top:1px solid var(--border);margin-top:20px}
+footer a{color:var(--accent)}
+code{background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:.85em}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-btn" href="../健保藥物查詢.html">← 返回首頁</a>
+  <span class="topbar-title">健保藥物查詢</span>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">💊 糖尿病 / 心腎保護</div>
+    <h1>SGLT2i</h1>
+    <div class="hero-sub">鈉-葡萄糖共同轉運蛋白 2 抑制劑｜DM・HF・CKD 三適應症完整整合指引</div>
+    <div class="update-chips">
+      <span class="update-chip">✅ 健保規範 114/3/1</span>
+      <span class="update-chip">✅ KDIGO 2024</span>
+      <span class="update-chip">✅ ADA 2026</span>
+      <span class="update-chip">✅ ESC 2023</span>
+      <span class="update-chip">✅ SMART-C Meta-analysis JAMA 2025</span>
+    </div>
+    <div class="alert-bar">⚠️ <span>健保規範異動頻繁，申報前請至 <a href="https://www.nhi.gov.tw" target="_blank">www.nhi.gov.tw</a> 確認最新版本。本資訊僅供臨床參考，最終決策由醫師負責。</span></div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ══ SECTION 1: 藥物給付範圍 ══ -->
+  <div class="section">
+    <div class="section-title">① 藥物劑型與健保給付範圍</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>藥物</th><th>DM</th><th>HF（HFrEF/HFmrEF）</th><th>CKD</th><th>備注</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Dapagliflozin 10mg</strong><br><span style="color:var(--muted);font-size:.8rem">Forxiga®</span></td>
+            <td class="td-yes">✅</td><td class="td-yes">✅</td><td class="td-yes">✅</td>
+            <td>三適應症均給付</td>
+          </tr>
+          <tr>
+            <td><strong>Empagliflozin 10mg</strong><br><span style="color:var(--muted);font-size:.8rem">Jardiance®</span></td>
+            <td class="td-yes">✅</td><td class="td-yes">✅</td><td class="td-yes">✅</td>
+            <td>三適應症均給付</td>
+          </tr>
+          <tr>
+            <td><strong>Empagliflozin 25mg</strong><br><span style="color:var(--muted);font-size:.8rem">Jardiance®</span></td>
+            <td class="td-yes">✅</td><td class="td-no">❌</td><td class="td-no">❌</td>
+            <td>僅 DM 給付</td>
+          </tr>
+          <tr>
+            <td><strong>Canagliflozin</strong><br><span style="color:var(--muted);font-size:.8rem">Invokana®</span></td>
+            <td class="td-yes">✅</td><td class="td-no">❌</td><td class="td-no">❌</td>
+            <td>僅 DM 給付</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 2: 台灣健保規範 ══ -->
+  <div class="section">
+    <div class="section-title">② 台灣健保規範（114/3/1 生效）</div>
+
+    <!-- 糖尿病 -->
+    <div class="subsection">
+      <div class="subsection-title">🅐 糖尿病（DM）</div>
+      <div class="cond-block success">
+        <div class="cond-label">前置治療</div>
+        <div class="cond-text">最大耐受劑量 <strong>Metformin</strong> 仍無法理想控制血糖之 T2DM</div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">申請方式</div>
+          <div class="info-value green">一般給付（免事前審查）</div>
+        </div>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">⚠️ 重要限制</div>
+        <div class="cond-text">不得同時申報 <strong>DPP-4i</strong> 或 <strong>GLP-1 RA</strong></div>
+      </div>
+    </div>
+
+    <!-- 心衰竭 -->
+    <div class="subsection">
+      <div class="subsection-title">🅑 慢性心衰竭（HF）</div>
+
+      <div class="indication-grid">
+        <div class="indication-card active">
+          <h4>🟢 HFrEF（LVEF ≦ 40%）</h4>
+          <ul class="styled">
+            <li>NYHA II–IV 級</li>
+            <li>初次使用需附<strong>一年內心臟影像 LVEF 數值</strong></li>
+            <li>ACEI/ARB + β-阻斷劑最大耐受劑量 ≥ 4 週（或有禁忌）</li>
+          </ul>
+        </div>
+        <div class="indication-card active">
+          <h4>🟢 HFmrEF（LVEF 41–49%）<span class="badge new" style="margin-left:4px">114/3/1 新增</span></h4>
+          <ul class="styled">
+            <li>NYHA II–IV 級，LVEF 41–49%</li>
+            <li>需附<strong>心臟專科醫師診斷書</strong> OR 心衰竭住院病史</li>
+            <li>ACEI/ARB + β-阻斷劑最大耐受劑量 ≥ 4 週（或禁忌）</li>
+          </ul>
+        </div>
+        <div class="indication-card inactive">
+          <h4>🔴 HFpEF（LVEF ≥ 50%）<span class="badge red" style="margin-left:4px">健保不給付</span></h4>
+          <div style="font-size:.85rem;color:var(--muted);margin-top:6px">⛔ 此為與 FDA 核准及 ESC 2023 / AHA 指引的<strong>重大落差</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CKD -->
+    <div class="subsection">
+      <div class="subsection-title">🅒 慢性腎臟病（CKD）<span class="badge new" style="margin-left:8px">114/3/1 新增</span></div>
+
+      <div class="cond-block warn">
+        <div class="cond-label">⚠️ 照護計畫綁定（最常見退件原因 #1）</div>
+        <div class="cond-text">病人必須已參加「<strong>Early-CKD 照護整合方案</strong>」或「<strong>Pre-ESRD 衛教計畫</strong>」，否則即使數值符合亦<strong>無法申報</strong>。</div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>條件</th><th>規定</th></tr></thead>
+          <tbody>
+            <tr><td>前置治療</td><td>最大耐受劑量 <strong>ACEI 或 ARB ≥ 4 週</strong></td></tr>
+            <tr><td>eGFR 範圍</td><td><strong>≥ 25 且 ≦ 60</strong> mL/min/1.73m²（兩端超出均不符）</td></tr>
+            <tr><td>蛋白尿範圍</td><td><strong>uACR ≥ 200 且 ≦ 5000</strong> mg/g（有上下限）</td></tr>
+            <tr><td>給付藥物</td><td>Dapagliflozin 10mg 或 Empagliflozin 10mg，<strong>每日最多 1 粒</strong></td></tr>
+            <tr><td>停藥條件</td><td>使用後 eGFR 下降至 <strong>&lt; 15 mL/min/1.73m²</strong> 須停藥</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="font-size:.87rem;font-weight:600;margin:14px 0 10px;color:var(--red)">CKD 排除條件（任一項即排除，須主動記錄病歷）</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>排除條件</th></tr></thead>
+          <tbody>
+            <tr><td>i</td><td>第 1 型糖尿病</td></tr>
+            <tr><td>ii</td><td>多囊腎、SLE 相關腎病、ANCA 相關血管炎</td></tr>
+            <tr><td>iii</td><td>6 個月內接受化療、免疫抑制或腎臟免疫治療</td></tr>
+            <tr><td>iv</td><td>器官移植病史</td></tr>
+            <tr><td>v</td><td>12 週內 AMI、不穩定狹心症、中風或 TIA</td></tr>
+            <tr><td>vi</td><td>12 週內 PCI / CABG</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 3: 試驗比較 ══ -->
+  <div class="section">
+    <div class="section-title">③ DAPA-CKD vs EMPA-KIDNEY 族群比較</div>
+    <div class="highlight-box blue" style="margin-bottom:14px;font-size:.87rem">
+      <strong>核心概念：兩個試驗互補而非競爭</strong><br>
+      DAPA-CKD 代表典型高蛋白尿/較高 eGFR 族群；EMPA-KIDNEY 擴展至更低 eGFR、更低蛋白尿、更多非 DM 病因
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>比較項目</th><th>CREDENCE（Cana）</th><th>DAPA-CKD（Dapa）</th><th>EMPA-KIDNEY（Empa）</th></tr></thead>
+        <tbody>
+          <tr><td>發表年份</td><td>2019 NEJM</td><td>2020 NEJM</td><td>2023 NEJM</td></tr>
+          <tr><td>樣本數</td><td>4,401</td><td>4,304</td><td>6,609（最大）</td></tr>
+          <tr><td>DM 比例</td><td>100% T2DM</td><td>~67% T2DM；33% non-DM</td><td>~46% T2DM；54% non-DM（最多）</td></tr>
+          <tr><td>eGFR 收納範圍</td><td>30–90</td><td>25–75</td><td>20–90（最寬）</td></tr>
+          <tr><td>平均 eGFR</td><td>~56</td><td>~43</td><td>~36（最低）</td></tr>
+          <tr><td>eGFR &lt;30 比例</td><td>排除</td><td>~15%（n=624）</td><td>~35%（n=2,282，最多）</td></tr>
+          <tr><td>uACR 最低門檻</td><td>≥300（最嚴）</td><td>≥200</td><td>≥30；eGFR 20–44 可無蛋白尿</td></tr>
+          <tr><td>平均 uACR</td><td>~900 mg/g</td><td>~1,017（最高）</td><td>~330（最低）</td></tr>
+          <tr><td>主要終點 HR</td><td>0.70</td><td class="td-yes">0.61（效益最大）</td><td>0.72</td></tr>
+          <tr><td>全因死亡率</td><td>↓趨勢</td><td class="td-yes">↓31%（顯著）</td><td>無顯著差異</td></tr>
+          <tr><td>心衰竭住院</td><td>↓39%</td><td>↓29%</td><td>HR 0.84（無顯著）</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="font-size:.87rem;font-weight:600;margin:16px 0 10px;color:var(--muted)">各臨床情境實證解讀</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>臨床情境</th><th>推薦藥物</th><th>實證強度</th></tr></thead>
+        <tbody>
+          <tr><td>T2DM + 高蛋白尿（uACR &gt;300）</td><td>兩者均可</td><td>⭐⭐⭐⭐⭐ 三試驗均支持</td></tr>
+          <tr><td>non-DM CKD + 蛋白尿（uACR ≥200）</td><td>兩者均可</td><td>⭐⭐⭐⭐ DAPA-CKD & EMPA-KIDNEY</td></tr>
+          <tr><td>uACR 30–200 mg/g</td><td><strong>Empagliflozin 優先</strong></td><td>⭐⭐⭐ EMPA-KIDNEY 有收納</td></tr>
+          <tr><td>eGFR 20–24（含非 DM）</td><td><strong>Empagliflozin 優先</strong></td><td>⭐⭐ EMPA-KIDNEY 唯一有收納</td></tr>
+          <tr><td>降低全因死亡率需求</td><td><strong>Dapagliflozin 優先</strong></td><td>⭐⭐⭐⭐ DAPA-CKD 顯著↓31%</td></tr>
+          <tr><td>心衰竭合併 CKD</td><td>兩者均可</td><td>⭐⭐⭐⭐⭐</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 4: 大型試驗 ══ -->
+  <div class="section">
+    <div class="section-title">④ 主要大型試驗結果摘要</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>試驗</th><th>族群</th><th>藥物</th><th>eGFR</th><th>主要結果</th></tr></thead>
+        <tbody>
+          <tr><td><strong>EMPA-REG</strong></td><td>T2DM + CVD</td><td>Empa 10/25mg</td><td>≥30</td><td>MACE↓14%；CV死亡<strong>↓38%</strong>；HHF↓35%</td></tr>
+          <tr><td><strong>CANVAS</strong></td><td>T2DM + CVD</td><td>Cana 100/300mg</td><td>≥30</td><td>MACE↓14%；HHF↓33%；<span class="td-warn">⚠️截肢↑</span></td></tr>
+          <tr><td><strong>DECLARE</strong></td><td>T2DM + CVD</td><td>Dapa 10mg</td><td>≥60</td><td>MACE非劣；HHF/CV死亡↓17%</td></tr>
+          <tr><td><strong>CREDENCE</strong></td><td>T2DM + 蛋白尿 CKD</td><td>Cana 100mg</td><td>30–90</td><td>ESKD↓32%；HHF↓39%</td></tr>
+          <tr><td><strong>DAPA-HF</strong></td><td>HFrEF（±DM）</td><td>Dapa 10mg</td><td>≥25，EF≤40</td><td>CV死亡/HHF↓26%；全因死亡<strong>↓17%</strong></td></tr>
+          <tr><td><strong>EMPEROR-R</strong></td><td>HFrEF（±DM）</td><td>Empa 10mg</td><td>≥20，EF≤40</td><td>CV死亡/HHF↓25%</td></tr>
+          <tr><td><strong>EMPEROR-P</strong></td><td>HFpEF（±DM）</td><td>Empa 10mg</td><td>≥20，EF&gt;40</td><td>CV死亡/HHF↓21%</td></tr>
+          <tr><td><strong>DELIVER</strong></td><td>HFmrEF/HFpEF（±DM）</td><td>Dapa 10mg</td><td>≥25，EF&gt;40</td><td>CV死亡/HHF↓18%</td></tr>
+          <tr><td><strong>DAPA-CKD</strong></td><td>CKD ± DM</td><td>Dapa 10mg</td><td>25–75</td><td>腎複合終點↓39%；全因死亡<strong>↓31%</strong></td></tr>
+          <tr><td><strong>EMPA-KIDNEY</strong></td><td>CKD ± DM</td><td>Empa 10mg</td><td>20–90</td><td>腎/CV複合終點↓28%；全因住院↓14%</td></tr>
+          <tr><td><strong>EMPA-KIDNEY 長期追蹤</strong></td><td>CKD ± DM</td><td>Empa 10mg</td><td>20–90</td><td>停藥後效益持續（HR 0.79，NEJM 2024）</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 5: 統合效益 ══ -->
+  <div class="section">
+    <div class="section-title">⑤ 統合效益數據</div>
+
+    <div class="subsection">
+      <div class="subsection-title">腎臟效益（SMART-C Meta-analysis, JAMA 2025）</div>
+      <div style="font-size:.82rem;color:var(--muted);margin-bottom:12px">13 RCT，&gt;90,000 人</div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-number">↓37%</div><div class="stat-label">CKD 進展<br>DM & non-DM 均顯著</div></div>
+        <div class="stat-card"><div class="stat-number">↓23%</div><div class="stat-label">急性腎損傷</div></div>
+        <div class="stat-card"><div class="stat-number">↓32%</div><div class="stat-label">ESKD（CREDENCE）</div></div>
+        <div class="stat-card"><div class="stat-number">↓39%</div><div class="stat-label">主要腎複合終點（DAPA-CKD）</div></div>
+      </div>
+      <div class="highlight-box green" style="margin-top:12px;font-size:.85rem">
+        UACR 高低無顯著交互作用 → 支持移除蛋白尿強制條件
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">心臟效益</div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-number">↓13%</div><div class="stat-label">全因死亡率（HF + T2DM NMA 2025）</div></div>
+        <div class="stat-card"><div class="stat-number">↓26%</div><div class="stat-label">全因住院</div></div>
+        <div class="stat-card"><div class="stat-number">↓30%</div><div class="stat-label">心衰竭住院</div></div>
+        <div class="stat-card"><div class="stat-number">↓38%</div><div class="stat-label">CV 死亡（EMPA-REG）</div></div>
+        <div class="stat-card"><div class="stat-number">↓20%</div><div class="stat-label">90天內 ADHF（4試驗合併，Day 5 即有症狀改善）</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 6: 透析族群 ══ -->
+  <div class="section">
+    <div class="section-title">⑥ 透析族群：現況與規範</div>
+    <div class="cond-block warn" style="margin-bottom:16px">
+      <div class="cond-label">健保立場</div>
+      <div class="cond-text"><strong>❌ 不給付</strong>｜所有大型 RCT 均排除透析患者（SGLT2 機轉因腎元減少效果減弱）</div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>面向</th><th>現況</th></tr></thead>
+        <tbody>
+          <tr><td>大型 RCT</td><td>所有試驗均排除透析患者</td></tr>
+          <tr><td>藥動學</td><td>Dapagliflozin 蛋白結合率 91%，不被 HD 清除；Empa 腎排泄 54%，PD 患者暴露量更高</td></tr>
+          <tr><td>觀察性數據</td><td>大型回顧性研究顯示透析患者使用 SGLT2i 者 CV 事件及死亡率較低</td></tr>
+          <tr><td>PD 特殊發現</td><td>使用者超濾量較高（1322 vs 985 mL/day）；但有輕度代謝性酸中毒風險</td></tr>
+          <tr><td>進行中 RCT</td><td>DARE-ESKD-2、DAPA-HD、EMPA-RRED（結果近期可期）</td></tr>
+          <tr><td>臨床建議</td><td>ESRD 患者目前<strong>不建議常規使用</strong>；個案使用需密切監測電解質及容積</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 7: 健保 vs 指引落差 ══ -->
+  <div class="section">
+    <div class="section-title">⑦ 健保 vs 國際指引落差分析</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>議題</th><th>台灣健保（114/3/1）</th><th>國際指引</th><th>落差</th></tr></thead>
+        <tbody>
+          <tr><td>CKD（無 DM）</td><td class="td-yes">✅ 給付</td><td>✅ KDIGO 2024 強烈建議（1A）</td><td class="td-yes">一致</td></tr>
+          <tr><td>eGFR 起始下限</td><td class="td-warn">≥ 25</td><td>KDIGO ≥ 20</td><td class="td-warn">⚠️ 健保較嚴格</td></tr>
+          <tr><td>蛋白尿門檻</td><td class="td-warn">uACR ≥ 200</td><td>EMPA-KIDNEY 低蛋白尿亦獲益</td><td class="td-warn">⚠️ 健保較嚴格</td></tr>
+          <tr><td>停藥門檻</td><td class="td-no">eGFR &lt;15 須停藥</td><td>不因 eGFR 下降停藥（除非透析）</td><td class="td-no">⛔ 重大落差</td></tr>
+          <tr><td>透析患者</td><td class="td-no">❌ 不給付</td><td>研究中；禁忌已移除</td><td class="td-warn">⚠️ 健保保守</td></tr>
+          <tr><td>HFpEF（LVEF≥50%）</td><td class="td-no">❌ 尚未給付</td><td>✅ ESC 2023 / AHA 均建議</td><td class="td-no">⛔ 重大落差</td></tr>
+          <tr><td>HFmrEF（LVEF 41–49%）</td><td class="td-yes">✅ 114/3/1 新增</td><td>✅ 指引建議</td><td class="td-yes">114/3/1 後一致</td></tr>
+          <tr><td>前置 RAAS 要求</td><td class="td-warn">必須 ACEI/ARB ≥ 4 週</td><td>建議合用，非強制前置</td><td class="td-warn">⚠️ 健保較嚴格</td></tr>
+          <tr><td>照護計畫綁定</td><td class="td-warn">必須加入 Early-CKD/Pre-ESRD</td><td>無此限制</td><td>台灣健保特有</td></tr>
+          <tr><td>SGLT2i + DPP-4i 合用</td><td class="td-no">❌ 不可同時申報</td><td>可合用</td><td class="td-warn">⚠️ 健保限制</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 8: 申報退件 ══ -->
+  <div class="section">
+    <div class="section-title">⑧ 實務申報退件原因</div>
+
+    <div class="subsection">
+      <div class="subsection-title">CKD 最常見退件（依頻率）</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>順序</th><th>退件原因</th><th>對策</th></tr></thead>
+          <tbody>
+            <tr><td><strong>#1</strong></td><td class="td-no">未參加 Early-CKD 或 Pre-ESRD 照護計畫</td><td>申請前先確認加入</td></tr>
+            <tr><td><strong>#2</strong></td><td>eGFR 超出 25–60 範圍</td><td>附近期腎功能報告</td></tr>
+            <tr><td><strong>#3</strong></td><td>uACR &lt;200 或未附尿蛋白報告</td><td>3 個月內報告；uACR &gt;5000 亦不符</td></tr>
+            <tr><td><strong>#4</strong></td><td>未附 ACEI/ARB 穩定用藥 4 週記錄</td><td>記錄劑量及起始日期</td></tr>
+            <tr><td><strong>#5</strong></td><td>排除條件未主動記錄於病歷</td><td>逐條排除並記錄</td></tr>
+            <tr><td><strong>#6</strong></td><td>ICD-10 診斷碼錯誤</td><td>CKD 各期＋共病編碼需正確</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">HF 申請注意事項</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>項目</th><th>注意事項</th></tr></thead>
+          <tbody>
+            <tr><td>LVEF 報告</td><td>初次申請<strong>必附</strong>；一年內標準心臟影像</td></tr>
+            <tr><td>HFmrEF 額外要求</td><td>心臟專科醫師診斷書 OR 心衰竭住院病史</td></tr>
+            <tr><td>β-阻斷劑記錄</td><td>需記錄已達最大耐受量或禁忌原因</td></tr>
+            <tr><td>Empagliflozin 劑量</td><td>確認開立 <strong>10mg</strong>，非 25mg</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">⑨ 安全監測（SADMANS）</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>安全議題</th><th>臨床重點</th></tr></thead>
+          <tbody>
+            <tr><td><strong>急性病時暫停</strong></td><td>SGLT2i、ACEI/ARB、利尿劑、Metformin、NSAID（腸胃炎、禁食、大手術、造影前）</td></tr>
+            <tr><td><strong>起始 eGFR 下降</strong></td><td>正常血流動力學效應，<strong>不因此停藥</strong>（排除脫水）</td></tr>
+            <tr><td><strong>泌尿生殖道感染</strong></td><td>黴菌性生殖器感染最常見</td></tr>
+            <tr><td><strong>Euglycemic DKA</strong></td><td>術前停藥 <strong>3–4 天</strong>；低碳水飲食者注意</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  整合健保規範 114/3/1 × KDIGO 2024 × ADA 2026 × ESC 2023 × SMART-C Meta-analysis（JAMA 2025）｜<a href="https://www.nhi.gov.tw" target="_blank">健保署查詢系統</a>
+</footer>
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Pentoxifylline｜健保藥物查詢</title>
+<style>
+:root{
+  --bg:#0f172a;--surface:#1e293b;--surface2:#263045;--border:#334155;
+  --accent:#38bdf8;--accent2:#818cf8;--text:#f1f5f9;--muted:#94a3b8;
+  --green:#4ade80;--red:#f87171;--yellow:#fbbf24;--orange:#fb923c;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+.topbar{background:#0c1a30;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--accent);text-decoration:none;font-size:.85rem;font-weight:500;padding:6px 12px;border:1px solid var(--border);border-radius:8px;transition:background .15s}
+.back-btn:hover{background:var(--surface2)}
+.topbar-title{font-size:.9rem;color:var(--muted)}
+.hero{background:linear-gradient(135deg,#0c1a30,#162032,#0c1a30);padding:36px 24px 28px;border-bottom:1px solid var(--border)}
+.hero-inner{max-width:860px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:#1e3a5f;color:var(--accent);font-size:.75rem;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:1.9rem;font-weight:800;letter-spacing:-.01em;margin-bottom:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:.95rem;color:var(--muted);margin-bottom:16px}
+.drug-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.meta-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:.78rem;color:var(--muted)}
+.meta-chip strong{color:var(--text)}
+.alert-bar{background:#422006;border:1px solid #92400e;border-radius:10px;padding:12px 16px;font-size:.83rem;color:#fcd34d;display:flex;gap:10px;align-items:flex-start;margin-top:14px}
+.container{max-width:860px;margin:0 auto;padding:32px 24px 64px}
+.section{margin-bottom:40px}
+.section-title{font-size:1.15rem;font-weight:700;color:var(--accent);margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+.subsection{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:16px}
+.subsection-title{font-size:1rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.cond-block{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 16px;margin-bottom:12px}
+.cond-block.warn{border-left-color:var(--red)}
+.cond-block.success{border-left-color:var(--green)}
+.cond-block.note{border-left-color:var(--yellow)}
+.cond-label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+.cond-text{font-size:.9rem;line-height:1.65}
+ul.styled{padding-left:0;list-style:none;margin:10px 0}
+ul.styled li{padding:5px 0 5px 18px;position:relative;font-size:.9rem}
+ul.styled li::before{content:'▸';position:absolute;left:0;color:var(--accent)}
+ol.styled{padding-left:20px;margin:10px 0}
+ol.styled li{padding:5px 0;font-size:.9rem}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+thead{background:var(--surface2)}
+th{padding:11px 14px;text-align:left;font-weight:700;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid #1e293b;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#1a2540}
+.td-yes{color:var(--green);font-weight:600}
+.td-no{color:var(--red);font-weight:600}
+.td-warn{color:var(--yellow)}
+.highlight-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:12px 0}
+.highlight-box.blue{border-left:4px solid var(--accent)}
+.highlight-box.red{border-left:4px solid var(--red)}
+.highlight-box.green{border-left:4px solid var(--green)}
+.highlight-box.yellow{border-left:4px solid var(--yellow)}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:700;vertical-align:middle}
+.badge.red{background:#450a0a;color:#f87171}
+.badge.green{background:#14532d;color:#4ade80}
+.badge.blue{background:#1e3a5f;color:#7dd3fc}
+.badge.yellow{background:#422006;color:#fbbf24}
+.badge.orange{background:#431407;color:#fb923c}
+.notice-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:10px}
+.notice-num{width:26px;height:26px;background:var(--accent);color:#0f172a;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;margin-right:8px;flex-shrink:0;vertical-align:middle}
+footer{text-align:center;color:var(--muted);font-size:.78rem;padding:24px;border-top:1px solid var(--border);margin-top:20px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="../健保藥物查詢.html" class="back-btn">← 返回首頁</a>
+  <span class="topbar-title">Pentoxifylline (PTF) — 臨床參考資料</span>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">💊 腎臟科 ／ 血管科</div>
+    <h1>Pentoxifylline (PTF)</h1>
+    <p class="hero-sub">Trental® ／ 己酮可可鹼 — 末梢血管疾病 &amp; Off-label CKD 蛋白尿治療</p>
+    <div class="drug-meta">
+      <div class="meta-chip"><strong>學名</strong> Pentoxifylline</div>
+      <div class="meta-chip"><strong>商品名</strong> Trental®</div>
+      <div class="meta-chip"><strong>劑型</strong> 400 mg 緩釋錠（口服）</div>
+      <div class="meta-chip"><strong>藥物分類</strong> Xanthine 衍生物 / 血液流變改善劑</div>
+      <div class="meta-chip"><strong>健保給付</strong> 末梢血管疾病（正式適應症）</div>
+      <div class="meta-chip"><strong>CKD 用途</strong> Off-label（台灣 TFDA 未核准腎臟適應症）</div>
+    </div>
+    <div class="alert-bar">
+      ⚠️ 資料整理至 2025 年，健保規範具時效性，申報前請至
+      <a href="https://www.nhi.gov.tw" target="_blank">https://www.nhi.gov.tw</a> 確認最新版本。
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 一、藥理機轉 -->
+  <div class="section">
+    <div class="section-title">⚙️ 一、藥理機轉</div>
+    <div class="subsection">
+      <p style="font-size:.9rem;margin-bottom:14px">Pentoxifylline 為非選擇性磷酸二酯酶抑制劑（PDE inhibitor），具多重作用：</p>
+      <div class="cond-block">
+        <div class="cond-label">血液流變學</div>
+        <div class="cond-text">增加紅血球變形能力、降低血液黏稠度、抑制血小板聚集 → 改善微循環</div>
+      </div>
+      <div class="cond-block success">
+        <div class="cond-label">抗纖維化 / 抗炎（CKD 保護機轉）</div>
+        <div class="cond-text">抑制 TNF-α、TGF-β1 分泌 → 減少腎臟纖維化及蛋白尿；抑制 NF-κB 活化 → 降低腎臟發炎</div>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">CKD 腎保護的理論基礎</div>
+        <div class="cond-text">降低腎小球內皮細胞發炎、減少 TGF-β 介導的腎小管間質纖維化，並有輕度降蛋白尿效果</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 二、台灣健保規範 -->
+  <div class="section">
+    <div class="section-title">🏥 二、台灣健保規範</div>
+    <div class="subsection">
+      <div class="subsection-title">✅ 正式核准適應症（TFDA + 健保）</div>
+      <div class="cond-block success">
+        <div class="cond-label">核准適應症</div>
+        <div class="cond-text">末梢血管疾病（Peripheral Vascular Disease, PVD）所致的慢性阻塞性動脈疾病、間歇性跛行（Intermittent Claudication）</div>
+      </div>
+      <div class="cond-block">
+        <div class="cond-label">給付條件</div>
+        <div class="cond-text">符合 PVD 適應症之患者，一般給付，不須事前審查</div>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">⚠️ CKD 適應症：Off-label</div>
+        <div class="cond-text">台灣健保<strong>無 CKD 或蛋白尿保護的獨立給付適應症</strong>。若開立於 CKD 蛋白尿治療，屬超適應症（off-label）使用，健保申報需謹慎，建議以 PVD 共病為申報依據，否則有退件風險。</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">📋 申報注意事項</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>項目</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr><td>申請方式</td><td>一般給付（PVD 適應症）</td></tr>
+            <tr><td>診斷碼</td><td>I73.9（其他周邊血管疾病）或 I73.89 / I70.2x（動脈粥樣硬化周邊動脈疾病）</td></tr>
+            <tr><td>CKD 申報風險</td><td class="td-warn">若以 CKD 為唯一診斷申報，可能退件；建議病歷記錄 PVD 共病</td></tr>
+            <tr><td>藥物交互作用</td><td>與抗凝血劑（warfarin）、抗血小板藥物合用出血風險升高，需監測</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 三、FDA 規範 -->
+  <div class="section">
+    <div class="section-title">🇺🇸 三、FDA 規範</div>
+    <div class="subsection">
+      <div class="cond-block">
+        <div class="cond-label">FDA 核准適應症</div>
+        <div class="cond-text">間歇性跛行（Intermittent Claudication）所致之末梢血管疾病慢性阻塞症狀治療（1984 年核准）</div>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">Black Box Warning / 重要警語</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>出血風險：與抗凝血劑（warfarin、heparin）或抗血小板藥物合用時，出血時間延長，需密切監測</li>
+            <li>最近腦出血或視網膜出血患者：禁用</li>
+            <li>低血壓風險：可能加重降壓藥效果</li>
+            <li>甲基黃嘌呤過敏者（如咖啡因、茶鹼）：禁用</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">標準劑量（PVD）</div>
+        <div class="cond-text">400 mg 緩釋錠，每日 3 次（TID），隨餐服用；腎功能不全（CrCl &lt;30 mL/min）：考慮減量至每日 2 次</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 四、CKD Off-label 臨床實證 -->
+  <div class="section">
+    <div class="section-title">🔬 四、CKD Off-label 臨床實證</div>
+
+    <div class="subsection">
+      <div class="subsection-title">📊 PREDIAN Trial（最重要的 RCT）</div>
+      <div class="highlight-box blue">
+        <p style="font-size:.88rem;margin-bottom:10px"><strong>研究設計：</strong>隨機對照試驗（RCT），糖尿病腎病變（T2DM + CKD stage 3–4）患者</p>
+        <div class="table-wrap" style="margin:10px 0">
+          <table>
+            <thead><tr><th>指標</th><th>結果</th></tr></thead>
+            <tbody>
+              <tr><td>蛋白尿變化</td><td class="td-yes">PTF 組 UACR 顯著降低（vs 安慰劑，p&lt;0.05）</td></tr>
+              <tr><td>eGFR 下降速率</td><td class="td-yes">PTF 組 eGFR 年下降速率較慢（保腎效果）</td></tr>
+              <tr><td>使用劑量</td><td>400 mg TID（同 PVD 標準劑量）</td></tr>
+              <tr><td>背景治療</td><td>ACEI/ARB 基礎上加用 PTF</td></tr>
+              <tr><td>結論</td><td>在 ACEI/ARB 基礎上加用 PTF 可進一步減少蛋白尿、延緩 CKD 進展</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:.82rem;color:var(--muted)">來源：de Zeeuw D et al. Lancet / Navarro-González JF et al. JASN</p>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">📋 臨床實證總覽</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>研究</th><th>族群</th><th>主要結果</th><th>證據等級</th></tr></thead>
+          <tbody>
+            <tr><td>PREDIAN RCT</td><td>T2DM + CKD G3-4</td><td class="td-yes">蛋白尿↓、eGFR 下降減緩</td><td>Level IB</td></tr>
+            <tr><td>系統性回顧（多篇 meta-analysis）</td><td>CKD（含 DM 及非 DM）</td><td class="td-yes">UACR 顯著改善（加在 ACEI/ARB 上）</td><td>Level IIA</td></tr>
+            <tr><td>腹膜透析研究</td><td>PD 患者</td><td>腹膜纖維化減少（動物及小型人體研究）</td><td>低（初步）</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">⚠️ 實證限制</div>
+        <div class="cond-text">目前缺乏大規模、多中心 RCT 專門評估 PTF 的硬性腎臟終點（ESRD、透析）；PREDIAN 為中型試驗，尚需更大規模驗證。KDIGO 2024 指引未將 PTF 列入 CKD 建議用藥。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 五、最新臨床指引地位 -->
+  <div class="section">
+    <div class="section-title">📚 五、最新臨床指引地位</div>
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>指引</th><th>PTF 地位</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr><td>KDIGO 2024 CKD 指引</td><td class="td-warn">未列入</td><td>未正式推薦 PTF 於 CKD 蛋白尿治療</td></tr>
+            <tr><td>ADA 2025 Standards of Care</td><td class="td-warn">未提及</td><td>糖尿病腎病優先 SGLT2i + ACEI/ARB + GLP-1RA + Finerenone</td></tr>
+            <tr><td>台灣腎臟醫學會指引</td><td class="td-warn">未正式列入</td><td>部分臨床醫師因 PREDIAN 數據在 ACEI/ARB 基礎上 add-on 使用</td></tr>
+            <tr><td>AHA/ACC 末梢血管指引</td><td class="td-yes">Class IIb</td><td>間歇性跛行的輔助治療（本身適應症）</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="highlight-box yellow">
+        <p style="font-size:.88rem"><strong>📌 臨床定位：</strong>PTF 在 CKD 屬於「add-on、補充性」治療選項，非標準一線或二線。在 SGLT2i、Finerenone、GLP-1 RA 時代，PTF 的相對重要性已下降，但在無法使用上述藥物的患者（如費用考量、副作用禁忌），或合併 PVD 的 CKD 患者，仍有臨床使用空間。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 六、臨床重點提示 -->
+  <div class="section">
+    <div class="section-title">⚠️ 六、臨床重點提示</div>
+
+    <div class="notice-item">
+      <span class="notice-num">1</span>
+      <strong>健保申報：以 PVD 為主要適應症</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">若患者同時有末梢血管疾病，可正當以 PVD 適應症申報健保。純 CKD 蛋白尿適應症申報有退件風險，需在病歷記錄兩者共病。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">2</span>
+      <strong>出血風險監測</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">CKD 患者常合併抗血板（aspirin）或 ACEI/ARB 使用，加用 PTF 需評估出血風險。有消化道出血病史或使用 warfarin 者須格外謹慎。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">3</span>
+      <strong>腎功能調整劑量</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">eGFR &lt;30 mL/min（CKD G4–5）：建議減量，400 mg BID 代替 TID，或依耐受性調整。透析患者：須謹慎，部分代謝物經腎排除。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">4</span>
+      <strong>現今 CKD 治療排序</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">當前 CKD 保腎標準治療順序：ACEI/ARB → SGLT2i（健保114/3/1起大幅擴大給付）→ Finerenone（自費）→ GLP-1 RA（符合條件者）。PTF 屬補充選項，非主線。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">5</span>
+      <strong>GI 副作用</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">最常見副作用為噁心、嘔吐、消化不良（約 5–10%）。隨餐服用可減少 GI 不適。若出現嚴重 GI 症狀應停藥。</span>
+    </div>
+
+    <div class="highlight-box red" style="margin-top:20px">
+      <p style="font-size:.88rem"><strong>🚫 禁忌症：</strong>最近發生腦出血或視網膜出血、對甲基黃嘌呤類（caffeine、theophylline）過敏、嚴重心臟節律障礙。</p>
+    </div>
+  </div>
+
+</div>
+<footer>資料整理至 2025 年，僅供臨床參考，最終決策由醫師負責。申報前請至健保署官網確認最新版本。</footer>
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Statin 降血脂｜健保藥物查詢</title>
+<style>
+:root{
+  --bg:#0f172a;--surface:#1e293b;--surface2:#263045;--border:#334155;
+  --accent:#38bdf8;--accent2:#818cf8;--text:#f1f5f9;--muted:#94a3b8;
+  --green:#4ade80;--red:#f87171;--yellow:#fbbf24;--orange:#fb923c;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+.topbar{background:#0c1a30;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--accent);text-decoration:none;font-size:.85rem;font-weight:500;padding:6px 12px;border:1px solid var(--border);border-radius:8px;transition:background .15s}
+.back-btn:hover{background:var(--surface2)}
+.topbar-title{font-size:.9rem;color:var(--muted)}
+.hero{background:linear-gradient(135deg,#0c1a30,#162032,#0c1a30);padding:36px 24px 28px;border-bottom:1px solid var(--border)}
+.hero-inner{max-width:860px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:#1e3a5f;color:var(--accent);font-size:.75rem;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:1.9rem;font-weight:800;letter-spacing:-.01em;margin-bottom:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:.95rem;color:var(--muted);margin-bottom:16px}
+.drug-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.meta-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:.78rem;color:var(--muted)}
+.meta-chip strong{color:var(--text)}
+.alert-bar{background:#422006;border:1px solid #92400e;border-radius:10px;padding:12px 16px;font-size:.83rem;color:#fcd34d;display:flex;gap:10px;align-items:flex-start;margin-top:14px}
+.alert-bar a{color:var(--accent)}
+.container{max-width:860px;margin:0 auto;padding:32px 24px 64px}
+.section{margin-bottom:40px}
+.section-title{font-size:1.15rem;font-weight:700;color:var(--accent);margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+.subsection{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:16px}
+.subsection-title{font-size:1rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.cond-block{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 16px;margin-bottom:12px}
+.cond-block.warn{border-left-color:var(--red)}
+.cond-block.success{border-left-color:var(--green)}
+.cond-block.note{border-left-color:var(--yellow)}
+.cond-label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+.cond-text{font-size:.9rem;line-height:1.65}
+ul.styled{padding-left:0;list-style:none;margin:10px 0}
+ul.styled li{padding:5px 0 5px 18px;position:relative;font-size:.9rem}
+ul.styled li::before{content:'▸';position:absolute;left:0;color:var(--accent)}
+ol.styled{padding-left:20px;margin:10px 0}
+ol.styled li{padding:5px 0;font-size:.9rem}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+thead{background:var(--surface2)}
+th{padding:11px 14px;text-align:left;font-weight:700;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid #1e293b;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#1a2540}
+.td-yes{color:var(--green);font-weight:600}
+.td-no{color:var(--red);font-weight:600}
+.td-warn{color:var(--yellow)}
+.highlight-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:12px 0}
+.highlight-box.blue{border-left:4px solid var(--accent)}
+.highlight-box.red{border-left:4px solid var(--red)}
+.highlight-box.green{border-left:4px solid var(--green)}
+.highlight-box.yellow{border-left:4px solid var(--yellow)}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:700;vertical-align:middle}
+.badge.red{background:#450a0a;color:#f87171}
+.badge.green{background:#14532d;color:#4ade80}
+.badge.blue{background:#1e3a5f;color:#7dd3fc}
+.badge.yellow{background:#422006;color:#fbbf24}
+.badge.orange{background:#431407;color:#fb923c}
+.news-bar{background:#0f2a1a;border:1px solid #166534;border-radius:10px;padding:14px 18px;margin-bottom:16px;font-size:.88rem;color:#4ade80}
+.news-bar strong{color:#86efac}
+.notice-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:10px}
+.notice-num{width:26px;height:26px;background:var(--accent);color:#0f172a;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;margin-right:8px;flex-shrink:0;vertical-align:middle}
+footer{text-align:center;color:var(--muted);font-size:.78rem;padding:24px;border-top:1px solid var(--border);margin-top:20px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="../健保藥物查詢.html" class="back-btn">← 返回首頁</a>
+  <span class="topbar-title">Statin 健保給付與國際指引</span>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">❤️ 心臟科 ／ 新陳代謝科 ／ 腎臟科</div>
+    <h1>Statin 降血脂</h1>
+    <p class="hero-sub">HMG-CoA Reductase Inhibitors — 台灣健保給付規範 ＋ 2025/2026 國際指引更新</p>
+    <div class="drug-meta">
+      <div class="meta-chip"><strong>藥物類別</strong> HMG-CoA 還原酶抑制劑</div>
+      <div class="meta-chip"><strong>常用品項</strong> Atorvastatin、Rosuvastatin、Pitavastatin 等</div>
+      <div class="meta-chip"><strong>健保章節</strong> 2.6 降血脂藥物</div>
+      <div class="meta-chip"><strong>2025 重大更新</strong> PCSK9i 門檻下修 + 三高防治 888 計畫</div>
+    </div>
+    <div class="alert-bar">
+      ⚠️ 健保給付規定具時效性，申報前請至 <a href="https://www.nhi.gov.tw" target="_blank">https://www.nhi.gov.tw</a> 確認最新版本。
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 最新動態 -->
+  <div class="section">
+    <div class="section-title">🆕 2025 年重大更新</div>
+    <div class="news-bar">
+      <strong>📢 2025/9/1 起實施：</strong>健保署配合「三高防治888計畫」，PCSK9 抑制劑（Evolocumab、Alirocumab）給付條件大幅放寬：<br>
+      ① LDL-C 起始治療值由 135 mg/dL 下修至 <strong>100 mg/dL</strong>&emsp;
+      ② 事前審查核准後使用時間由 6 個月延長至 <strong>12 個月</strong><br>
+      預估嘉惠約 5,005 名心血管疾病病友，每人每年約節省 11.5 萬元。
+    </div>
+    <div class="news-bar" style="margin-top:0">
+      <strong>📢 2025 台灣血脂管理臨床路徑共識（九大醫學會）：</strong>採用 5 級風險分層（低/中/高/非常高/極高風險），目標導向治療。糖尿病、CKD 或 LDL-C ≥190 mg/dL 屬<strong>高風險</strong>；極高風險建議中至高強度 Statin 或合併 Ezetimibe 起始治療。
+    </div>
+  </div>
+
+  <!-- 一、台灣健保給付分層 -->
+  <div class="section">
+    <div class="section-title">🏥 一、台灣健保給付規範</div>
+
+    <div class="subsection">
+      <div class="subsection-title">📋 依危險因子數目分層的給付條件</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>族群</th><th>起始治療 LDL-C 門檻</th><th>治療目標 LDL-C</th><th>非藥物治療前置</th></tr></thead>
+          <tbody>
+            <tr><td><strong>心血管疾病或糖尿病</strong></td><td>TC ≥160 或 LDL-C ≥100 mg/dL</td><td class="td-yes">&lt;100 mg/dL</td><td>可與非藥物治療並行</td></tr>
+            <tr><td>≥2 個危險因子</td><td>TC ≥200 或 LDL-C ≥130 mg/dL</td><td>&lt;130 mg/dL</td><td>先進行 3–6 個月</td></tr>
+            <tr><td>1 個危險因子</td><td>TC ≥240 或 LDL-C ≥160 mg/dL</td><td>&lt;160 mg/dL</td><td>先進行 3–6 個月</td></tr>
+            <tr><td>0 個危險因子</td><td>LDL-C ≥190 mg/dL</td><td>&lt;190 mg/dL</td><td>先進行 3–6 個月</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">📌 危險因子定義</div>
+      <div class="cond-block">
+        <div class="cond-label">計算危險因子數（每項各 1 分）</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>高血壓</li>
+            <li>年齡：男性 ≥45 歲 / 女性 ≥55 歲或停經</li>
+            <li>早發性冠心病家族史（一等親男性 &lt;55 歲、女性 &lt;65 歲發生心臟病）</li>
+            <li>HDL-C &lt;40 mg/dL</li>
+            <li>吸菸（<strong>注意：吸菸者若未戒菸，需自費；戒菸後可申報健保</strong>）</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">追蹤規定</div>
+        <div class="cond-text">第一年每 3–6 個月抽血追蹤（含 LDL-C、肝功能）；第二年起至少每 6–12 個月一次。注意肝功能異常（ALT &gt;3× ULN 應停藥）及橫紋肌溶解症（CK 升高 + 肌肉症狀）。</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">💊 PCSK9 抑制劑（Evolocumab / Alirocumab）給付（2025/9/1 新）</div>
+      <div class="cond-block warn">
+        <div class="cond-label">給付條件（PCSK9i）</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>已有心血管疾病（二級預防）患者</li>
+            <li>已使用最大耐受劑量 Statin（±Ezetimibe）仍 LDL-C ≥<strong>100 mg/dL</strong>（2025/9/1 起，舊門檻 135 mg/dL）</li>
+            <li>申請方式：事前審查，核准有效期延長為 12 個月（舊為 6 個月）</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 二、國際指引更新 -->
+  <div class="section">
+    <div class="section-title">🌐 二、2025–2026 國際指引重點更新</div>
+
+    <div class="subsection">
+      <div class="subsection-title">2026 ACC/AHA 血脂指引（2026 年 3 月發布，取代 2018 版）</div>
+      <div class="cond-block success">
+        <div class="cond-label">極高風險 ASCVD 目標（次級預防）</div>
+        <div class="cond-text">LDL-C &lt;<strong>55 mg/dL</strong>（1.4 mmol/L）且 non-HDL-C &lt;85 mg/dL</div>
+      </div>
+      <div class="cond-block">
+        <div class="cond-label">高風險一次預防（10 年風險 &gt;10%）</div>
+        <div class="cond-text">目標 LDL-C &lt;70 mg/dL；以高強度 Statin 使 LDL 下降 ≥50%</div>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">重要新原則</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>Statin 仍為藥物治療基石，不足時加用 Ezetimibe，再考慮 PCSK9 抑制劑</li>
+            <li>強烈建議成人一生<strong>至少測量一次 Lp(a)</strong></li>
+            <li>冠狀動脈鈣化（CAC）掃描強化使用，輔助治療決策</li>
+            <li>更早介入：兒童期健康生活習慣諮詢；FH 患者或 30 歲以下 LDL-C ≥160 mg/dL 考慮提早用藥</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">2025 ACC/AHA 急性冠心症（ACS）指引</div>
+      <div class="cond-block success">
+        <div class="cond-label">ACS 出院建議</div>
+        <div class="cond-text">出院時即啟動<strong>高強度 Statin + Ezetimibe</strong>。若 LDL-C 介於 55–69 mg/dL，特別是合併糖尿病、多血管疾病、Lp(a) 升高或疑似 FH 者，應考慮強化治療。</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">2025 ESC/EAS 聚焦更新</div>
+      <div class="cond-block success">
+        <div class="cond-label">ACS 住院期間強化降脂</div>
+        <div class="cond-text">目標 LDL-C ≤55 mg/dL；初次治療或 Statin 難達標者，建議<strong>高強度 Statin + Ezetimibe 組合起始</strong>。</div>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">高三酸甘油脂</div>
+        <div class="cond-text">高至極高風險合併高 TG 患者，建議高劑量 Icosapent ethyl（純 EPA）+ Statin（Class IIa/B）。</div>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">⚠️ 明確排除</div>
+        <div class="cond-text">Dietary supplements（紅麴、大蒜、薑黃等）<strong>不應用於降低 ASCVD 風險</strong>。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 三、台灣健保 vs 國際指引落差 -->
+  <div class="section">
+    <div class="section-title">📊 三、台灣健保 vs 國際指引落差</div>
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>項目</th><th>台灣健保給付</th><th>國際指引（ACC/AHA 2026 / ESC 2025）</th></tr></thead>
+          <tbody>
+            <tr><td>心血管疾病 LDL 起始治療</td><td>≥100 mg/dL</td><td class="td-warn">建議直接開始治療，目標 &lt;55–70 mg/dL</td></tr>
+            <tr><td>極高風險 LDL 目標</td><td>&lt;100 mg/dL</td><td class="td-warn">&lt;55 mg/dL</td></tr>
+            <tr><td>PCSK9i 起始門檻</td><td>LDL ≥100 mg/dL（2025年新）</td><td class="td-warn">最大耐受 Statin + Ezetimibe 未達標即可</td></tr>
+            <tr><td>風險分層方式</td><td>危險因子數目（0/1/≥2）</td><td class="td-warn">5 級 ASCVD 風險評估（含 Lp(a)、ApoB、CAC）</td></tr>
+            <tr><td>ACS 起始治療</td><td>需符合 LDL 門檻</td><td class="td-warn">入院即啟動高強度 Statin + Ezetimibe</td></tr>
+            <tr><td>Lp(a) 測量</td><td>無規定</td><td class="td-warn">強烈建議一生至少一次</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="highlight-box yellow">
+        <p style="font-size:.88rem"><strong>臨床重點：</strong>台灣健保規定仍較國際指引保守，但 2025 年更新已大幅縮小差距，尤其在 PCSK9i 給付上往國際標準靠攏。對極高風險患者，臨床上強化治療的依據充分，可依判斷與病人溝通後積極處置。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 四、申報注意事項 -->
+  <div class="section">
+    <div class="section-title">⚠️ 四、退件風險與申報注意事項</div>
+
+    <div class="notice-item">
+      <span class="notice-num">1</span>
+      <strong>危險因子分類需明確記錄</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">病歷需清楚記錄危險因子數目（高血壓、年齡、家族史、HDL-C、抽菸），核算出對應的 LDL-C 起始門檻，再確認目前 LDL-C 數值是否符合給付條件。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">2</span>
+      <strong>吸菸者：戒菸才能申報健保</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">若以吸菸作為危險因子，患者若仍在吸菸，依健保規定需自費。須在病歷記錄戒菸狀態，或改以其他危險因子申報。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">3</span>
+      <strong>非藥物治療期限（非心血管疾病/糖尿病患者）</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">≥1 個危險因子患者需先進行 3–6 個月非藥物治療才能申報。病歷需記錄建議飲食控制及運動的日期，以及複診時仍未達標。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">4</span>
+      <strong>PCSK9i 事前審查文件</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">申請 PCSK9i 須提供：① 心血管疾病診斷佐證、② 最大耐受 Statin（±Ezetimibe）使用記錄、③ 最近 LDL-C 報告（≥100 mg/dL）。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">5</span>
+      <strong>追蹤要求</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">第一年每 3–6 個月、第二年起每 6–12 個月追蹤 LDL-C 及肝功能。ALT 超過 3 倍正常上限應暫停，橫紋肌溶解症須停藥。</span>
+    </div>
+  </div>
+
+</div>
+<footer>資料整理至 2025 年，依據健保署 2.6 降血脂藥物給付規定及 2026 ACC/AHA、2025 ESC/EAS 指引。申報前請至健保署官網確認最新版本。</footer>
+</body>
+</html>

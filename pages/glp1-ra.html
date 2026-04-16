@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>GLP-1 RA｜健保藥物查詢</title>
+<style>
+:root{
+  --bg:#0f172a;--surface:#1e293b;--surface2:#263045;--border:#334155;
+  --accent:#38bdf8;--accent2:#818cf8;--text:#f1f5f9;--muted:#94a3b8;
+  --green:#4ade80;--red:#f87171;--yellow:#fbbf24;--orange:#fb923c;
+  --tag-blue:#1e3a5f;--tag-green:#14532d;--tag-red:#450a0a;--tag-yellow:#422006;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+
+/* ── Nav bar ── */
+.topbar{background:#0c1a30;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--accent);text-decoration:none;font-size:.85rem;font-weight:500;padding:6px 12px;border:1px solid var(--border);border-radius:8px;transition:background .15s}
+.back-btn:hover{background:var(--surface2)}
+.topbar-title{font-size:.9rem;color:var(--muted)}
+
+/* ── Hero ── */
+.hero{background:linear-gradient(135deg,#0c1a30,#162032,#0c1a30);padding:36px 24px 28px;border-bottom:1px solid var(--border)}
+.hero-inner{max-width:860px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:#1e3a5f;color:var(--accent);font-size:.75rem;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:1.9rem;font-weight:800;letter-spacing:-.01em;margin-bottom:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:.95rem;color:var(--muted);margin-bottom:16px}
+.alert-bar{background:#422006;border:1px solid #92400e;border-radius:10px;padding:12px 16px;font-size:.83rem;color:#fcd34d;display:flex;gap:10px;align-items:flex-start}
+.alert-bar a{color:var(--accent);word-break:break-all}
+
+/* ── Layout ── */
+.container{max-width:860px;margin:0 auto;padding:32px 24px 64px}
+
+/* ── Sections ── */
+.section{margin-bottom:40px}
+.section-title{font-size:1.15rem;font-weight:700;color:var(--accent);margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+
+/* ── Sub sections ── */
+.subsection{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:16px}
+.subsection-title{font-size:1rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+
+/* ── Condition blocks ── */
+.cond-block{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 16px;margin-bottom:12px}
+.cond-block.warn{border-left-color:var(--red)}
+.cond-block.success{border-left-color:var(--green)}
+.cond-block.note{border-left-color:var(--yellow)}
+.cond-label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+.cond-text{font-size:.9rem;line-height:1.65}
+
+/* ── Drug list ── */
+.drug-list{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.drug-tag{background:#1e3a5f;color:var(--accent);border:1px solid #2563eb44;padding:5px 12px;border-radius:20px;font-size:.8rem;font-weight:500}
+
+/* ── Info grid ── */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:12px 0}
+.info-item{background:var(--surface2);border-radius:8px;padding:12px 14px}
+.info-label{font-size:.73rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.info-value{font-size:.92rem;font-weight:600}
+.info-value.green{color:var(--green)}
+.info-value.red{color:var(--red)}
+.info-value.yellow{color:var(--yellow)}
+
+/* ── Lists ── */
+ul.styled{padding-left:0;list-style:none;margin:10px 0}
+ul.styled li{padding:5px 0 5px 18px;position:relative;font-size:.9rem}
+ul.styled li::before{content:'▸';position:absolute;left:0;color:var(--accent)}
+ol.styled{padding-left:20px;margin:10px 0}
+ol.styled li{padding:4px 0;font-size:.9rem}
+
+/* ── Tables ── */
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+thead{background:var(--surface2)}
+th{padding:11px 14px;text-align:left;font-weight:700;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid #1e293b;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#1a2540}
+.td-yes{color:var(--green);font-weight:600}
+.td-no{color:var(--red);font-weight:600}
+.td-warn{color:var(--yellow)}
+
+/* ── Highlight boxes ── */
+.highlight-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:12px 0}
+.highlight-box.blue{border-left:4px solid var(--accent)}
+.highlight-box.red{border-left:4px solid var(--red)}
+.highlight-box.green{border-left:4px solid var(--green)}
+.highlight-box.yellow{border-left:4px solid var(--yellow)}
+
+/* ── Badge ── */
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:700;vertical-align:middle}
+.badge.red{background:#450a0a;color:#f87171}
+.badge.green{background:#14532d;color:#4ade80}
+.badge.blue{background:#1e3a5f;color:#7dd3fc}
+.badge.yellow{background:#422006;color:#fbbf24}
+
+/* ── Trial data ── */
+.trial-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin:12px 0}
+.stat-card{background:var(--surface2);border-radius:10px;padding:14px;text-align:center}
+.stat-number{font-size:1.5rem;font-weight:800;color:var(--accent)}
+.stat-label{font-size:.75rem;color:var(--muted);margin-top:4px}
+
+/* ── Notice list ── */
+.notice-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:10px;counter-increment:notice}
+.notice-num{width:26px;height:26px;background:var(--accent);color:#0f172a;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;margin-right:8px;flex-shrink:0;vertical-align:middle}
+
+/* ── Footer ── */
+footer{text-align:center;color:var(--muted);font-size:.78rem;padding:24px;border-top:1px solid var(--border);margin-top:20px}
+footer a{color:var(--accent)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-btn" href="../健保藥物查詢.html">← 返回首頁</a>
+  <span class="topbar-title">健保藥物資料查詢</span>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">💉 GLP-1 受體促效劑</div>
+    <h1>GLP-1 RA</h1>
+    <div class="hero-sub">GLP-1 受體促效劑｜第二型糖尿病（T2DM）與慢性腎臟病（CKD）</div>
+    <div class="alert-bar">
+      ⚠️ <span>資料整理至 <strong>2025 年第一季</strong>，健保給付規定具時效性。最新版本請至健保署確認：<a href="https://www.nhi.gov.tw" target="_blank">www.nhi.gov.tw</a></span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ══ SECTION 1: 台灣健保規範 ══ -->
+  <div class="section">
+    <div class="section-title">🏥 一、台灣健保規範</div>
+
+    <!-- 適應症 A -->
+    <div class="subsection">
+      <div class="subsection-title">【適應症 A】第二型糖尿病（T2DM）</div>
+
+      <div style="margin-bottom:14px">
+        <div style="font-size:.85rem;color:var(--muted);margin-bottom:8px;font-weight:600">✅ 適用藥品（健保有給付）</div>
+        <div class="drug-list">
+          <span class="drug-tag">胰妥善 Victoza（Liraglutide）</span>
+          <span class="drug-tag">易周糖 Trulicity（Dulaglutide）</span>
+          <span class="drug-tag">爽胰達 Soliqua（Lixisenatide/Insulin glargine）</span>
+          <span class="drug-tag">胰妥讚 Ozempic（Semaglutide）</span>
+        </div>
+      </div>
+
+      <div style="font-size:.85rem;color:var(--red);font-weight:700;margin-bottom:10px">🔴 給付條件</div>
+
+      <div class="cond-block">
+        <div class="cond-label">條件一｜一般血糖控制不佳</div>
+        <div class="cond-text">
+          已接受過<strong>最大耐受劑量的 metformin 及/或 sulfonylurea</strong>，且併用下列藥品之一持續 <strong>6 個月</strong>，HbA1c 仍 <strong>≥ 8.5%</strong> 以上之第二型糖尿病患者：
+          <ul class="styled" style="margin-top:8px">
+            <li>SGLT-2 抑制劑</li>
+            <li>DPP-4 抑制劑</li>
+            <li>SGLT-2 抑制劑合併 DPP-4 抑制劑複方藥品</li>
+            <li>Insulin</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cond-block">
+        <div class="cond-label">條件二｜重大心血管事件患者</div>
+        <div class="cond-text">
+          發生重大心血管事件（心肌梗塞、冠狀動脈或其他動脈血管再通術、動脈硬化相關之缺血性腦中風等），接受過<strong>最大耐受劑量 metformin</strong> 後仍無法理想控制血糖之 T2DM 患者——<strong>可不須使用其他口服降血糖藥品</strong>而考慮使用 liraglutide / dulaglutide / semaglutide。
+        </div>
+      </div>
+
+      <div class="cond-block warn">
+        <div class="cond-label">❗ 重要限制</div>
+        <div class="cond-text">本藥品<strong>不得與 DPP-4 抑制劑、SGLT-2 抑制劑併用</strong>（以健保給付組合為限）。</div>
+      </div>
+
+      <div class="info-grid" style="margin-top:14px">
+        <div class="info-item">
+          <div class="info-label">申請方式</div>
+          <div class="info-value yellow">事前審查</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">開立科別</div>
+          <div class="info-value">新陳代謝科、內分泌科、一般內科</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 適應症 B -->
+    <div class="subsection">
+      <div class="subsection-title">【適應症 B】慢性腎臟病（CKD）<span class="badge red" style="margin-left:8px">健保不給付</span></div>
+      <div class="cond-block warn">
+        <div class="cond-text">截至 2025 年第一季，台灣健保對 GLP-1 RA 用於 CKD（不論是否合併糖尿病）<strong>尚無獨立的腎臟保護適應症給付</strong>。<br><br>
+        若 CKD 患者需健保使用 GLP-1 RA，仍須以<strong>糖尿病適應症申請</strong>，滿足上述 T2DM 條件。<br><br>
+        📌 2025 年 2 月健保大幅擴增的「CKD 腎臟保護」是針對 <strong>SGLT2 抑制劑</strong>（Dapagliflozin / Empagliflozin），不包括 GLP-1 RA。
+        </div>
+      </div>
+
+      <div style="font-size:.87rem;font-weight:600;color:var(--muted);margin:16px 0 8px">🔑 自費使用情境（CKD + T2DM 想用 GLP-1 RA 保腎但不符合健保條件者）</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>情境說明</th><th>健保狀態</th></tr></thead>
+          <tbody>
+            <tr><td>HbA1c &lt; 8.5%，但 CKD 有蛋白尿</td><td class="td-no">健保不給付，需自費（如 Ozempic）</td></tr>
+            <tr><td>CKD 無糖尿病</td><td class="td-no">完全自費（健保無此適應症）</td></tr>
+            <tr><td>符合 T2DM 條件 + CKD</td><td class="td-warn">可以糖尿病名義申請，但需備齊前置用藥記錄</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="highlight-box yellow" style="margin-top:12px;font-size:.87rem">
+        <strong>口服 Semaglutide（Rybelsus®）：</strong>已在台灣上市，但健保尚未給付，目前須完全自費使用。
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 2: FDA 規範 ══ -->
+  <div class="section">
+    <div class="section-title">🇺🇸 二、FDA 規範</div>
+
+    <div class="subsection">
+      <div class="subsection-title">T2DM 適應症</div>
+      <div class="cond-text" style="font-size:.9rem">FDA 核准的 GLP-1 RA 包括 liraglutide、semaglutide（Ozempic）、dulaglutide、exenatide 等，用於改善 T2DM 血糖控制。Ozempic® 另有減少 T2DM 合併心血管疾病患者重大不良心血管事件風險的適應症。</div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">🔴 CKD 適應症 <span class="badge blue" style="margin-left:6px">2025 年 1 月最新核准</span></div>
+      <div class="cond-block success">
+        <div class="cond-text">FDA 已核准 <strong>Ozempic（semaglutide）</strong> 用於降低成人 T2D 合併 CKD 患者的：腎臟疾病惡化風險、腎衰竭（末期腎臟病）以及心血管疾病相關死亡風險。Ozempic 成為該藥物類別中<strong>適應症最廣的 GLP-1 RA</strong>。</div>
+      </div>
+
+      <div style="font-size:.87rem;font-weight:600;margin:16px 0 10px">FLOW Trial 關鍵數據</div>
+      <div style="font-size:.82rem;color:var(--muted);margin-bottom:10px">納入：T2D 合併 CKD（eGFR 50–75 伴 UACR &gt;300 mg/g，或 eGFR 25–50 伴 UACR &gt;100 mg/g）</div>
+      <div class="trial-stats">
+        <div class="stat-card">
+          <div class="stat-number">↓24%</div>
+          <div class="stat-label">主要複合腎臟事件風險（HR 0.76）</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">↓29%</div>
+          <div class="stat-label">心血管死亡風險（HR 0.71）</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">提前終止</div>
+          <div class="stat-label">試驗提前達到預定療效標準</div>
+        </div>
+      </div>
+
+      <div class="cond-block warn" style="margin-top:14px">
+        <div class="cond-label">⚠️ Black Box Warning（GLP-1 RA 通用）</div>
+        <div class="cond-text">甲狀腺 C 細胞腫瘤風險：有<strong>甲狀腺髓質癌（MTC）</strong>個人或家族史，或<strong>第 2 型多發性內分泌腫瘤綜合症（MEN 2）</strong>患者禁用。</div>
+      </div>
+    </div>
+
+    <div style="font-size:.87rem;font-weight:600;margin:16px 0 8px;color:var(--muted)">台灣 vs FDA 關鍵差異</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>面向</th><th>台灣健保</th><th>FDA</th></tr></thead>
+        <tbody>
+          <tr><td>CKD 獨立適應症</td><td class="td-no">❌ 無</td><td class="td-yes">✅ Semaglutide 已核准（2025/1）</td></tr>
+          <tr><td>T2DM 給付門檻</td><td class="td-warn">HbA1c ≥ 8.5%，前置三藥失效</td><td>無此嚴格前置要求</td></tr>
+          <tr><td>口服 Semaglutide</td><td class="td-no">自費</td><td class="td-yes">已核准給付</td></tr>
+          <tr><td>SGLT2i 併用限制</td><td class="td-no">健保給付下不能同時申報</td><td>無此限制</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 3: 臨床指引 ══ -->
+  <div class="section">
+    <div class="section-title">📚 三、最新臨床指引</div>
+
+    <div class="subsection">
+      <div class="subsection-title">🫘 KDIGO 2024 CKD 指引</div>
+      <div class="highlight-box blue">
+        <strong>Recommendation 3.9.1：</strong>在 T2D 合併 CKD 成人患者，已使用 metformin 和/或 SGLT2i 仍未達個別化血糖目標，<strong>應使用長效 GLP-1 RA</strong>。
+      </div>
+      <div style="font-size:.87rem;color:var(--muted);margin-top:10px">KDIGO 2022 糖尿病 CKD 指引（Practice Point 4.3）：在 T2D 合併 CKD 患者，eGFR 及費用應引導選擇，其中 GLP-1 RA 列為<strong>偏好選項之一</strong>。</div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">🇺🇸 ADA 2025 Standards of Care</div>
+      <div class="cond-text" style="font-size:.9rem">ADA 強力支持在 T2D 合併 CKD 或 ASCVD 患者使用 GLP-1 RA，GLP-1 RA 即使在<strong>晚期 CKD 仍維持降糖療效與安全性</strong>，並可降低白蛋白尿、延緩 eGFR 下降。</div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">📋 KDIGO 2025 Commentary（最新）</div>
+      <div class="cond-text" style="font-size:.9rem">KDIGO 已於 2025 年發布 GLP-1 RA 用於糖尿病與 CKD 的專題評論（基於 FLOW trial 數據），進一步強化 semaglutide 在 T2DM + CKD 患者的器官保護角色。<br><br>KDIGO 2026 糖尿病 CKD 指引草案已開放公開意見（至 2026 年 4 月 13 日），預計正式收錄 FLOW 數據。</div>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 4: 臨床重點提示 ══ -->
+  <div class="section">
+    <div class="section-title">⚠️ 四、臨床重點提示</div>
+
+    <div style="font-size:.87rem;font-weight:600;margin-bottom:10px;color:var(--muted)">🔴 健保 vs 指引落差摘要</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>議題</th><th>健保現況</th><th>國際指引建議</th></tr></thead>
+        <tbody>
+          <tr><td>GLP-1 RA 用於 CKD 保腎</td><td class="td-no">無此適應症給付</td><td>KDIGO/ADA 強烈建議 T2D+CKD 使用</td></tr>
+          <tr><td>HbA1c 門檻</td><td class="td-warn">≥ 8.5%（嚴苛）</td><td>不限定門檻，以心腎保護為優先</td></tr>
+          <tr><td>SGLT2i 可與 GLP-1 RA 合用</td><td class="td-no">健保給付下不可同時申報</td><td>兩者建議合用（四大支柱治療概念）</td></tr>
+          <tr><td>口服 Semaglutide（Rybelsus）</td><td class="td-no">完全自費</td><td>ADA 支持使用</td></tr>
+          <tr><td>CKD 無糖尿病</td><td class="td-no">無任何給付管道</td><td>尚無完整 RCT 資料（FLOW 限 T2D）</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="font-size:.87rem;font-weight:600;margin:20px 0 10px">📋 實務申報注意事項</div>
+
+    <div class="notice-item">
+      <span class="notice-num">1</span> <strong>申請 GLP-1 RA 健保給付，務必備齊：</strong>
+      <ul class="styled" style="margin-top:8px">
+        <li>前置藥物使用記錄（Metformin + SU 最大耐受量，加上 SGLT2i 或 DPP-4i 或 Insulin 使用 ≥ 6 個月）</li>
+        <li>最近 3 個月內 HbA1c 報告（需 ≥ 8.5%）</li>
+        <li>或心血管事件佐證文件（如心導管報告、腦梗塞影像）</li>
+      </ul>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">2</span> <strong>若以重大心血管事件申請（快速通道）：</strong>
+      <ul class="styled" style="margin-top:8px">
+        <li>不需要三藥前置失效，但仍需 Metformin 最大耐受</li>
+        <li>需附心血管事件佐證，且事件需為「動脈硬化性」（非心衰竭本身）</li>
+      </ul>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">3</span> <strong>CKD 患者特殊提醒：</strong>
+      <ul class="styled" style="margin-top:8px">
+        <li>若 CKD 患者 HbA1c &lt; 8.5% 且無心血管事件，即使有蛋白尿也<strong>無法申請健保給付</strong></li>
+        <li>此類患者若要使用 Semaglutide 達到腎臟保護目的，需<strong>自費</strong></li>
+        <li>eGFR &lt; 15（透析中）患者：多數 GLP-1 RA 仍可使用，但 <strong>Exenatide（Byetta）在 eGFR &lt; 30 不建議使用</strong></li>
+      </ul>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">4</span> <strong>藥物交互限制（申報陷阱）：</strong>
+      <ul class="styled" style="margin-top:8px">
+        <li>健保規定 GLP-1 RA 不得與 DPP-4i 或 SGLT2i 同時以<strong>健保給付開立</strong></li>
+        <li>臨床上若<strong>自費 SGLT2i + 健保 GLP-1 RA</strong>，應可行，須於病歷清楚記錄</li>
+      </ul>
+    </div>
+
+    <div class="highlight-box yellow" style="margin-top:20px;font-size:.85rem">
+      <strong>❓ 需進一步確認：</strong>
+      <ul class="styled" style="margin-top:8px">
+        <li>健保是否有計畫針對 CKD 保護適應症將 GLP-1 RA 納入（目前尚未公告）</li>
+        <li>KDIGO 2026 糖尿病 CKD 指引正式版預計何時生效</li>
+        <li>台灣 Semaglutide 2 mg 版本的健保申請狀態（SUSTAIN FORTE 數據）</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  資料整理至 2025 年第一季｜實際申報以健保署公告為準｜<a href="https://www.nhi.gov.tw" target="_blank">健保署藥品給付規定查詢系統</a>
+</footer>
+</body>
+</html>

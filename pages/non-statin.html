@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>非Statin降血脂藥｜健保藥物查詢</title>
+<style>
+:root{
+  --bg:#0f172a;--surface:#1e293b;--surface2:#263045;--border:#334155;
+  --accent:#38bdf8;--accent2:#818cf8;--text:#f1f5f9;--muted:#94a3b8;
+  --green:#4ade80;--red:#f87171;--yellow:#fbbf24;--orange:#fb923c;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+.topbar{background:#0c1a30;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--accent);text-decoration:none;font-size:.85rem;font-weight:500;padding:6px 12px;border:1px solid var(--border);border-radius:8px;transition:background .15s}
+.back-btn:hover{background:var(--surface2)}
+.topbar-title{font-size:.9rem;color:var(--muted)}
+.hero{background:linear-gradient(135deg,#0c1a30,#162032,#0c1a30);padding:36px 24px 28px;border-bottom:1px solid var(--border)}
+.hero-inner{max-width:860px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:#1e3a5f;color:var(--accent);font-size:.75rem;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:1.9rem;font-weight:800;letter-spacing:-.01em;margin-bottom:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:.95rem;color:var(--muted);margin-bottom:16px}
+.drug-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.meta-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:.78rem;color:var(--muted)}
+.meta-chip strong{color:var(--text)}
+.alert-bar{background:#422006;border:1px solid #92400e;border-radius:10px;padding:12px 16px;font-size:.83rem;color:#fcd34d;display:flex;gap:10px;align-items:flex-start;margin-top:14px}
+.alert-bar a{color:var(--accent)}
+.container{max-width:860px;margin:0 auto;padding:32px 24px 64px}
+.section{margin-bottom:40px}
+.section-title{font-size:1.15rem;font-weight:700;color:var(--accent);margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+.subsection{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:16px}
+.subsection-title{font-size:1rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.cond-block{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 16px;margin-bottom:12px}
+.cond-block.warn{border-left-color:var(--red)}
+.cond-block.success{border-left-color:var(--green)}
+.cond-block.note{border-left-color:var(--yellow)}
+.cond-label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+.cond-text{font-size:.9rem;line-height:1.65}
+ul.styled{padding-left:0;list-style:none;margin:10px 0}
+ul.styled li{padding:5px 0 5px 18px;position:relative;font-size:.9rem}
+ul.styled li::before{content:'▸';position:absolute;left:0;color:var(--accent)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+thead{background:var(--surface2)}
+th{padding:11px 14px;text-align:left;font-weight:700;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid #1e293b;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#1a2540}
+.td-yes{color:var(--green);font-weight:600}
+.td-no{color:var(--red);font-weight:600}
+.td-warn{color:var(--yellow)}
+.highlight-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:12px 0}
+.highlight-box.blue{border-left:4px solid var(--accent)}
+.highlight-box.red{border-left:4px solid var(--red)}
+.highlight-box.green{border-left:4px solid var(--green)}
+.highlight-box.yellow{border-left:4px solid var(--yellow)}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:700;vertical-align:middle}
+.badge.red{background:#450a0a;color:#f87171}
+.badge.green{background:#14532d;color:#4ade80}
+.badge.blue{background:#1e3a5f;color:#7dd3fc}
+.badge.yellow{background:#422006;color:#fbbf24}
+.badge.orange{background:#431407;color:#fb923c}
+.drug-header{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:4px;font-size:1rem;font-weight:700;display:flex;align-items:center;gap:10px}
+.notice-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:10px}
+.notice-num{width:26px;height:26px;background:var(--accent);color:#0f172a;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;margin-right:8px;flex-shrink:0;vertical-align:middle}
+footer{text-align:center;color:var(--muted);font-size:.78rem;padding:24px;border-top:1px solid var(--border);margin-top:20px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="../健保藥物查詢.html" class="back-btn">← 返回首頁</a>
+  <span class="topbar-title">非Statin降血脂藥 — Omacor / Linicor / ATOzet</span>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">❤️ 心臟科 ／ 新陳代謝科</div>
+    <h1>非Statin 降血脂藥</h1>
+    <p class="hero-sub">Omacor（Omega-3）、Linicor（Fenofibrate）、ATOzet（Ezetimibe/Atorvastatin）— 與 Statin 的角色區別</p>
+    <div class="drug-meta">
+      <div class="meta-chip"><strong>Omacor</strong> EPA+DHA Omega-3 — 自費</div>
+      <div class="meta-chip"><strong>Linicor</strong> Fenofibrate — 健保給付</div>
+      <div class="meta-chip"><strong>ATOzet</strong> Ezetimibe+Atorvastatin — 健保給付</div>
+    </div>
+    <div class="alert-bar">
+      ⚠️ 健保規範具時效性，Ezetimibe/ATOzet（106年）、Fenofibrate（108年）版本請至 <a href="https://www.nhi.gov.tw" target="_blank">https://www.nhi.gov.tw</a> 確認最新版本。
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 核心觀念 -->
+  <div class="section">
+    <div class="section-title">⚙️ 核心觀念：與 Statin 的角色差異</div>
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>藥物類別</th><th>主要靶點</th><th>降LDL</th><th>降TG</th><th>心血管試驗</th><th>與Statin關係</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Statin</strong></td><td>肝臟HMG-CoA還原酶</td><td class="td-yes">↓25-55%</td><td>↓10-30%</td><td>最強（一級證據）</td><td>第一線基礎</td></tr>
+            <tr><td><strong>Ezetimibe（ATOzet含此）</strong></td><td>小腸 NPC1L1</td><td class="td-yes">↓13-20%</td><td>微弱</td><td>IMPROVE-IT 有CVD outcome</td><td>加在Statin上</td></tr>
+            <tr><td><strong>Fenofibrate（Linicor）</strong></td><td>PPARα活化</td><td>輕微↓或↑</td><td class="td-yes">↓30-50%</td><td>CVD outcome次要</td><td>合併Statin用於混合型</td></tr>
+            <tr><td><strong>Omega-3 EPA+DHA（Omacor）</strong></td><td>VLDL合成抑制</td><td class="td-warn">↑LDL-C（注意！）</td><td class="td-yes">↓20-45%</td><td>EPA純製劑有REDUCE-IT證據</td><td>加在Statin上降TG</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 藥物一：Omacor -->
+  <div class="section">
+    <div class="section-title">🐟 藥物一：Omacor（Omega-3 EPA+DHA 複方）</div>
+
+    <div class="subsection">
+      <div class="subsection-title">🏥 台灣健保規範</div>
+      <div class="cond-block warn">
+        <div class="cond-label">⚠️ 健保給付狀態</div>
+        <div class="cond-text"><strong>目前無健保給付，屬自費用藥。</strong>TFDA 許可適應症為高三酸甘油酯血症，但健保尚未收載。自費約每顆 60 元。</div>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">台灣藥品特點</div>
+        <div class="cond-text">Omacor（脂妙清）有效成分 EPA 460mg + DHA 380mg，佔 84%，遠高於一般市售保健魚油（多低於 30%），藥學效力差異顯著。</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">🇺🇸 FDA 規範（Lovaza® 類）</div>
+      <div class="cond-block">
+        <div class="cond-label">核准適應症</div>
+        <div class="cond-text">高三酸甘油酯血症（TG ≥500 mg/dL），作為飲食輔助治療，每日 4g（4顆）</div>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">重要安全警語</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>心房顫動/心房撲動風險增加（心血管疾病或糖尿病患者尤明顯）</li>
+            <li>LDL-C 可能升高（TG 極高時使用後須監測 LDL-C）—— DHA 成分效應</li>
+            <li>胰臟炎預防效果未被 FDA 確立</li>
+            <li>對心血管死亡率改善未被確立（此點與純 EPA 製劑 Vascepa 不同）</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">🔬 EPA+DHA vs 純EPA（Vascepa/Vazkepa）關鍵差異</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>特點</th><th>Omacor（EPA+DHA）</th><th>Vascepa/Vazkepa（純EPA，Icosapent ethyl）</th></tr></thead>
+          <tbody>
+            <tr><td>成分</td><td>EPA 46% + DHA 38%</td><td>純EPA 96%+</td></tr>
+            <tr><td>降TG</td><td>↓20-30%</td><td>↓20-30%</td></tr>
+            <tr><td>LDL-C影響</td><td class="td-warn">可能↑（DHA效應）</td><td class="td-yes">不升高LDL-C</td></tr>
+            <tr><td>心血管試驗</td><td class="td-warn">STRENGTH試驗陰性（無CVD outcome）</td><td class="td-yes">REDUCE-IT：MACE↓25%（p&lt;0.001）</td></tr>
+            <tr><td>FDA適應症</td><td>僅降TG</td><td class="td-yes">降TG + 降CV風險（2019年核准）</td></tr>
+            <tr><td>台灣現況</td><td>TFDA已核准，自費</td><td class="td-warn">尚未取得台灣上市許可</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="highlight-box yellow">
+        <p style="font-size:.88rem"><strong>📌 臨床原則：</strong>TG ≥500 mg/dL 降胰臟炎風險可考慮 Omacor；TG 150–499 mg/dL + 已有 ASCVD → 優先考慮純 EPA 製劑（但台灣目前無上市）。EPA+DHA 混合製劑用於心血管二級預防之證據不足。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 藥物二：Linicor（Fenofibrate） -->
+  <div class="section">
+    <div class="section-title">💊 藥物二：Linicor（Fenofibrate，苯纖酸類衍生物）</div>
+
+    <div class="subsection">
+      <div class="subsection-title">🏥 台灣健保規範</div>
+      <div class="cond-block">
+        <div class="cond-label">給付適應症</div>
+        <div class="cond-text">高三酸甘油酯血症、高膽固醇血症、混合型高血脂症（第IIa、IIb、III、IV、V型）</div>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">🔴 關鍵給付條件（容易退件）</div>
+        <div class="cond-text">三酸甘油酯在 200 mg/dL 以上開始藥物治療時，須<strong>同時符合 TC/HDL-C &gt;5 或 HDL-C &lt;40 mg/dL</strong>。TG 再高，若 HDL-C ≥40 且 TC/HDL-C ≤5，健保不給付！</div>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">申請方式</div>
+        <div class="cond-text">一般給付（符合規定即可申請，無需事前審查）；需附完整血脂套組（TG、TC、HDL-C、LDL-C）</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">🇺🇸 FDA 規範</div>
+      <div class="cond-block">
+        <div class="cond-label">核准適應症</div>
+        <div class="cond-text">① 嚴重高三酸甘油酯血症（TG ≥500 mg/dL）；② 原發性高膽固醇血症或混合型高脂血症（合併Statin或單獨使用）</div>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">重要警語</div>
+        <div class="cond-text">肌肉病變/橫紋肌溶解症（與Statin合用時風險上升）；肝毒性（監測ALT/AST）；腎功能惡化（eGFR&lt;30：禁忌）；禁忌：嚴重腎功能不全、肝病、膽囊疾病</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">⚠️ Fenofibrate in CKD：腎臟科特別注意</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>eGFR</th><th>處置</th></tr></thead>
+          <tbody>
+            <tr><td>60–89</td><td>正常劑量，監測腎功能</td></tr>
+            <tr><td>30–59</td><td class="td-warn">應謹慎，降低劑量；注意血清肌酐可能假性升高（非真正惡化）</td></tr>
+            <tr><td>&lt;30</td><td class="td-no">禁忌 — 不得申報</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">血清肌酐假性升高</div>
+        <div class="cond-text">Fenofibrate 抑制腎小管肌酸分泌，造成血清肌酐升高，但 eGFR（Cystatin C 測定）並非真正惡化。需判別是否為真正腎功能下降。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 藥物三：ATOzet -->
+  <div class="section">
+    <div class="section-title">💊 藥物三：ATOzet（Ezetimibe 10mg + Atorvastatin 複方）</div>
+
+    <div class="subsection">
+      <div class="subsection-title">🏥 台灣健保規範（章節 2.6.3）</div>
+      <div class="cond-block warn">
+        <div class="cond-label">🔴 核心前置條件</div>
+        <div class="cond-text"><strong>須經使用 Statin 類藥品單一治療 3 個月未達治療目標者</strong>，才可申請 ATOzet 或 Ezetimibe。不得在 Statin 未試過的情況下直接申請。</div>
+      </div>
+      <div class="cond-block">
+        <div class="cond-label">適用病症</div>
+        <div class="cond-text">原發性高膽固醇血症（E78.0）、同型接合子家族性高膽固醇血症（HOFH，E78.01）</div>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">不得與 gemfibrozil 併用</div>
+        <div class="cond-text">ATOzet 禁止與 gemfibrozil（另一種 fibrate）同時申報。</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">🆚 Ezetimibe 單方（Ezetrol）vs ATOzet 複方使用時機</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>情境</th><th>選擇</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr><td>Statin 不耐受（嚴重 myalgia/myositis）</td><td class="td-yes">Ezetimibe 單方（Ezetrol）</td><td>可取代 Statin 單獨使用</td></tr>
+            <tr><td>Statin 3 個月後 LDL 未達目標</td><td class="td-yes">Ezetimibe 單方 或 ATOzet</td><td>ATOzet 服藥較方便（一錠合一）</td></tr>
+            <tr><td>服藥依從性考量</td><td>ATOzet 複方</td><td>減少藥錠數，提升依從性</td></tr>
+            <tr><td>原用 Statin 非 Atorvastatin</td><td class="td-warn">注意</td><td>ATOzet 含 Atorvastatin，若原用 Rosuvastatin/Pitavastatin 需換藥</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">📚 臨床指引（IMPROVE-IT 試驗）</div>
+      <div class="highlight-box blue">
+        <p style="font-size:.88rem;margin-bottom:8px"><strong>IMPROVE-IT：</strong>ACS 後患者，Statin + Ezetimibe vs Statin alone，7 年追蹤</p>
+        <ul class="styled" style="margin:0">
+          <li>心血管事件相對風險下降 6.4%（p=0.016）</li>
+          <li>LDL-C 降至 53 mg/dL vs 70 mg/dL（對照組）</li>
+          <li>首個非 Statin 藥物顯示加在 Statin 上可改善 CVD outcome</li>
+        </ul>
+        <p style="font-size:.82rem;color:var(--muted);margin-top:8px">Class IIa / Evidence Level B-R；2026 ACC/AHA 指引支持高風險患者早加 Ezetimibe</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 退件風險 -->
+  <div class="section">
+    <div class="section-title">⚠️ 退件風險與申報重點</div>
+
+    <div class="notice-item">
+      <span class="notice-num">1</span>
+      <strong>Fenofibrate：申報前先查 HDL-C</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">TG 再高，若 HDL-C ≥40 mg/dL 且 TC/HDL-C ≤5，健保不給付。附檢查報告前確認同時符合 TG 門檻 + HDL-C 條件。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">2</span>
+      <strong>Fenofibrate：腎功能是絕對禁忌門</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">eGFR &lt;30 不得申報。糖尿病腎病變患者特別注意。若有血清肌酐升高，需判別是藥物效應（假性）還是真正腎功能惡化。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">3</span>
+      <strong>Ezetimibe/ATOzet：「3個月」是關鍵時間點</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">病歷必須有清楚的 Statin 使用起始日期 + 3 個月後 LDL-C 仍未達目標的數值記錄（至少兩次：用藥前 + 3 個月後）。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">4</span>
+      <strong>Ezetimibe/ATOzet：Statin 不耐受需記錄原因</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">若以「Statin 不耐受」申請 Ezetimibe 單獨使用，須在病歷記錄具體症狀（myalgia/myositis 嚴重程度、出現時間、停藥後緩解）。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">5</span>
+      <strong>Omacor：純屬自費，勿誤申健保</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">目前無健保給付，開立即為自費。對於 TG 極高（≥500 mg/dL）擔心胰臟炎的患者，可告知自費選項。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">6</span>
+      <strong>ATOzet 診斷碼</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">需填 E78.0（原發性高膽固醇血症）或 E78.01（HOFH），不可籠統填「高血脂」（E78.5），否則可能退件。</span>
+    </div>
+  </div>
+
+  <!-- 健保 vs 指引落差 -->
+  <div class="section">
+    <div class="section-title">📊 健保 vs 2026 ACC/AHA 指引落差</div>
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>面向</th><th>台灣健保</th><th>2026 ACC/AHA 指引</th></tr></thead>
+          <tbody>
+            <tr><td>Ezetimibe 使用時機</td><td>Statin 用 3 個月未達標後才能加</td><td class="td-warn">高風險患者可與 Statin 較早合用；FH 患者建議起始即合用</td></tr>
+            <tr><td>Fenofibrate 使用條件</td><td>TG≥200 且需同時低HDL</td><td class="td-warn">TG ≥500 主要為降胰臟炎風險；CVD evidence 不足</td></tr>
+            <tr><td>Omega-3 製劑</td><td>無健保給付（自費）</td><td class="td-warn">純EPA（IPE）用於 ASCVD + 高TG 有 Class IIa 建議</td></tr>
+            <tr><td>FH 患者</td><td>Statin 先用</td><td class="td-warn">Statin + Ezetimibe 可作為起始</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+<footer>資料整理至 2025 年，依據健保署 2.6 降血脂藥物給付規定（106/108年版）及 2026 ACC/AHA、2021 ACC 指引。申報前請至健保署官網確認最新版本。</footer>
+</body>
+</html>

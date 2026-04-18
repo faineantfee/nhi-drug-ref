@@ -90,7 +90,7 @@ footer{text-align:center;color:var(--muted);font-size:.78rem;padding:24px;border
       <div class="meta-chip"><strong>劑型</strong> 10 mg / 20 mg 口服錠</div>
       <div class="meta-chip"><strong>分類</strong> 非類固醇 MRA（ns-MRA）</div>
       <div class="meta-chip"><strong>台灣健保</strong> <span style="color:var(--red)">目前自費</span>（草案審議中）</div>
-      <div class="meta-chip"><strong>FDA</strong> CKD+T2DM（2021）＋ HFmrEF/HFpEF（2025）</div>
+      <div class="meta-chip"><strong>FDA</strong> CKD+T2DM（2021）＋ HFmrEF/HFpEF（2025）＋ <span style="color:var(--yellow)">non-DM CKD 申請中（2026）</span></div>
     </div>
     <div class="alert-bar">
       ⚠️ 台灣目前<strong>自費使用</strong>，健保草案條件尚在審議。資料整理至 2025 年，請至
@@ -151,10 +151,14 @@ footer{text-align:center;color:var(--muted);font-size:.78rem;padding:24px;border
 
   <!-- 三、FDA 規範 -->
   <div class="section">
-    <div class="section-title">🇺🇸 三、FDA 規範</div>
+    <div class="section-title">🔵 三、FDA 規範</div>
 
     <div class="subsection">
       <div class="subsection-title">✅ FDA 核准適應症（兩個）</div>
+      <div class="cond-block note" style="margin-bottom:14px">
+        <div class="cond-label">🆕 2026 年最新動態：non-DM CKD 申請中</div>
+        <div class="cond-text">Bayer 已於 <strong>2026 年 3 月</strong>宣布將向 FDA 申請擴大適應症至非糖尿病 CKD 患者（基於 FIND-CKD 試驗陽性結果，詳見第四節）。</div>
+      </div>
       <div class="cond-block success">
         <div class="cond-label">適應症一：CKD + T2DM（2021 年核准）</div>
         <div class="cond-text">降低成人第二型糖尿病合併慢性腎臟病患者的腎臟疾病持續性下降、腎衰竭（ESRD）、心血管死亡及非致命性心肌梗塞的複合事件風險</div>
@@ -249,6 +253,43 @@ footer{text-align:center;color:var(--muted);font-size:.78rem;padding:24px;border
         <p style="font-size:.88rem">合併 13,026 人的 pooled analysis 顯示：腎臟及心臟複合終點均有顯著改善，且在不同 CKD 分期（G2–G4）、不同 UACR 層級均一致獲益。</p>
       </div>
     </div>
+
+    <div class="subsection">
+      <div class="subsection-title">
+        🆕 FIND-CKD（<strong>Non-DM CKD</strong>，Phase III — 2026 年 3 月陽性結果公布）
+        <span class="badge yellow" style="margin-left:6px">突破性進展</span>
+      </div>
+      <div class="highlight-box blue">
+        <p style="font-size:.85rem;margin-bottom:12px">
+          <strong>族群：</strong>非糖尿病 CKD 患者（>1,500 人），包含高血壓腎病變、慢性腎絲球腎炎等多種病因。背景治療：已使用最大耐受劑量 ACEI 或 ARB。<br>
+          <strong>設計：</strong>隨機雙盲安慰劑對照，Finerenone 10 mg 或 20 mg（依血鉀及 eGFR 決定劑量）vs 安慰劑，追蹤 32 個月。
+        </p>
+        <div class="stat-grid" style="margin:10px 0">
+          <div class="stat-card">
+            <div class="stat-val">✅ 達標</div>
+            <div class="stat-label">主要終點：eGFR slope（32 個月年均下降速率）顯著優於安慰劑</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val">Non-DM</div>
+            <div class="stat-label">首個在非糖尿病 CKD 族群達到主要終點的 ns-MRA Phase III 試驗</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-val">安全</div>
+            <div class="stat-label">無新安全性疑慮；高鉀血症以劑量調整策略管理</div>
+          </div>
+        </div>
+        <p style="font-size:.82rem;color:var(--muted);margin-top:8px">
+          宣布時間：2026 年 3 月（Bayer 官方聲明）；詳細數據預計於學術會議正式發表。<br>
+          <strong>後續：</strong>Bayer 已宣布將向 FDA 提交申請，擴大 Kerendia 適應症至 non-DM CKD。
+        </p>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">臨床意義</div>
+        <div class="cond-text">
+          MRA 的抗纖維化機轉（抑制 TGF-β、collagen 沉積）並不依賴血糖環境，此試驗正式確認 Finerenone 的腎保護效益<strong>可延伸至非糖尿病 CKD</strong>，包括高血壓腎病、IgA 腎病等族群。台灣健保及 FDA 適應症擴充後，潛在受益患者族群將大幅增加。
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- 五、與指引及治療位置 -->
@@ -263,6 +304,11 @@ footer{text-align:center;color:var(--muted);font-size:.78rem;padding:24px;border
             <tr><td>KDIGO 2024 CKD 指引</td><td class="td-yes">T2DM + CKD（UACR ≥200 mg/g）在 ACEI/ARB + SGLT2i 基礎上加用 Finerenone</td><td>1B</td></tr>
             <tr><td>ADA 2025 Standards of Care</td><td class="td-yes">T2DM + CKD（UACR ≥30 mg/g + eGFR ≥25）加用 Finerenone，與 SGLT2i 合用</td><td>強烈建議 A</td></tr>
             <tr><td>ESC 2023 心衰竭指引</td><td class="td-yes">HFmrEF/HFpEF 症狀緩解及預後改善（基於 FINEARTS-HF）</td><td>IIa/B</td></tr>
+            <tr>
+              <td>FIND-CKD Phase III<br><span class="badge yellow">2026/3 終點達標</span></td>
+              <td class="td-warn"><strong>Non-DM CKD</strong>：eGFR slope 顯著改善；FDA 申請擴大適應症中。現行指引尚未更新，但實證基礎已建立。</td>
+              <td>待指引更新</td>
+            </tr>
           </tbody>
         </table>
       </div>

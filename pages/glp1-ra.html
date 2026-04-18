@@ -174,16 +174,6 @@ footer a{color:var(--accent)}
         <div class="cond-text">本藥品<strong>不得與 DPP-4 抑制劑、SGLT-2 抑制劑併用</strong>（以健保給付組合為限）。</div>
       </div>
 
-      <div class="info-grid" style="margin-top:14px">
-        <div class="info-item">
-          <div class="info-label">申請方式</div>
-          <div class="info-value yellow">事前審查</div>
-        </div>
-        <div class="info-item">
-          <div class="info-label">開立科別</div>
-          <div class="info-value">新陳代謝科、內分泌科、一般內科</div>
-        </div>
-      </div>
     </div>
 
     <!-- 適應症 B -->
@@ -216,7 +206,7 @@ footer a{color:var(--accent)}
 
   <!-- ══ SECTION 2: FDA 規範 ══ -->
   <div class="section">
-    <div class="section-title">🇺🇸 二、FDA 規範</div>
+    <div class="section-title">🔵 二、FDA 規範</div>
 
     <div class="subsection">
       <div class="subsection-title">T2DM 適應症</div>
@@ -252,17 +242,115 @@ footer a{color:var(--accent)}
       </div>
     </div>
 
-    <div style="font-size:.87rem;font-weight:600;margin:16px 0 8px;color:var(--muted)">台灣 vs FDA 關鍵差異</div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>面向</th><th>台灣健保</th><th>FDA</th></tr></thead>
-        <tbody>
-          <tr><td>CKD 獨立適應症</td><td class="td-no">❌ 無</td><td class="td-yes">✅ Semaglutide 已核准（2025/1）</td></tr>
-          <tr><td>T2DM 給付門檻</td><td class="td-warn">HbA1c ≥ 8.5%，前置三藥失效</td><td>無此嚴格前置要求</td></tr>
-          <tr><td>口服 Semaglutide</td><td class="td-no">自費</td><td class="td-yes">已核准給付</td></tr>
-          <tr><td>SGLT2i 併用限制</td><td class="td-no">健保給付下不能同時申報</td><td>無此限制</td></tr>
-        </tbody>
-      </table>
+  </div>
+
+  <!-- ══ SECTION 2.5: 藥效摘要 ══ -->
+  <div class="section">
+    <div class="section-title">💊 三、多重藥效摘要</div>
+
+    <!-- 降血糖 -->
+    <div class="subsection">
+      <div class="subsection-title">🩸 降血糖效果</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>藥物</th><th>HbA1c 降幅（平均）</th><th>空腹血糖</th><th>備註</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Semaglutide 0.5/1mg</strong>（Ozempic）</td><td class="td-yes">−1.5 ~ −1.8%</td><td>顯著下降</td><td>SUSTAIN 系列；降幅最強</td></tr>
+            <tr><td><strong>Dulaglutide 1.5mg</strong>（Trulicity）</td><td class="td-yes">−1.4 ~ −1.5%</td><td>顯著下降</td><td>AWARD 系列</td></tr>
+            <tr><td><strong>Liraglutide 1.2/1.8mg</strong>（Victoza）</td><td class="td-yes">−1.2 ~ −1.6%</td><td>顯著下降</td><td>LEADER</td></tr>
+            <tr><td><strong>口服 Semaglutide</strong>（Rybelsus）</td><td>−1.2 ~ −1.4%</td><td>下降</td><td>PIONEER 系列；台灣自費</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cond-block success" style="font-size:.85rem">
+        機轉：增強葡萄糖依賴性胰島素分泌＋抑制升糖素＋延緩胃排空 → <strong>低血糖風險極低</strong>（單獨使用時）
+      </div>
+    </div>
+
+    <!-- 減重 -->
+    <div class="subsection">
+      <div class="subsection-title">⚖️ 減重效果</div>
+      <div class="trial-stats">
+        <div class="stat-card"><div class="stat-number">−15%</div><div class="stat-label">Semaglutide 2.4mg（Wegovy）<br>STEP-1 試驗，68 週</div></div>
+        <div class="stat-card"><div class="stat-number">−4 ~ 6 kg</div><div class="stat-label">Semaglutide 1mg（Ozempic）<br>T2DM 族群</div></div>
+        <div class="stat-card"><div class="stat-number">−3 ~ 4 kg</div><div class="stat-label">Dulaglutide / Liraglutide<br>T2DM 族群平均</div></div>
+      </div>
+      <div class="table-wrap" style="margin-top:12px">
+        <table>
+          <thead><tr><th>藥物</th><th>台灣健保減重適應症</th><th>備註</th></tr></thead>
+          <tbody>
+            <tr><td>Semaglutide 2.4mg（Wegovy）</td><td class="td-no">❌ 自費（台灣尚未核准減重適應症健保給付）</td><td>FDA 2021 核准肥胖症；BMI ≥30 或 ≥27 + 合併症</td></tr>
+            <tr><td>Liraglutide 3mg（Saxenda）</td><td class="td-no">❌ 自費</td><td>FDA 核准；台灣 TFDA 亦核准，但健保不給付</td></tr>
+            <tr><td>Ozempic（Semaglutide 1mg）</td><td class="td-warn">DM 條文間接獲益</td><td>減重為附加效益，非核准適應症</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 脂肪肝 -->
+    <div class="subsection">
+      <div class="subsection-title">🫀 脂肪肝（MASLD / MASH）效果</div>
+      <div class="highlight-box green" style="margin-bottom:12px">
+        <strong>Semaglutide 最新進展（2024）：</strong>ESSENCE trial 顯示 semaglutide 2.4mg 可使 MASH 組織學改善達 62.9%（vs 34.3% 安慰劑）；肝纖維化改善 37%。FDA 已於 <strong>2024 年 3 月核准 Wegovy 用於 MASH 合併肝纖維化（F2–F3）</strong>，為首個獲批此適應症的 GLP-1 RA。
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>效益</th><th>臨床證據</th></tr></thead>
+          <tbody>
+            <tr><td>肝臟脂肪含量（MRI-PDFF）</td><td>各 GLP-1 RA 均顯示顯著降低（−20 ~ −40%）</td></tr>
+            <tr><td>NASH/MASH 組織學改善</td><td>Semaglutide LEAN/ESSENCE；Liraglutide LEAN trial（2015）</td></tr>
+            <tr><td>肝纖維化改善</td><td>Semaglutide 顯著改善 F2–F3；其他 GLP-1 RA 數據有限</td></tr>
+            <tr><td>台灣健保給付</td><td class="td-no">❌ 目前無 MASLD/MASH 適應症給付</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 其他效果 -->
+    <div class="subsection">
+      <div class="subsection-title">🌐 其他多重器官保護效益</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>效益類別</th><th>主要試驗 / 數據</th><th>效果</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>心血管保護</strong><br><small>（ASCVD / MACE）</small></td>
+              <td>LEADER（Lira）、SUSTAIN-6（Sema）、REWIND（Dula）、HARMONY（Albi）</td>
+              <td class="td-yes">MACE↓12–26%；CV 死亡↓降低</td>
+            </tr>
+            <tr>
+              <td><strong>腎臟保護</strong><br><small>（蛋白尿、eGFR）</small></td>
+              <td>FLOW trial（Sema 1mg，NEJM 2024）</td>
+              <td class="td-yes">主要腎事件↓24%；腎衰竭↓↓；FDA 2025/1 新增 CKD 適應症</td>
+            </tr>
+            <tr>
+              <td><strong>血壓</strong></td>
+              <td>多項 RCT 合併分析</td>
+              <td>收縮壓平均↓2–4 mmHg</td>
+            </tr>
+            <tr>
+              <td><strong>血脂</strong></td>
+              <td>各主要試驗</td>
+              <td>TG↓10–20%；LDL 輕度改善</td>
+            </tr>
+            <tr>
+              <td><strong>心衰竭</strong></td>
+              <td>STEP-HFpEF（Sema 2.4mg，NEJM 2023）</td>
+              <td class="td-yes">HFpEF 症狀改善、6MWT↑、體重↓；HHF 趨勢降低（尚待更多數據）</td>
+            </tr>
+            <tr>
+              <td><strong>神經保護 / 失智</strong></td>
+              <td>EVOKE Plus（Sema 1mg，2024 NEJM）</td>
+              <td>早期阿茲海默認知下降趨緩（−22%）；進行中研究</td>
+            </tr>
+            <tr>
+              <td><strong>睡眠呼吸中止症</strong></td>
+              <td>SURMOUNT-OSA（Tirz；2024）</td>
+              <td>AHI↓60%以上（Tirzepatide；GIP+GLP-1）；GLP-1 RA 類似效益預期</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -279,7 +367,7 @@ footer a{color:var(--accent)}
     </div>
 
     <div class="subsection">
-      <div class="subsection-title">🇺🇸 ADA 2025 Standards of Care</div>
+      <div class="subsection-title">🔵 ADA 2025 Standards of Care</div>
       <div class="cond-text" style="font-size:.9rem">ADA 強力支持在 T2D 合併 CKD 或 ASCVD 患者使用 GLP-1 RA，GLP-1 RA 即使在<strong>晚期 CKD 仍維持降糖療效與安全性</strong>，並可降低白蛋白尿、延緩 eGFR 下降。</div>
     </div>
 
@@ -356,6 +444,9 @@ footer a{color:var(--accent)}
 </div>
 
 <footer>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;margin-bottom:16px;font-size:.85rem;color:var(--muted);text-align:left;max-width:860px;margin-left:auto;margin-right:auto">
+    📌 <strong style="color:var(--text)">範圍說明：</strong>本頁僅討論傳統 GLP-1 受體促效劑（Liraglutide、Dulaglutide、Semaglutide 等）。<strong style="color:var(--accent)">Mounjaro®（Tirzepatide）</strong>為 GIP＋GLP-1 雙重促效劑，機轉、試驗數據及健保規範均有所不同，<strong>不在本篇討論範圍</strong>，將另頁整理。
+  </div>
   資料整理至 2025 年第一季｜實際申報以健保署公告為準｜<a href="https://www.nhi.gov.tw" target="_blank">健保署藥品給付規定查詢系統</a>
 </footer>
 </body>

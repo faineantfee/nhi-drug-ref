@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>腎性貧血 ESA｜健保藥物查詢</title>
+<style>
+:root{
+  --bg:#0f172a;--surface:#1e293b;--surface2:#263045;--border:#334155;
+  --accent:#38bdf8;--accent2:#818cf8;--text:#f1f5f9;--muted:#94a3b8;
+  --green:#4ade80;--red:#f87171;--yellow:#fbbf24;--orange:#fb923c;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+.topbar{background:#0c1a30;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--accent);text-decoration:none;font-size:.85rem;font-weight:500;padding:6px 12px;border:1px solid var(--border);border-radius:8px;transition:background .15s}
+.back-btn:hover{background:var(--surface2)}
+.topbar-title{font-size:.9rem;color:var(--muted)}
+.hero{background:linear-gradient(135deg,#0c1a30,#162032,#0c1a30);padding:36px 24px 28px;border-bottom:1px solid var(--border)}
+.hero-inner{max-width:860px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:#1e3a5f;color:var(--accent);font-size:.75rem;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:1.9rem;font-weight:800;letter-spacing:-.01em;margin-bottom:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:.95rem;color:var(--muted);margin-bottom:16px}
+.drug-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.meta-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:.78rem;color:var(--muted)}
+.meta-chip strong{color:var(--text)}
+.alert-bar{background:#422006;border:1px solid #92400e;border-radius:10px;padding:12px 16px;font-size:.83rem;color:#fcd34d;display:flex;gap:10px;align-items:flex-start;margin-top:14px}
+.alert-bar a{color:#7dd3fc;font-weight:600;text-decoration:underline}
+.prca-bar{background:#3b0a0a;border:2px solid var(--red);border-radius:10px;padding:14px 18px;font-size:.88rem;color:#fca5a5;margin-bottom:16px;display:flex;gap:10px;align-items:flex-start}
+.container{max-width:860px;margin:0 auto;padding:32px 24px 64px}
+.section{margin-bottom:40px}
+.section-title{font-size:1.15rem;font-weight:700;color:var(--accent);margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+.section-title.red{color:var(--red)}
+.subsection{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:16px}
+.subsection-title{font-size:1rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.cond-block{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 16px;margin-bottom:12px}
+.cond-block.warn{border-left-color:var(--red)}
+.cond-block.success{border-left-color:var(--green)}
+.cond-block.note{border-left-color:var(--yellow)}
+.cond-label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+.cond-text{font-size:.9rem;line-height:1.65}
+ul.styled{padding-left:0;list-style:none;margin:10px 0}
+ul.styled li{padding:5px 0 5px 18px;position:relative;font-size:.9rem}
+ul.styled li::before{content:'▸';position:absolute;left:0;color:var(--accent)}
+ol.styled{padding-left:20px;margin:10px 0}
+ol.styled li{padding:5px 0;font-size:.9rem}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+thead{background:var(--surface2)}
+th{padding:11px 14px;text-align:left;font-weight:700;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid #1e293b;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#1a2540}
+.td-yes{color:var(--green);font-weight:600}
+.td-no{color:var(--red);font-weight:600}
+.td-warn{color:var(--yellow)}
+.highlight-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:12px 0}
+.highlight-box.blue{border-left:4px solid var(--accent)}
+.highlight-box.red{border-left:4px solid var(--red)}
+.highlight-box.green{border-left:4px solid var(--green)}
+.highlight-box.yellow{border-left:4px solid var(--yellow)}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:700;vertical-align:middle}
+.badge.red{background:#450a0a;color:#f87171}
+.badge.green{background:#14532d;color:#4ade80}
+.badge.blue{background:#1e3a5f;color:#7dd3fc}
+.badge.yellow{background:#422006;color:#fbbf24}
+.badge.orange{background:#431407;color:#fb923c}
+.notice-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:10px}
+.notice-num{width:26px;height:26px;background:var(--accent);color:#0f172a;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;margin-right:8px;flex-shrink:0;vertical-align:middle}
+.notice-num.red{background:var(--red)}
+.step-block{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:10px;position:relative;padding-left:60px}
+.step-num{position:absolute;left:16px;top:16px;width:32px;height:32px;background:var(--accent2);color:#0f172a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem}
+footer{text-align:center;color:var(--muted);font-size:.78rem;padding:24px;border-top:1px solid var(--border);margin-top:20px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="../健保藥物查詢.html" class="back-btn">← 返回首頁</a>
+  <span class="topbar-title">腎性貧血 ESA — 健保規範 ＋ KDIGO 2026</span>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">🫘 腎臟科 ／ 透析單位 ／ 一般內科</div>
+    <h1>腎性貧血 ESA</h1>
+    <p class="hero-sub">Erythropoiesis-Stimulating Agents — Epoetin / Darbepoetin alfa / CERA（Mircera）— 台灣健保規範 ＋ KDIGO 2026 更新</p>
+    <div class="drug-meta">
+      <div class="meta-chip"><strong>健保章節</strong> 4.1.1 腎性貧血用藥</div>
+      <div class="meta-chip"><strong>申請方式</strong> 一般給付（無須事前審查）</div>
+      <div class="meta-chip"><strong>指引更新</strong> KDIGO 2026 Anemia in CKD</div>
+      <div class="meta-chip"><strong>Hb 啟動門檻</strong> &lt; 9 g/dL（透析 / CKD G5）</div>
+    </div>
+    <div class="alert-bar">
+      ⚠️ 健保規範具時效性，申報前請至 <a href="https://www.nhi.gov.tw" target="_blank">https://www.nhi.gov.tw</a> 確認最新版本（依據健保藥品給付規定 4.1.1，最後修訂 105/9/1）。
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 一、健保給付規範 -->
+  <div class="section">
+    <div class="section-title">🏥 一、台灣健保給付規範</div>
+
+    <div class="subsection">
+      <div class="subsection-title">📋 給付對象與 Hb 門檻</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>族群</th><th>給付條件（Hb 門檻）</th><th>申請方式</th><th>備註</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>透析患者（HD / PD）</strong></td>
+              <td class="td-yes">Hb &lt; 9 g/dL</td>
+              <td>一般給付</td>
+              <td>Hb 監測費含於透析費，不另給付</td>
+            </tr>
+            <tr>
+              <td><strong>非透析 CKD G5（eGFR &lt; 15）</strong></td>
+              <td class="td-yes">Hb &lt; 9 g/dL</td>
+              <td>一般給付</td>
+              <td>Hb 監測費另行申報</td>
+            </tr>
+            <tr>
+              <td>非透析 CKD G3b–G4</td>
+              <td class="td-no">❌ 不在給付範圍</td>
+              <td>—</td>
+              <td>KDIGO 2026 允許，健保尚未涵蓋</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">📊 Hb 目標值規範</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>項目</th><th>台灣健保（申報依據）</th><th>KDIGO 2026（臨床參考）</th></tr></thead>
+          <tbody>
+            <tr><td>啟動 Hb 門檻（透析）</td><td>&lt; 9 g/dL（固定）</td><td class="td-warn">≤ 9–10 g/dL（可個別化）</td></tr>
+            <tr><td>啟動 Hb 門檻（非透析）</td><td>&lt; 9 g/dL，限 CKD G5</td><td class="td-warn">8.5–10 g/dL 依症狀（CKD G3b–G5）</td></tr>
+            <tr><td>Hb 治療目標</td><td>10 g/dL</td><td class="td-warn">個別化；&lt; 11.5 g/dL（成人上限）</td></tr>
+            <tr><td><strong>暫停條件</strong></td><td class="td-no"><strong>Hb &gt; 11 g/dL 須暫停</strong></td><td>Hb &gt; 11.5 g/dL；或 2 週內升幅 &gt; 1 g/dL 需減量 25–50%</td></tr>
+            <tr><td>月劑量上限</td><td>EPO ≤ 20,000 U；Darbepoetin/CERA ≤ 100 mcg</td><td>依臨床反應個別調整</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">⚠️ 申報關鍵：健保 Hb 暫停門檻為 11 g/dL，比 KDIGO 11.5 g/dL 更嚴格</div>
+        <div class="cond-text">申報時依健保規範，而非 KDIGO 指引。Hb 超過 11 g/dL 繼續申報可能被追退——病歷須有暫停記錄。</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">🔬 Hb 監測頻率規定</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>族群</th><th>監測頻率</th><th>費用歸屬</th></tr></thead>
+          <tbody>
+            <tr><td>血液透析患者</td><td>每月 1 次</td><td>含於透析費，不另給付</td></tr>
+            <tr><td>腹膜透析患者</td><td>每月 1 次</td><td>含於透析費，不另給付</td></tr>
+            <tr><td>非透析 CKD 患者</td><td>至少每 3 個月 1 次</td><td>另行申報</td></tr>
+            <tr><td>非透析初次使用者</td><td>治療後 6–8 週加做 1 次</td><td>另行申報</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 二、三種 ESA 比較 -->
+  <div class="section">
+    <div class="section-title">💉 二、三種 ESA 藥物特性比較</div>
+
+    <div class="subsection">
+      <div class="subsection-title">📋 藥物分類與基本特性</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>特性</th>
+              <th>第一代<br>Epoetin（Eprex / Recormon）</th>
+              <th>第二代<br>Darbepoetin alfa（Aranesp）</th>
+              <th>第三代<br>CERA（Mircera）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>作用機制</td><td>重組人類 EPO</td><td>高唾液酸化 EPO 衍生物</td><td>PEG 化 EPO；持續作用</td></tr>
+            <tr><td>半衰期（SC）</td><td>約 19–24 hr</td><td>約 49 hr</td><td class="td-yes">約 130 hr</td></tr>
+            <tr><td>半衰期（IV）</td><td>約 8 hr</td><td>約 25 hr</td><td class="td-yes">約 134 hr</td></tr>
+            <tr>
+              <td>注射頻率</td>
+              <td>每週 2–3 次（或每週 1 次大劑量）</td>
+              <td>每週 1 次 → 穩定後每 2 週 1 次</td>
+              <td class="td-yes">每 2 週 1 次 → 穩定後<strong>每月 1 次</strong></td>
+            </tr>
+            <tr><td>起始劑量</td><td>50–150 U/kg 每週 3 次；或 40,000 U 每週 1 次</td><td>0.45 mcg/kg 每週 1 次；或 0.75 mcg/kg 每 2 週 1 次</td><td>0.6 mcg/kg 每 2 週 1 次</td></tr>
+            <tr><td>健保月劑量上限</td><td colspan="3" style="text-align:center">EPO 20,000 U ／ Darbepoetin 100 mcg ／ CERA 100 mcg（超量需附資料）</td></tr>
+            <tr>
+              <td>PRCA 風險</td>
+              <td class="td-warn">SC 途徑較高（歷史事件）</td>
+              <td>低</td>
+              <td class="td-yes">更低（PEG 化抗原性小）</td>
+            </tr>
+            <tr>
+              <td>臨床優勢</td>
+              <td>最多臨床數據；可精細調控劑量</td>
+              <td>注射次數少；SC 便利</td>
+              <td class="td-yes">每月 1 次；依從性最佳</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">🔄 劑量換算參考</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>換算方向</th><th>比例</th><th>注意事項</th></tr></thead>
+          <tbody>
+            <tr><td>Epoetin → Darbepoetin</td><td>Epoetin 200 U ≈ Darbepoetin 1 mcg（約 200:1）</td><td>個別差異大，需依臨床反應調整</td></tr>
+            <tr><td>Darbepoetin → CERA</td><td>Darbepoetin 1 mcg ≈ CERA 3–4 mcg（廠商建議）</td><td>依各廠商 PI 換算表</td></tr>
+            <tr><td>換藥原則</td><td colspan="2">保守起始，2–4 週後依 Hb 反應調整；切勿直接換算後立即達最高劑量</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 三、使用前評估與鐵劑策略 -->
+  <div class="section">
+    <div class="section-title">🧪 三、使用前評估與鐵劑策略</div>
+
+    <div class="subsection">
+      <div class="subsection-title">📋 使用前必要評估（健保規定）</div>
+      <div class="cond-block warn">
+        <div class="cond-label">啟動前三項必排除（病歷需記載）</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>維他命 B12 或葉酸缺乏</li>
+            <li>腸胃道出血</li>
+            <li>全身性感染或發炎疾病（活動性感染期間不應使用）</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cond-block">
+        <div class="cond-label">鐵質評估（使用前及每 3–6 個月）</div>
+        <div class="cond-text">檢測 <strong>Ferritin</strong> 及 <strong>TSAT</strong>，評估鐵儲存狀態。鐵缺乏時應先補鐵，再評估 ESA 反應，不應單純倍增 ESA 劑量。</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">⚗️ 鐵缺乏評估標準（KDIGO 2026 新命名）</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>類型（KDIGO 2026）</th><th>舊稱</th><th>判斷標準</th><th>臨床意義</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>系統性鐵缺乏</strong><br><small style="color:var(--muted)">Systemic iron deficiency</small></td>
+              <td>絕對鐵缺乏</td>
+              <td>Ferritin &lt; 45 ng/mL 或 TSAT &lt; 20%（非透析）</td>
+              <td>鐵儲存真正不足</td>
+            </tr>
+            <tr>
+              <td><strong>鐵限制性紅血球生成</strong><br><small style="color:var(--muted)">Iron-restricted erythropoiesis</small></td>
+              <td>功能性鐵缺乏</td>
+              <td>TSAT &lt; 30%（即使 ferritin 正常）</td>
+              <td>高 hepcidin 阻礙鐵釋放</td>
+            </tr>
+            <tr>
+              <td><strong>透析病人補鐵啟動門檻</strong></td>
+              <td>—</td>
+              <td>Ferritin ≤ 500 ng/mL + TSAT ≤ 30%</td>
+              <td class="td-yes">積極補鐵以優化 ESA 反應</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="highlight-box blue">
+        <p style="font-size:.88rem"><strong>鐵劑優先原則：</strong>當 TSAT &lt; 20–30% 時，先給予靜脈鐵劑，再評估 ESA 反應。不應因 Hb 未達標就單純增加 ESA 劑量。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 四、ESA 低反應性 -->
+  <div class="section">
+    <div class="section-title">📉 四、ESA 低反應性（Hyporesponsiveness）</div>
+
+    <div class="subsection">
+      <div class="subsection-title">定義</div>
+      <div class="cond-block note">
+        <div class="cond-label">診斷標準</div>
+        <div class="cond-text">
+          使用超過常規劑量（EPO &gt; 300 U/kg/週 或月總量 &gt; 20,000 U；或 Darbepoetin/CERA &gt; 100 mcg/月）仍無法達到目標 Hb，或需持續增量才能維持建議 Hb 濃度。<br><br>
+          <strong>⚠️ ESA 低反應性本身即與 CKD 死亡風險增加相關——需積極查找病因，不應單純增加劑量。</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">🔍 系統性評估（依優先順序）</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>優先順序</th><th>原因</th><th>評估方式</th><th>處置</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge red">最優先</span></td><td><strong>鐵缺乏</strong>（最常見）</td><td>Ferritin、TSAT</td><td>靜脈鐵劑（TSAT &lt; 30%）</td></tr>
+            <tr><td><span class="badge orange">高</span></td><td>慢性發炎 / 感染</td><td>CRP、PCT、臨床評估</td><td>治療感染；控制發炎</td></tr>
+            <tr><td><span class="badge orange">高</span></td><td>透析不足</td><td>Kt/V（HD ≥1.2；PD ≥1.7）</td><td>改善透析充分性</td></tr>
+            <tr><td><span class="badge yellow">中</span></td><td>嚴重副甲狀腺亢進</td><td>iPTH（骨髓纖維化風險）</td><td>積極控制 iPTH</td></tr>
+            <tr><td><span class="badge yellow">中</span></td><td>VitB12 / 葉酸缺乏</td><td>血清 VitB12、葉酸</td><td>補充相應維生素</td></tr>
+            <tr><td><span class="badge blue">需排除</span></td><td>惡性腫瘤 / 骨髓疾病</td><td>骨髓穿刺；影像學</td><td>依病因處理</td></tr>
+            <tr><td><span class="badge red">需排除</span></td><td><strong>PRCA（純紅血球再生不良）</strong></td><td>網狀紅血球、骨髓穿刺</td><td class="td-no">立即停 ESA，免疫抑制治療（見第六章）</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 五、常見不良反應 -->
+  <div class="section">
+    <div class="section-title">⚠️ 五、ESA 常見不良反應</div>
+
+    <div class="subsection">
+      <div class="subsection-title">🫀 心血管及血栓事件</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>不良事件</th><th>機制</th><th>臨床注意</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>高血壓</strong>（最常見）</td>
+              <td>EPO 受體於血管平滑肌表達 → 血管收縮；Hb 升高 → 血液黏稠度↑</td>
+              <td>治療 2–4 週內最常出現；密切追蹤血壓</td>
+            </tr>
+            <tr>
+              <td>靜脈血栓（含通路血栓）</td>
+              <td>血液黏稠度增加 + 血小板功能改善 → 促血栓狀態</td>
+              <td>HD 病人血管通路血栓最需警惕</td>
+            </tr>
+            <tr>
+              <td>中風</td>
+              <td>高 Hb 目標尤其危險（TREAT 試驗：Hb 目標 13 g/dL → 中風風險約 2 倍）</td>
+              <td class="td-warn">有中風史者使用前需審慎評估風險效益</td>
+            </tr>
+            <tr>
+              <td>心肌梗塞 / 心血管死亡</td>
+              <td>高 Hb 目標合併高心血管風險時最危險</td>
+              <td class="td-warn">Hb 上限不應超過 11 g/dL（健保）/ 11.5 g/dL（KDIGO）</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">KDIGO 2026 建議</div>
+        <div class="cond-text">心血管住院期間暫停 ESA 是合理的。有中風史、靜脈血栓史、惡性腫瘤的病人，使用 ESA 前需進行個別化風險效益評估。</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">其他副作用</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>副作用</th><th>特點</th><th>處置</th></tr></thead>
+          <tbody>
+            <tr><td>頭痛 / 流感樣症狀</td><td>治療初期，多為一過性</td><td>通常無需停藥，觀察即可</td></tr>
+            <tr><td>注射部位局部蕁麻疹</td><td>SC 途徑偶發</td><td class="td-warn">若持續發生需警覺 PRCA 可能</td></tr>
+            <tr><td>嚴重過敏 / 過敏性休克</td><td>罕見；IV 鐵劑合用時需特別注意</td><td>使用前需備好急救設備</td></tr>
+            <tr><td>血清鉀升高</td><td>紅血球生成增加 → 細胞攝鉀增加</td><td>監測電解質，透析病人尤需注意</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 六、PRCA -->
+  <div class="section">
+    <div class="section-title red">⛔ 六、PRCA（純紅血球再生不良）完整診療指引</div>
+
+    <div class="prca-bar">
+      ⛔ <div><strong>PRCA 是 ESA 最嚴重的免疫性罕見併發症。</strong>一旦確診，<strong>所有 ESA 製劑（包含 Darbepoetin、CERA）均須立即停用</strong>，且不得在未清除抗 EPO 抗體前改用其他 ESA。</div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">📊 流行病學</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>項目</th><th>數據</th></tr></thead>
+          <tbody>
+            <tr><td>發生率（皮下注射）</td><td class="td-warn">約 1.6 / 10,000 病人年</td></tr>
+            <tr><td>發生率（靜脈注射）</td><td class="td-yes">約 0.02 / 10,000 病人年（遠低於 SC）</td></tr>
+            <tr><td>發病時間中位數</td><td>ESA 開始後約 7–9 個月（範圍：1 個月至 5 年）</td></tr>
+            <tr><td>機制</td><td>抗 EPO 中和性抗體（IgG）——同時中和外源性 ESA 及<strong>內源性 EPO</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">🚨 臨床警示徵象（何時懷疑 PRCA）</div>
+      <div class="cond-block warn">
+        <div class="cond-label">以下任一情形，立即評估 PRCA</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>Hb 快速下降，每週 &gt; 0.7–1 g/dL（即使 ESA 持續使用或已增量）</li>
+            <li>每月 Hb 下降 &gt; 20 g/L，且網狀紅血球計數 &lt; 20,000 /μL</li>
+            <li>儘管持續高劑量 ESA，每週需至少 1 單位輸血維持 Hb</li>
+            <li>治療前曾有良好反應，後出現急速、無法解釋的貧血惡化</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">🔬 診斷步驟（逐步）</div>
+
+      <div class="step-block">
+        <div class="step-num">1</div>
+        <strong>周邊血液評估</strong>
+        <ul class="styled" style="margin-top:8px">
+          <li>網狀紅血球計數 &lt; 10,000–20,000 /μL（嚴重偏低，<strong>最重要早期指標</strong>）</li>
+          <li>正常球性正染性貧血（MCV 正常）</li>
+          <li>白血球及血小板計數正常（有別於其他骨髓衰竭）</li>
+          <li>血清 EPO 濃度極低（內源性被中和）</li>
+        </ul>
+      </div>
+
+      <div class="step-block">
+        <div class="step-num">2</div>
+        <strong>骨髓穿刺及切片（確診必要）</strong>
+        <ul class="styled" style="margin-top:8px">
+          <li>紅血球系列前驅細胞嚴重低下（erythroid precursors &lt; 5%）</li>
+          <li>骨髓整體細胞度正常；粒球及巨核球系列正常</li>
+          <li>同時安排胸部 X 光或 CT 排除胸腺瘤</li>
+        </ul>
+      </div>
+
+      <div class="step-block">
+        <div class="step-num">3</div>
+        <strong>抗 EPO 抗體檢測</strong>
+        <div class="table-wrap" style="margin-top:10px">
+          <table>
+            <thead><tr><th>檢測方法</th><th>敏感性</th><th>特點</th></tr></thead>
+            <tbody>
+              <tr><td>ELISA</td><td class="td-warn">中等（可能偽陰性）</td><td>較普及；初篩；偽陰性較多</td></tr>
+              <tr><td>放射免疫沉澱法</td><td class="td-yes">最高</td><td>確診金標準；需特定實驗室</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="cond-block warn" style="margin-top:10px;margin-bottom:0">
+          <div class="cond-label">⚠️ 偽陰性風險</div>
+          <div class="cond-text">若臨床表現符合（Hb 驟降、網狀紅血球極低、骨髓紅系低下），<strong>不應因抗體陰性而延誤停藥決策</strong>。</div>
+        </div>
+      </div>
+
+      <div class="step-block">
+        <div class="step-num">4</div>
+        <strong>排除其他 PRCA 原因</strong>
+        <div class="table-wrap" style="margin-top:10px">
+          <table>
+            <thead><tr><th>需排除疾病</th><th>評估方式</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Parvovirus B19 感染</strong>（最重要）</td><td>血清 Parvovirus B19 IgM / PCR</td></tr>
+              <tr><td>B 型肝炎</td><td>HBsAg、Anti-HBc</td></tr>
+              <tr><td>胸腺瘤</td><td>胸部 CT</td></tr>
+              <tr><td>骨髓發育不良（MDS）</td><td>骨髓穿刺切片（細胞遺傳學）</td></tr>
+              <tr><td>自體免疫疾病（SLE、RA）</td><td>ANA、Anti-dsDNA</td></tr>
+              <tr><td>藥物性 PRCA</td><td>抗癲癇藥、部分抗生素、抗甲狀腺藥物</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">💊 PRCA 治療流程</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>治療</th><th>說明</th><th>證據等級</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="td-no"><strong>立即停所有 ESA（必要）</strong></td>
+              <td>包含 Epoetin、Darbepoetin、CERA。切勿改用其他 ESA，抗體具交叉反應性。</td>
+              <td><span class="badge red">強烈建議</span></td>
+            </tr>
+            <tr>
+              <td>支持性輸血</td>
+              <td>嚴重貧血期間依臨床症狀給予。有腎移植計畫者盡量減少（降低同種敏化風險）。</td>
+              <td>臨床實踐</td>
+            </tr>
+            <tr>
+              <td><strong>Cyclosporine A</strong>（一線）</td>
+              <td>最多文獻支持；常用劑量 2–5 mg/kg/day 分 2 次；透析病人依谷濃度調整（目標 150–250 ng/mL）。</td>
+              <td>病例系列</td>
+            </tr>
+            <tr>
+              <td><strong>Prednisolone</strong>（一線）</td>
+              <td>0.5–1 mg/kg/day 逐步減量；可與 CsA 合用或單獨使用。</td>
+              <td>病例系列</td>
+            </tr>
+            <tr>
+              <td>Cyclophosphamide（可合用）</td>
+              <td>與類固醇合用；適用頑固性病例。</td>
+              <td>個案報告</td>
+            </tr>
+            <tr>
+              <td>Rituximab（二線）</td>
+              <td>抗 CD20 單株抗體；有個案系列顯示有效。</td>
+              <td>個案報告</td>
+            </tr>
+            <tr>
+              <td>HIF-PHI（過渡期）</td>
+              <td>不含 EPO 結構，不受抗 EPO 抗體影響。免疫抑制治療有效後可用於維持 Hb。急性期單用效果有限。</td>
+              <td>個案系列</td>
+            </tr>
+            <tr>
+              <td class="td-yes"><strong>腎臟移植</strong></td>
+              <td>對適合移植的病人應優先考慮；移植後免疫抑制常可根治 PRCA。</td>
+              <td>觀察性研究</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">✅ ESA 再啟動條件 / PRCA 預防</div>
+      <div class="cond-block">
+        <div class="cond-label">再啟動前提（須全部符合）</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>確認抗 EPO 抗體完全清除（多次不同時間點均陰性）</li>
+            <li>改為<strong>靜脈注射（IV）途徑</strong>，不再使用皮下注射</li>
+            <li>密切追蹤 Hb 及網狀紅血球（若再次快速下降應立即停藥）</li>
+            <li>告知病人並取得知情同意</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cond-block success">
+        <div class="cond-label">PRCA 預防原則</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li><strong>HD 病人優先使用 IV 途徑</strong>——靜脈注射發生率遠低於皮下注射；HD 費用含於透析費，無額外成本</li>
+            <li>正確保存製劑：嚴格維持冷鏈（2–8°C）；避免劇烈搖晃（防蛋白質變性）</li>
+            <li>每月監測網狀紅血球；若 Hb 下降與 ESA 劑量不相符需立即加查</li>
+            <li>SC 給藥若出現局部蕁麻疹，需提高警覺（可能為早期免疫反應）</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 七、退件風險 -->
+  <div class="section">
+    <div class="section-title">⚠️ 七、退件風險與申報防範</div>
+
+    <div class="notice-item">
+      <span class="notice-num red">!</span>
+      <strong>Hb ≥ 9 g/dL：不符合給付</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">開立前確認最近 Hb 報告日期及數值。Hb ≥ 9 g/dL 即不符合給付條件，即使病人有症狀亦無法申報。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num red">!</span>
+      <strong>Hb &gt; 11 g/dL 未暫停 → 追退風險極高</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">超過門檻繼續申報可能被追退。Hb &gt; 11 g/dL 時須暫停並於病歷記錄停藥日期及 Hb 數值。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">3</span>
+      <strong>Hb 升速過快未減量</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">2 週內上升 &gt; 1 g/dL 未減量 25–50%——每月審視 Hb 趨勢，升幅異常需減量並在病歷記錄。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">4</span>
+      <strong>月劑量超標未附超量申請資料</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">EPO &gt; 20,000 U 或 Darbepoetin / CERA &gt; 100 mcg 須附：病人年齡、前月 Hb、前月劑量、目標值、使用理由。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">5</span>
+      <strong>未附鐵質評估報告</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">使用前及每 3–6 個月需附 Ferritin / TSAT 報告。開立時確認報告時效性。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">6</span>
+      <strong>Hb 監測頻率不符</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">透析病人：每月 1 次（含於透析費）；非透析：每 3 個月 1 次；初次使用後 6–8 週加做一次。報告日期需與申報期間對應。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">7</span>
+      <strong>ICD-10 碼不符 / 前置排除未記錄</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">腎臟病貧血需使用 N18.x、Z99.2（與適應症對應）。病歷須有 VitB12/葉酸缺乏、腸胃道出血、全身性感染已評估並排除的記載。</span>
+    </div>
+  </div>
+
+  <!-- 八、KDIGO 2026 vs 健保落差 -->
+  <div class="section">
+    <div class="section-title">📊 八、KDIGO 2026 vs 台灣健保落差</div>
+
+    <div class="subsection">
+      <div class="subsection-title">KDIGO 2026 重大更新重點</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>面向</th><th>2012 版</th><th>2026 版（更新）</th></tr></thead>
+          <tbody>
+            <tr><td>ESA 啟動門檻（透析）</td><td>Hb 9–10 g/dL</td><td>Hb ≤ 9–10 g/dL（<strong>更強調個別化</strong>）</td></tr>
+            <tr><td>ESA 啟動門檻（非透析）</td><td>Hb 9–10 g/dL</td><td class="td-yes">8.5–10 g/dL 依症狀；更彈性</td></tr>
+            <tr><td>Hb 上限</td><td>不超過 11.5 g/dL</td><td>維持 &lt; 11.5 g/dL（與 2012 相同）</td></tr>
+            <tr><td>一線治療</td><td>ESA</td><td>ESA 優先；HIF-PHI 為替代選項</td></tr>
+            <tr><td>HIF-PHI 定位</td><td>尚未收錄</td><td class="td-yes">新增完整章節；ESA 不耐受或低反應的替代</td></tr>
+            <tr><td>鐵劑策略（HD）</td><td>Ferritin ≤ 200 + TSAT ≤ 20%</td><td class="td-yes">Ferritin ≤ 500 + TSAT ≤ 30%（更積極）</td></tr>
+            <tr><td>鐵缺乏命名</td><td>絕對 / 功能性鐵缺乏</td><td>系統性鐵缺乏 / 鐵限制性紅血球生成</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">台灣健保 vs KDIGO 2026 關鍵落差</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>比較項目</th><th>台灣健保（申報依據）</th><th>KDIGO 2026（臨床參考）</th><th>落差方向</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>非透析 CKD 適應範圍</td>
+              <td>僅 CKD G5（eGFR &lt; 15）</td>
+              <td class="td-warn">CKD G3b–G5 依症狀均可考慮</td>
+              <td>健保較嚴格</td>
+            </tr>
+            <tr>
+              <td>ESA 啟動 Hb（非透析）</td>
+              <td>&lt; 9 g/dL（固定）</td>
+              <td class="td-warn">8.5–10 g/dL（個別化）</td>
+              <td>健保較保守</td>
+            </tr>
+            <tr>
+              <td>Hb 暫停門檻</td>
+              <td class="td-warn">11 g/dL 須暫停</td>
+              <td>&lt; 11.5 g/dL 維持目標</td>
+              <td>健保稍嚴格</td>
+            </tr>
+            <tr>
+              <td>HIF-PHI 給付</td>
+              <td class="td-warn">尚未常規納入</td>
+              <td class="td-yes">可作 ESA 替代選項</td>
+              <td>健保尚未跟進</td>
+            </tr>
+            <tr>
+              <td>鐵劑補充積極度</td>
+              <td class="td-warn">Ferritin &lt; 100（非透析）/ &lt; 200（透析）判斷缺乏</td>
+              <td class="td-yes">Ferritin ≤ 500 + TSAT ≤ 30% 考慮補鐵</td>
+              <td>指引更積極</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="highlight-box yellow">
+        <p style="font-size:.88rem"><strong>申報原則：</strong>申報時依台灣健保規範（Hb 門檻、停藥條件、月劑量上限），而非 KDIGO 國際指引。KDIGO 指引用於臨床決策參考，不可直接作為健保申報依據。</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+<footer>資料整理至 2026 年，依據健保署藥品給付規定 4.1.1（最後修訂 105/9/1）及 KDIGO 2026 Anemia in CKD Guideline。參考文獻：TREAT Trial（NEJM 2009）、Casadevall et al. PRCA criteria（Eur J Haematol 2004）。申報前請至健保署官網確認最新版本。</footer>
+</body>
+</html>

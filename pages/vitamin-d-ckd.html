@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Vitamin D in CKD｜健保藥物查詢</title>
+<style>
+:root{
+  --bg:#0f172a;--surface:#1e293b;--surface2:#263045;--border:#334155;
+  --accent:#38bdf8;--accent2:#818cf8;--text:#f1f5f9;--muted:#94a3b8;
+  --green:#4ade80;--red:#f87171;--yellow:#fbbf24;--orange:#fb923c;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+.topbar{background:#0c1a30;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--accent);text-decoration:none;font-size:.85rem;font-weight:500;padding:6px 12px;border:1px solid var(--border);border-radius:8px;transition:background .15s}
+.back-btn:hover{background:var(--surface2)}
+.topbar-title{font-size:.9rem;color:var(--muted)}
+.hero{background:linear-gradient(135deg,#0c1a30,#162032,#0c1a30);padding:36px 24px 28px;border-bottom:1px solid var(--border)}
+.hero-inner{max-width:860px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:#1e3a5f;color:var(--accent);font-size:.75rem;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:1.9rem;font-weight:800;letter-spacing:-.01em;margin-bottom:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:.95rem;color:var(--muted);margin-bottom:16px}
+.drug-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.meta-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:.78rem;color:var(--muted)}
+.meta-chip strong{color:var(--text)}
+.alert-bar{background:#422006;border:1px solid #92400e;border-radius:10px;padding:12px 16px;font-size:.83rem;color:#fcd34d;display:flex;gap:10px;align-items:flex-start;margin-top:14px}
+.alert-bar a{color:#7dd3fc;font-weight:600;text-decoration:underline}
+.container{max-width:860px;margin:0 auto;padding:32px 24px 64px}
+.section{margin-bottom:40px}
+.section-title{font-size:1.15rem;font-weight:700;color:var(--accent);margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+.subsection{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:16px}
+.subsection-title{font-size:1rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.cond-block{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 16px;margin-bottom:12px}
+.cond-block.warn{border-left-color:var(--red)}
+.cond-block.success{border-left-color:var(--green)}
+.cond-block.note{border-left-color:var(--yellow)}
+.cond-label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+.cond-text{font-size:.9rem;line-height:1.65}
+ul.styled{padding-left:0;list-style:none;margin:10px 0}
+ul.styled li{padding:5px 0 5px 18px;position:relative;font-size:.9rem}
+ul.styled li::before{content:'▸';position:absolute;left:0;color:var(--accent)}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+thead{background:var(--surface2)}
+th{padding:11px 14px;text-align:left;font-weight:700;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid #1e293b;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#1a2540}
+.td-yes{color:var(--green);font-weight:600}
+.td-no{color:var(--red);font-weight:600}
+.td-warn{color:var(--yellow)}
+.highlight-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:12px 0}
+.highlight-box.blue{border-left:4px solid var(--accent)}
+.highlight-box.red{border-left:4px solid var(--red)}
+.highlight-box.green{border-left:4px solid var(--green)}
+.highlight-box.yellow{border-left:4px solid var(--yellow)}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:700;vertical-align:middle}
+.badge.red{background:#450a0a;color:#f87171}
+.badge.green{background:#14532d;color:#4ade80}
+.badge.blue{background:#1e3a5f;color:#7dd3fc}
+.badge.yellow{background:#422006;color:#fbbf24}
+.badge.orange{background:#431407;color:#fb923c}
+.notice-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:10px}
+.notice-num{width:26px;height:26px;background:var(--accent);color:#0f172a;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;margin-right:8px;flex-shrink:0;vertical-align:middle}
+.notice-num.red{background:var(--red);color:#fff}
+.drug-card{background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:20px}
+.drug-card.blue{border-color:#1e3a5f}
+.drug-card.yellow-b{border-color:#422006}
+.drug-card-title{font-size:1.05rem;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+footer{text-align:center;color:var(--muted);font-size:.78rem;padding:24px;border-top:1px solid var(--border);margin-top:20px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="../健保藥物查詢.html" class="back-btn">← 返回首頁</a>
+  <span class="topbar-title">Vitamin D in CKD — Rocaltrol IV ／ U-Ca PO</span>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">🫘 腎臟科 ／ 透析單位</div>
+    <h1>Vitamin D in CKD</h1>
+    <p class="hero-sub">Rocaltrol IV（Calcitriol 注射）／ U-Ca PO（Alfacalcidol 口服）— CKD 及透析患者補充策略 ＋ 台灣健保規範 ＋ KDIGO 2017／2025</p>
+    <div class="drug-meta">
+      <div class="meta-chip"><strong>Rocaltrol IV</strong> Calcitriol 1 mcg/mL 靜脈注射</div>
+      <div class="meta-chip"><strong>U-Ca（One-Alpha）</strong> Alfacalcidol 0.25 / 0.5 mcg 口服</div>
+      <div class="meta-chip"><strong>申請方式</strong> 一般給付</div>
+      <div class="meta-chip"><strong>停藥門檻</strong> 血鈣 ≥ 10.5 mg/dL</div>
+      <div class="meta-chip"><strong>指引</strong> KDIGO 2017 + 2025 Controversies</div>
+    </div>
+    <div class="alert-bar">
+      ⚠️ 健保規範具時效性（修訂：86/1/1、91/7/1、100/1/1），申報前請至 <a href="https://www.nhi.gov.tw" target="_blank">https://www.nhi.gov.tw</a> 確認最新版本。
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 一、台灣健保規範 -->
+  <div class="section">
+    <div class="section-title">🏥 一、台灣健保給付規範</div>
+
+    <div class="subsection">
+      <div class="subsection-title">📋 給付適應症（四大類）</div>
+      <div class="cond-block success">
+        <div class="cond-label">1. Vit. D 依賴型佝僂症 / 低磷血症佝僂症</div>
+        <div class="cond-text">需附<strong>醫學中心診斷證明</strong></div>
+      </div>
+      <div class="cond-block success">
+        <div class="cond-label">2. 副甲狀腺機能低下症</div>
+        <div class="cond-text">需檢附<strong>病歷影本</strong></div>
+      </div>
+      <div class="cond-block">
+        <div class="cond-label">3. 慢性腎不全引起之低血鈣症（腎臟科最常用）</div>
+        <div class="cond-text">
+          需符合「<strong>腎臟功能失調</strong>」，即以下<strong>三擇一</strong>：
+          <ul class="styled" style="margin-top:8px">
+            <li>BUN ≥ 80 mg/dL</li>
+            <li>Creatinine ≥ 4.0 mg/dL</li>
+            <li>iPTH &gt; 正常值三倍以上</li>
+          </ul>
+          <div style="margin-top:10px;padding:10px 14px;background:#3b0a0a;border-radius:8px;font-size:.88rem;color:#fca5a5">
+            ⛔ <strong>禁用條件：血中鈣濃度 ≥ 10.5 mg/dL 不可使用（健保明文規定）</strong>
+          </div>
+        </div>
+      </div>
+      <div class="cond-block success">
+        <div class="cond-label">4. 停經後婦女脊椎壓迫性骨折或髖骨骨折</div>
+        <div class="cond-text">不得併用 bisphosphonates、calcitonin、raloxifene</div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">📌 申報重點一覽</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>項目</th><th>重點</th></tr></thead>
+          <tbody>
+            <tr><td>申請方式</td><td class="td-yes">一般給付（符合適應症即可申報，無需事前審查）</td></tr>
+            <tr><td>腎功能門檻（三擇一）</td><td>BUN ≥ 80 <strong>或</strong> Cr ≥ 4.0 <strong>或</strong> iPTH &gt; 3× ULN</td></tr>
+            <tr><td>停藥門檻</td><td class="td-no">校正血鈣 ≥ 10.5 mg/dL（健保明文，當次即不可申報）</td></tr>
+            <tr><td>劑型管理</td><td>Rocaltrol IV（靜脈）與 U-Ca PO（口服 Alfacalcidol）屬同類管理，不得同次重複申報</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 二、FDA 規範 -->
+  <div class="section">
+    <div class="section-title">🔵 二、FDA 規範</div>
+    <div class="subsection">
+      <div class="subsection-title">Rocaltrol（Calcitriol）FDA 核准適應症</div>
+      <div class="cond-block">
+        <div class="cond-label">核准適應症</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>透析患者的低血鈣症及代謝性骨病</li>
+            <li>中重度慢性腎衰竭（Ccr 15–55 mL/min，尚未透析）的次發性副甲狀腺亢進及代謝性骨病（iPTH ≥ 100 pg/mL 具強烈指示意義）</li>
+            <li>手術後或特發性副甲狀腺機能低下症</li>
+          </ul>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>面向</th><th>FDA 規範</th><th>台灣健保</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>非透析 CKD 使用</td>
+              <td class="td-yes">核准（Ccr 15–55 mL/min）</td>
+              <td class="td-warn">門檻較嚴：Cr ≥ 4.0 或 BUN ≥ 80 或 PTH &gt; 3× ULN</td>
+            </tr>
+            <tr>
+              <td>停藥血鈣門檻</td>
+              <td>無固定門檻，強調個別化定期監測</td>
+              <td class="td-no">明文：≥ 10.5 mg/dL 停藥</td>
+            </tr>
+            <tr>
+              <td>Black Box Warning</td>
+              <td class="td-yes">無；主要風險為高血鈣</td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 三、KDIGO 指引 -->
+  <div class="section">
+    <div class="section-title">📚 三、KDIGO 最新臨床指引（2017 + 2025）</div>
+
+    <div class="subsection">
+      <div class="subsection-title">非透析 CKD（G3a–G5）</div>
+      <div class="cond-block note">
+        <div class="cond-label">KDIGO 2017 Rec. 4.2.2（2C）</div>
+        <div class="cond-text">成人 CKD G3a–G5 非透析患者，<strong>不建議常規使用</strong> calcitriol 或活性 Vit D 類似物（2C）。<br>
+        合理做法：保留給 <strong>CKD G4–G5 且有嚴重進行性 SHPT</strong> 的患者。</div>
+      </div>
+      <div class="cond-block success">
+        <div class="cond-label">啟動活性 Vit D 前——先處理可矯正因子</div>
+        <div class="cond-text">
+          當 iPTH 持續上升或超過正常值上限時，應先評估並矯正以下可逆因子（2C）：
+          <ul class="styled" style="margin-top:8px">
+            <li>高血磷（限制飲食磷、加磷結合劑）</li>
+            <li>低血鈣（鈣補充劑）—— <strong>低血鈣是 iPTH 升高的獨立可矯正因子，應優先處理</strong></li>
+            <li>Vit D 缺乏（25(OH)D 不足時，先補 native Vit D：cholecalciferol / ergocalciferol）</li>
+          </ul>
+          <div style="margin-top:8px;font-size:.88rem;color:var(--muted)">階梯建議：矯正可逆因子 → PTH 仍未受控 → 才考慮啟動活性 Vit D</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">透析患者（CKD G5D）</div>
+      <div class="cond-block">
+        <div class="cond-label">KDIGO 2017 Rec. 4.2.3 — PTH 目標範圍（2C）</div>
+        <div class="cond-text">
+          CKD G5D 患者，建議維持 iPTH 在<strong>正常值上限的約 2 至 9 倍</strong>（約 120–540 pg/mL，依 assay 而異）<br>
+          若 PTH 在此範圍內朝任一方向明顯變化，應啟動或調整治療。
+        </div>
+      </div>
+      <div class="cond-block success">
+        <div class="cond-label">KDIGO 2017 Rec. 4.2.4（2B）— 需要降 PTH 時</div>
+        <div class="cond-text">
+          建議使用 <strong>calcimimetics、calcitriol 或 Vit D 類似物，或兩者合併</strong>。<br>
+          從低劑量開始，不依賴初始 PTH 濃度，再依 PTH 反應逐步調整。出現高血鈣時減量或停止 Vit D 製劑。
+        </div>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">2025 KDIGO Controversies Conference 補充</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>低劑量活性 Vit D 可作為控制 PTH 的<strong>有用補充治療</strong></li>
+            <li>透析患者的 PTH 與全因死亡率呈 <strong>U 形或 J 形曲線</strong>，最佳目標值仍有不確定性</li>
+            <li>過度壓低 PTH 導致 adynamic bone disease（低轉換骨病）的風險需納入考量</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 四、Rocaltrol IV -->
+  <div class="section">
+    <div class="section-title">💉 四、實務劑量——Rocaltrol IV（Calcitriol 靜脈注射）</div>
+
+    <div class="drug-card blue">
+      <div class="drug-card-title">🔵 Rocaltrol IV（1 mcg/mL）— 主要用於 HD 患者 SHPT</div>
+      <div class="cond-block note">
+        <div class="cond-label">給藥時機</div>
+        <div class="cond-text"><strong>每次透析結束前 IV push</strong>（避免被透析液清除；透析中給藥會損失藥效）</div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>iPTH 範圍</th><th>建議起始劑量</th><th>頻次</th></tr></thead>
+          <tbody>
+            <tr><td>300–600 pg/mL</td><td>0.5–1 mcg / 次</td><td>每週 3 次（每次透析後）</td></tr>
+            <tr><td>600–1000 pg/mL</td><td>1–2 mcg / 次</td><td>每週 3 次</td></tr>
+            <tr>
+              <td>&gt; 1000 pg/mL</td>
+              <td>2–4 mcg / 次</td>
+              <td class="td-warn">每週 3 次；<strong>考慮合併 Cinacalcet</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:16px;font-weight:700;font-size:.9rem;color:var(--muted);margin-bottom:8px">每 2–4 週評估 iPTH、tCa（校正鈣）、P：</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>情況</th><th>處置</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="td-no"><strong>校正血鈣 ≥ 10.5 mg/dL</strong></td>
+              <td class="td-no"><strong>停藥（健保規範門檻）</strong></td>
+            </tr>
+            <tr>
+              <td class="td-warn">校正血鈣 10.2–10.4 mg/dL</td>
+              <td class="td-warn">警戒：不增量、考慮減量（臨床保守標準，非健保明文）</td>
+            </tr>
+            <tr>
+              <td>P &gt; 5.5 mg/dL</td>
+              <td>優先加強磷結合劑，暫緩增量</td>
+            </tr>
+            <tr>
+              <td class="td-warn">iPTH &lt; 150 pg/mL</td>
+              <td class="td-warn">主動減量，避免 adynamic bone disease</td>
+            </tr>
+            <tr>
+              <td class="td-yes">iPTH 達目標（150–300 pg/mL）</td>
+              <td class="td-yes">降至維持量（0.5–1 mcg / 次透析）</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="cond-block warn" style="margin-top:14px">
+        <div class="cond-label">停藥指標</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>校正血鈣 ≥ 10.5 mg/dL（健保明文）</li>
+            <li>iPTH 持續壓低至 &lt; 150 pg/mL（低轉換骨病風險）</li>
+            <li>頑固性高血磷合併高血鈣（個別評估）</li>
+          </ul>
+          <div style="margin-top:8px;font-size:.83rem;color:var(--muted)">
+            ⚠️ 注意：KDIGO 2017 已不再建議使用固定 Ca × P 乘積目標（舊版 KDOQI 2003 曾建議 &lt; 55 mg²/dL²，<strong>已非現行標準</strong>）
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 五、U-Ca PO -->
+  <div class="section">
+    <div class="section-title">💊 五、實務劑量——U-Ca PO（Alfacalcidol 口服）</div>
+
+    <div class="drug-card yellow-b">
+      <div class="drug-card-title">🟡 U-Ca / One-Alpha（0.25 / 0.5 mcg）— 非透析 CKD、PD、HD 口服替代</div>
+      <div class="cond-block note">
+        <div class="cond-label">Alfacalcidol 與 Calcitriol 的差異</div>
+        <div class="cond-text">
+          Alfacalcidol 需經<strong>肝臟 25-羥化</strong>後轉為有活性的 calcitriol，起效稍慢，腸道升鈣效果略低於直接 calcitriol，但<strong>臨床 PTH 抑制效果相近</strong>。
+          更適合 PD 或口服用藥條件較佳的患者。
+        </div>
+      </div>
+
+      <div class="table-wrap" style="margin-top:14px">
+        <table>
+          <thead><tr><th>CKD 分期 / 情境</th><th>建議起始劑量</th><th>頻次</th><th>備註</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>CKD G3b–G4（iPTH &gt; 3× ULN）</td>
+              <td>0.25 mcg</td>
+              <td>每日一次（QD）</td>
+              <td>緩慢壓低 PTH；每月監測 Ca、P</td>
+            </tr>
+            <tr>
+              <td>CKD G5 非透析（iPTH &gt; 500 pg/mL）</td>
+              <td>0.25–0.5 mcg</td>
+              <td>QD</td>
+              <td>每月監測 Ca、P</td>
+            </tr>
+            <tr>
+              <td>HD / PD（中度 SHPT）</td>
+              <td>0.5–1 mcg</td>
+              <td>QD 或 Tiw</td>
+              <td class="td-warn">PD 患者需注意透析液鈣濃度</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="highlight-box blue" style="margin-top:14px">
+        <p style="font-size:.88rem"><strong>調整原則與停藥指標</strong>同 Rocaltrol IV，以<strong>校正血鈣 ≥ 10.5 mg/dL 為健保停藥門檻</strong>。每 2–4 週評估 Ca、P、iPTH，依反應調整。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 六、退件風險 -->
+  <div class="section">
+    <div class="section-title">⚠️ 六、退件風險與申報防範</div>
+
+    <div class="notice-item">
+      <span class="notice-num red">!</span>
+      <strong>血鈣 ≥ 10.5 mg/dL 仍繼續申報 → 最常見退件</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">當次校正血鈣超標即不可申報。需在病歷記錄停藥日期及血鈣數值，血鈣恢復正常後才可重新申報。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num red">!</span>
+      <strong>iPTH 未達三倍正常值即使用（適應症不符）</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">腎功能失調三擇一中「iPTH &gt; 正常值三倍以上」需有具體數值及正常參考範圍記錄。若 iPTH 輕度上升但未達門檻，需改以 BUN 或 Cr 條件申報。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">3</span>
+      <strong>病歷缺腎功能記錄</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">病歷須記載 BUN、Cr（或 eGFR）、iPTH（含數值及正常參考值）、當次校正血鈣，缺任一即可能退件。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">4</span>
+      <strong>口服與注射製劑同次重複申報</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">Rocaltrol IV 與 U-Ca PO 屬同類管理，同一診次不得同時申報。選擇其一後，病歷記錄使用劑型及理由。</span>
+    </div>
+
+    <div class="notice-item">
+      <span class="notice-num">5</span>
+      <strong>佝僂症 / 副甲狀腺機能低下症適應症文件不足</strong><br>
+      <span style="font-size:.88rem;color:var(--muted)">第一類需醫學中心診斷證明；第二類需病歷影本。文件缺乏即退件，建議首次申報時即附齊。</span>
+    </div>
+
+    <div class="subsection" style="margin-top:16px">
+      <div class="subsection-title">📋 必備病歷記載清單</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>項目</th><th>給付門檻</th><th>退件風險</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>腎功能（三擇一）</td>
+              <td>BUN ≥ 80 或 Cr ≥ 4.0 或 iPTH &gt; 3× ULN</td>
+              <td class="td-no">缺文件必退</td>
+            </tr>
+            <tr>
+              <td>禁用條件確認</td>
+              <td>校正血鈣 &lt; 10.5 mg/dL（需記錄當次數值）</td>
+              <td class="td-no">超標仍申報必退</td>
+            </tr>
+            <tr>
+              <td>iPTH 正常參考值</td>
+              <td>需記錄數值及該院正常參考範圍，以確認是否超過 3 倍</td>
+              <td class="td-warn">缺參考值難以核算</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 七、健保 vs KDIGO 落差 -->
+  <div class="section">
+    <div class="section-title">📊 七、健保 vs KDIGO 落差</div>
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>面向</th><th>台灣健保（申報依據）</th><th>KDIGO 2017／2025（臨床參考）</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Non-D CKD 使用 active Vit D</td>
+              <td>允許（Cr ≥ 4.0 / BUN ≥ 80 / iPTH &gt; 3× ULN）</td>
+              <td class="td-warn">不建議常規使用（2C）；保留給 G4–G5 嚴重進行性 SHPT</td>
+            </tr>
+            <tr>
+              <td>透析 PTH 目標</td>
+              <td>未明文訂定</td>
+              <td class="td-warn">iPTH 2–9 倍正常值上限（約 120–540 pg/mL）；U 形死亡率曲線，過低亦有害</td>
+            </tr>
+            <tr>
+              <td>停藥血鈣門檻</td>
+              <td class="td-no">≥ 10.5 mg/dL（明文）</td>
+              <td>高血鈣時減量或停藥（無固定數值，強調彈性）</td>
+            </tr>
+            <tr>
+              <td>Ca × P 乘積目標</td>
+              <td>未規定</td>
+              <td class="td-yes">已廢棄固定目標（KDOQI 舊標準 &lt; 55 mg²/dL² 不再建議）</td>
+            </tr>
+            <tr>
+              <td>低血鈣優先處理</td>
+              <td>未明文要求階梯</td>
+              <td class="td-warn">明確建議先矯正低血鈣再啟動 active Vit D</td>
+            </tr>
+            <tr>
+              <td>Native Vit D（cholecalciferol）</td>
+              <td>不給付</td>
+              <td class="td-warn">25(OH)D 缺乏者建議先補充（如一般族群策略）</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="highlight-box yellow">
+        <p style="font-size:.88rem"><strong>臨床提醒：</strong>健保允許 Non-D CKD 使用活性 Vit D（符合腎功能門檻），但 KDIGO 建議更保守，應先矯正可逆因子（低血鈣、低 25(OH)D、高血磷）後再評估是否啟動。兩者並不衝突，可在符合健保規定的前提下，依 KDIGO 階梯原則臨床決策。</p>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">🔗 建議查閱官方資料</div>
+      <div class="cond-block">
+        <div class="cond-label">參考連結</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>健保署給付規定：<a href="https://www.nhi.gov.tw" target="_blank" style="color:var(--accent)">https://www.nhi.gov.tw</a></li>
+            <li>KDIGO 2017 CKD-MBD：<a href="https://kdigo.org/wp-content/uploads/2017/02/2017-KDIGO-CKD-MBD-GL-Update.pdf" target="_blank" style="color:var(--accent)">KDIGO 2017 Full Guideline PDF</a></li>
+            <li>KDIGO 2025 Controversies：<a href="https://kdigo.org/wp-content/uploads/2025/02/KDIGO-2025-CKD-MBD-Controversies-Conference-Report_Final.pdf" target="_blank" style="color:var(--accent)">KDIGO 2025 CKD-MBD Controversies PDF</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<footer>資料整理至 2025 年，依據健保署活性維生素 D 給付規定（修訂 86/1/1、91/7/1、100/1/1）及 KDIGO 2017 CKD-MBD Guideline Update、KDIGO 2025 Controversies Conference Report。申報前請至健保署官網確認最新版本。所有資訊僅供臨床參考，最終決策由主治醫師負責。</footer>
+</body>
+</html>

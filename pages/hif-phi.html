@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>HIF-PHI 腎性貧血｜健保藥物查詢</title>
+<style>
+:root{
+  --bg:#0f172a;--surface:#1e293b;--surface2:#263045;--border:#334155;
+  --accent:#38bdf8;--accent2:#818cf8;--text:#f1f5f9;--muted:#94a3b8;
+  --green:#4ade80;--red:#f87171;--yellow:#fbbf24;--orange:#fb923c;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI','Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);line-height:1.7;font-size:15px}
+.topbar{background:#0c1a30;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--accent);text-decoration:none;font-size:.85rem;font-weight:500;padding:6px 12px;border:1px solid var(--border);border-radius:8px;transition:background .15s}
+.back-btn:hover{background:var(--surface2)}
+.topbar-title{font-size:.9rem;color:var(--muted)}
+.hero{background:linear-gradient(135deg,#0c1a30,#162032,#0c1a30);padding:36px 24px 28px;border-bottom:1px solid var(--border)}
+.hero-inner{max-width:860px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:#1e3a5f;color:var(--accent);font-size:.75rem;font-weight:600;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:1.9rem;font-weight:800;letter-spacing:-.01em;margin-bottom:6px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:.95rem;color:var(--muted);margin-bottom:16px}
+.drug-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.meta-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:.78rem;color:var(--muted)}
+.meta-chip strong{color:var(--text)}
+.alert-bar{background:#422006;border:1px solid #92400e;border-radius:10px;padding:12px 16px;font-size:.83rem;color:#fcd34d;display:flex;gap:10px;align-items:flex-start;margin-top:14px}
+.alert-bar a{color:#7dd3fc;font-weight:600;text-decoration:underline}
+.container{max-width:860px;margin:0 auto;padding:32px 24px 64px}
+.section{margin-bottom:40px}
+.section-title{font-size:1.15rem;font-weight:700;color:var(--accent);margin-bottom:18px;padding-bottom:8px;border-bottom:2px solid var(--border);display:flex;align-items:center;gap:8px}
+.subsection{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;margin-bottom:16px}
+.subsection-title{font-size:1rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.cond-block{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 16px;margin-bottom:12px}
+.cond-block.warn{border-left-color:var(--red)}
+.cond-block.success{border-left-color:var(--green)}
+.cond-block.note{border-left-color:var(--yellow)}
+.cond-label{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:6px}
+.cond-text{font-size:.9rem;line-height:1.65}
+ul.styled{padding-left:0;list-style:none;margin:10px 0}
+ul.styled li{padding:5px 0 5px 18px;position:relative;font-size:.9rem}
+ul.styled li::before{content:'▸';position:absolute;left:0;color:var(--accent)}
+ol.styled{padding-left:20px;margin:10px 0}
+ol.styled li{padding:5px 0;font-size:.9rem}
+.table-wrap{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+thead{background:var(--surface2)}
+th{padding:11px 14px;text-align:left;font-weight:700;color:var(--muted);white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid #1e293b;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#1a2540}
+.td-yes{color:var(--green);font-weight:600}
+.td-no{color:var(--red);font-weight:600}
+.td-warn{color:var(--yellow)}
+.td-muted{color:var(--muted)}
+.highlight-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin:12px 0}
+.highlight-box.blue{border-left:4px solid var(--accent)}
+.highlight-box.red{border-left:4px solid var(--red)}
+.highlight-box.green{border-left:4px solid var(--green)}
+.highlight-box.yellow{border-left:4px solid var(--yellow)}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:700;vertical-align:middle}
+.badge.red{background:#450a0a;color:#f87171}
+.badge.green{background:#14532d;color:#4ade80}
+.badge.blue{background:#1e3a5f;color:#7dd3fc}
+.badge.yellow{background:#422006;color:#fbbf24}
+.badge.orange{background:#431407;color:#fb923c}
+.badge.purple{background:#2e1065;color:#c4b5fd}
+.notice-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:10px}
+.notice-num{width:26px;height:26px;background:var(--accent);color:#0f172a;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem;margin-right:8px;flex-shrink:0;vertical-align:middle}
+.drug-pill{display:inline-block;background:#1e3a5f;border:1px solid var(--accent);color:var(--accent);font-size:.8rem;font-weight:700;padding:3px 10px;border-radius:6px;margin-bottom:12px}
+.drug-pill.grey{background:var(--surface2);border-color:var(--border);color:var(--muted)}
+.ref-link{font-size:.78rem;color:var(--muted);margin-top:6px}
+.ref-link a{color:#7dd3fc;text-decoration:underline}
+footer{text-align:center;color:var(--muted);font-size:.78rem;padding:24px;border-top:1px solid var(--border);margin-top:20px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="../健保藥物查詢.html" class="back-btn">← 返回首頁</a>
+  <span class="topbar-title">HIF-PHI — 腎性貧血 低氧誘導因子穩定劑</span>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">🫘 腎臟科 ／ 透析單位</div>
+    <h1>HIF-PHI 腎性貧血</h1>
+    <p class="hero-sub">Hypoxia-Inducible Factor Prolyl Hydroxylase Inhibitors — Vadadustat（Vafseo）台灣核准品 ＋ 國際各藥比較 ＋ KDIGO 2026</p>
+    <div class="drug-meta">
+      <div class="meta-chip"><strong>台灣核准</strong> <span style="color:#4ade80">Vadadustat（Vafseo）</span> 限透析患者</div>
+      <div class="meta-chip"><strong>健保給付</strong> <span style="color:#f87171">❌ 目前全自費</span></div>
+      <div class="meta-chip"><strong>給藥方式</strong> 口服 QD（每日一次）</div>
+      <div class="meta-chip"><strong>KDIGO 2026 位階</strong> ESA 替代選項</div>
+    </div>
+    <div class="alert-bar">
+      ⚠️ TFDA 許可證請至 <a href="https://info.fda.gov.tw/MLMS/H0001.aspx" target="_blank">https://info.fda.gov.tw</a> 查詢；健保給付規範請至 <a href="https://www.nhi.gov.tw" target="_blank">https://www.nhi.gov.tw</a> 確認最新版本。
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 一、台灣 TFDA 核准狀態 -->
+  <div class="section">
+    <div class="section-title">🇹🇼 一、台灣 TFDA 核准狀態</div>
+
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>藥物</th><th>商品名</th><th>廠商</th><th>給藥頻次</th><th>台灣 TFDA</th><th>備註</th></tr></thead>
+          <tbody>
+            <tr style="background:#0f2a1a">
+              <td><strong>Vadadustat</strong></td>
+              <td>Vafseo</td>
+              <td>Akebia / CSL Vifor</td>
+              <td>QD（每日 1 次）</td>
+              <td class="td-yes">✅ 已核准（限透析患者）</td>
+              <td>KDIGO 2026 確認台灣屬已核准地區</td>
+            </tr>
+            <tr>
+              <td>Roxadustat</td>
+              <td>Evrenzo</td>
+              <td>AZ / FibroGen</td>
+              <td>TIW（每週 3 次）</td>
+              <td class="td-no">❌ 台灣未核准</td>
+              <td>歐盟、日本、中國、韓國、英國已核准</td>
+            </tr>
+            <tr>
+              <td>Daprodustat</td>
+              <td>Jesduvroq</td>
+              <td>GSK</td>
+              <td>QD</td>
+              <td class="td-no">❌ 台灣未核准</td>
+              <td>美國、日本已核准</td>
+            </tr>
+            <tr>
+              <td>Molidustat</td>
+              <td>Masuda</td>
+              <td>Bayer</td>
+              <td>QD</td>
+              <td class="td-no">❌ 台灣未核准</td>
+              <td>日本市場</td>
+            </tr>
+            <tr>
+              <td>Enarodustat</td>
+              <td>Eneroid</td>
+              <td>JT Pharma</td>
+              <td>QD</td>
+              <td class="td-no">❌ 台灣未核准</td>
+              <td>日本市場</td>
+            </tr>
+            <tr>
+              <td>Desidustat</td>
+              <td>Desirem</td>
+              <td>Zydus</td>
+              <td>QD</td>
+              <td class="td-no">❌ 台灣未核准</td>
+              <td>印度市場</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="highlight-box yellow">
+        <p style="font-size:.88rem"><strong>台灣現況：</strong>六種 HIF-PHI 中，僅 <strong>Vadadustat（Vafseo）</strong>獲 TFDA 核准，且<strong>限於透析患者</strong>。TFDA 許可證字號請至官網自行查證確認最新狀態。</p>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">🏥 台灣健保給付狀況</div>
+      <div class="cond-block warn">
+        <div class="cond-label">目前結論</div>
+        <div class="cond-text">
+          <strong>HIF-PHI（包含 Vadadustat）在台灣均無健保給付，屬全自費藥物。</strong>
+          <ul class="styled" style="margin-top:8px">
+            <li>健保腎性貧血治療目前仍以 ESA（Epoetin、Darbepoetin）為主</li>
+            <li>Vadadustat 雖獲 TFDA 核准，但尚無健保申請通過記錄</li>
+            <li>如有新增給付公告，請至健保署官網查詢</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 二、劑量與使用方法 -->
+  <div class="section">
+    <div class="section-title">💊 二、劑量與使用方法</div>
+
+    <!-- Vadadustat -->
+    <div class="subsection">
+      <div class="drug-pill">✅ 台灣核准</div>
+      <div class="subsection-title">Vadadustat（Vafseo）— 每日一次口服（QD）</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>情境</th><th>起始劑量</th><th>調整單位</th><th>最高劑量</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>透析患者（從 ESA 轉換）</td>
+              <td><strong>300 mg QD</strong></td>
+              <td>每次調整 150 mg</td>
+              <td class="td-warn">600 mg QD</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">劑量調整原則</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>目標 Hb：<strong>不超過 11 g/dL</strong>（FDA / EMA 規範）</li>
+            <li>每 4 週依 Hb 調整一次</li>
+            <li>轉換期間若 Hb 降至 &lt; 9 g/dL：可考慮 RBC 輸血或短暫 ESA 過渡；<strong>暫停 Vadadustat</strong>，待 Hb ≥ 10 g/dL 後恢復</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">服藥間隔與監測</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>與<strong>口服鐵劑</strong>：服藥前至少 <strong>1 小時</strong>間隔</li>
+            <li>與<strong>含鐵型磷結合劑</strong>：服藥前至少 1 小時</li>
+            <li>與<strong>非含鐵型磷結合劑</strong>：服藥前 1 小時 <em>或</em> 服藥後 2 小時</li>
+            <li>肝功能監測：每月 ALT、AST、Bilirubin，<strong>連續 6 個月</strong></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Roxadustat -->
+    <div class="subsection">
+      <div class="drug-pill grey">❌ 台灣未核准（僅供參考）</div>
+      <div class="subsection-title">Roxadustat（Evrenzo）— 每週 3 次（TIW）</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>情境</th><th>起始劑量</th><th>頻次</th></tr></thead>
+          <tbody>
+            <tr><td>NDD-CKD（非透析，歐日核准）</td><td>&lt; 60 kg：50 mg；≥ 60 kg：70 mg</td><td>TIW</td></tr>
+            <tr><td>DD-CKD（透析），ESA-Naïve</td><td>70–100 mg</td><td>TIW</td></tr>
+            <tr><td>從 ESA 轉換</td><td>依原 ESA 劑量對應換算</td><td>TIW</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">⚠️ 台灣法規提醒</div>
+        <div class="cond-text">台灣未核准，屬仿單外使用（off-label）。台灣臨床使用須透過專案進口或特殊管道，<strong>不建議在未核准情形下常規使用</strong>。</div>
+      </div>
+    </div>
+
+    <!-- Daprodustat -->
+    <div class="subsection">
+      <div class="drug-pill grey">❌ 台灣未核准（僅供參考）</div>
+      <div class="subsection-title">Daprodustat（Jesduvroq）— 每日一次（QD）</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>劑型</th><th>劑量範圍</th><th>頻次</th></tr></thead>
+          <tbody>
+            <tr><td>錠劑（1 / 2 / 4 / 6 / 8 mg）</td><td>4 mg 起始，依 Hb 調整至最高 24 mg</td><td>QD</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 三、FDA 規範 -->
+  <div class="section">
+    <div class="section-title">🔵 三、FDA 核准規範</div>
+
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>藥物</th><th>FDA 核准</th><th>核准適應症</th><th>Black Box Warning</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Vadadustat（Vafseo）</strong></td>
+              <td class="td-yes">✅ 2024/3/27</td>
+              <td>透析至少 <strong>3 個月</strong>的 CKD 成人腎性貧血</td>
+              <td class="td-warn">死亡、MI、腦中風、靜脈栓塞、血液透析通路栓塞</td>
+            </tr>
+            <tr>
+              <td><strong>Daprodustat（Jesduvroq）</strong></td>
+              <td class="td-yes">✅ 2023/2</td>
+              <td>透析至少 <strong>4 個月</strong>的 CKD 成人腎性貧血</td>
+              <td class="td-warn">同上</td>
+            </tr>
+            <tr>
+              <td>Roxadustat</td>
+              <td class="td-no">❌ 未獲 FDA 核准</td>
+              <td>—</td>
+              <td class="td-muted">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">FDA 關鍵限制</div>
+        <div class="cond-text">FDA 基於心血管安全疑慮，將 Daprodustat 和 Vadadustat 的核准<strong>限縮於維持性透析患者</strong>；非透析 CKD 患者不適用。</div>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">非透析患者特殊警告（Vadadustat）</div>
+        <div class="cond-text">在非透析 CKD 成人的大型臨床試驗（PRO2TECT）中，Vadadustat 組相較 Darbepoetin alfa，<strong>死亡率、腦中風、MI、嚴重 AKI、嚴重肝損傷及嚴重胃腸道糜爛的風險均有增加</strong>。<br>
+        因此<strong>不建議用於非透析患者</strong>（台灣 TFDA 核准亦僅限透析患者）。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 四、KDIGO 2026 -->
+  <div class="section">
+    <div class="section-title">📚 四、KDIGO 2026 最新臨床指引</div>
+
+    <div class="subsection">
+      <div class="subsection-title">主要立場</div>
+      <div class="cond-block note">
+        <div class="cond-label">KDIGO 2026（Kidney International, vol.109, issue 1, 2026）</div>
+        <div class="cond-text">
+          KDIGO 2026 將 <strong>ESA 建議為首選一線治療</strong>，主因是對 HIF-PHI 的心血管安全性仍有疑慮，且現有試驗存在方法學限制。<br>
+          <strong>HIF-PHI 定位為替代選項</strong>，適用於特定臨床情境（ESA 不耐受、ESA 低反應等）。
+        </div>
+      </div>
+      <div class="cond-block">
+        <div class="cond-label">Hb 目標（KDIGO 2026）</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>建議 Hb 目標 <strong>10–11.5 g/dL</strong></li>
+            <li>不建議超過 <strong>11.5–12 g/dL</strong></li>
+            <li>強調個體化決策（individualized decision-making）</li>
+          </ul>
+        </div>
+      </div>
+      <div class="cond-block warn">
+        <div class="cond-label">HIF-PHI 絕對禁忌（KDIGO 2026）</div>
+        <div class="cond-text"><strong>妊娠期間禁忌使用</strong>——致畸風險，各藥物細節請參閱仿單。</div>
+      </div>
+      <p class="ref-link">Reference: <a href="https://kdigo.org/wp-content/uploads/2026/01/KDIGO-2026-Anemia-in-CKD-Guideline.pdf" target="_blank">KDIGO 2026 Anemia in CKD Full Guideline PDF</a></p>
+    </div>
+  </div>
+
+  <!-- 五、HIF-PHI vs ESA 國際實證比較 -->
+  <div class="section">
+    <div class="section-title">📊 五、HIF-PHI vs ESA：國際實證比較</div>
+
+    <div class="subsection">
+      <div class="subsection-title">🫀 心血管安全（關鍵大型試驗）</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>藥物</th><th>透析 MACE</th><th>非透析 MACE</th><th>備註</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Roxadustat</strong></td>
+              <td class="td-yes">不劣於 ESA</td>
+              <td class="td-warn">未達非劣性（FDA 未核准）</td>
+              <td>歐盟：透析 + 非透析均核准</td>
+            </tr>
+            <tr>
+              <td><strong>Daprodustat</strong></td>
+              <td class="td-yes">不劣於 ESA（ASCEND-D）</td>
+              <td class="td-yes">不劣於 Darbepoetin（ASCEND-ND，NEJM 2021）</td>
+              <td>FDA 限透析</td>
+            </tr>
+            <tr>
+              <td><strong>Vadadustat</strong></td>
+              <td class="td-yes">不劣於 ESA（INNO2VATE）</td>
+              <td class="td-warn">未達非劣性（PRO2TECT）</td>
+              <td class="td-warn">FDA / 台灣限透析；某些研究 MACE 稍高</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">⚗️ 鐵代謝優勢（HIF-PHI 共同優點）</div>
+      <div class="cond-block success">
+        <div class="cond-label">不依賴靜脈鐵補充的機制</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>↓ Hepcidin → 改善鐵利用效率</li>
+            <li>↑ TIBC、Transferrin（增加鐵運輸）</li>
+            <li>↓ 靜脈鐵需求（部分研究）</li>
+            <li>Roxadustat / Daprodustat 另有 ↓ 總膽固醇效果（Vadadustat 無此效果）</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">💡 特殊情境療效</div>
+      <div class="cond-block note">
+        <div class="cond-label">ESA 低反應患者（高 hsCRP / 發炎性貧血）</div>
+        <div class="cond-text">在伴隨發炎（高 hsCRP）的 ESA 低反應患者中，HIF-PHI（尤其 Roxadustat）療效優勢更顯著——不依賴 EPO 受體路徑，可<strong>部分繞過發炎造成的 EPO 阻抗</strong>。</div>
+      </div>
+      <div class="cond-block note">
+        <div class="cond-label">PD（腹膜透析）患者</div>
+        <div class="cond-text">
+          Roxadustat 在 PD 患者第三期研究顯示良好效果（ESA-Naïve 50–70 mg TIW；ESA-Converted 70–100 mg TIW，Hb 維持 10.93–11.05 g/dL）。<br>
+          <span style="color:var(--red)">⚠️ 但 Roxadustat 在台灣未核准，此優勢目前在台灣無法合法利用。Vadadustat 的 PD 患者資料較少。</span>
+        </div>
+      </div>
+      <div class="cond-block">
+        <div class="cond-label">2025 NMA（BMC Nephrology，45 項 RCT，&gt;32,000 名患者）</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>非透析患者：Roxadustat 對 Hb 提升最有效</li>
+            <li>透析依賴患者：Daprodustat 療效較突出</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">⚠️ 各藥安全性側寫</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>藥物</th><th>主要安全疑慮</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Vadadustat</strong></td><td>某些研究中 MACE 稍高；非透析有明確 CV 信號；肝毒性需監測</td></tr>
+            <tr><td><strong>Roxadustat</strong></td><td>胃腸道不適較常見；可逆性甲狀腺功能異常；BCRP 抑制（Statin 交互作用）</td></tr>
+            <tr><td><strong>Daprodustat</strong></td><td>安全性整體與 Roxadustat 相近；血脂異常回報稍多；CYP2C8 代謝（TMP 交互作用）</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 六、禁忌症與高風險族群 -->
+  <div class="section">
+    <div class="section-title">🚫 六、禁忌症與高風險族群</div>
+
+    <div class="subsection">
+      <div class="subsection-title">絕對禁忌（各藥物共通）</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>禁忌情境</th><th>說明</th></tr></thead>
+          <tbody>
+            <tr><td class="td-no"><strong>妊娠</strong></td><td>致畸風險，所有 HIF-PHI 禁用（KDIGO 2026 明文）</td></tr>
+            <tr><td class="td-no"><strong>近期重大心血管事件</strong></td><td>近 3 個月內 MI、腦中風、ACS</td></tr>
+            <tr><td class="td-no"><strong>重度肝功能異常 / 肝硬化</strong></td><td>Vadadustat 不建議用於肝硬化或急性肝病患者</td></tr>
+            <tr><td class="td-no"><strong>需立即輸血矯正貧血</strong></td><td>HIF-PHI 起效慢（3–6 週），非急救用藥</td></tr>
+            <tr><td class="td-no"><strong>非透析 CKD</strong></td><td>台灣 Vadadustat 核准僅限透析患者</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">⚠️ 高風險族群（需特別謹慎）</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>高風險族群</th><th>主要顧慮</th></tr></thead>
+          <tbody>
+            <tr><td>活躍性惡性腫瘤</td><td class="td-warn">HIF 路徑可能促進腫瘤血管新生（VEGF↑）</td></tr>
+            <tr><td>增生性視網膜病變 / 黃斑部病變</td><td class="td-warn">HIF 路徑可能影響視網膜血管生成</td></tr>
+            <tr><td>血栓體質、近期 DVT / PE</td><td class="td-warn">增加血栓風險</td></tr>
+            <tr><td>嚴重慢性肺病</td><td>HIF 啟動機制可能異常（缺氧感測混亂）</td></tr>
+            <tr><td>遺傳性血色素異常（地中海貧血等）</td><td>非 EPO 缺乏性貧血，療效有限</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="subsection">
+      <div class="subsection-title">💊 重要藥物交互作用</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>合併用藥</th><th>交互作用</th><th>處理方式</th></tr></thead>
+          <tbody>
+            <tr><td>口服鐵劑</td><td>顯著降低 HIF-PHI 吸收</td><td class="td-warn">間隔 ≥ 1 小時</td></tr>
+            <tr><td>含鐵型磷結合劑</td><td>同上</td><td class="td-warn">間隔 ≥ 1 小時</td></tr>
+            <tr><td>非含鐵型磷結合劑</td><td>影響 Vadadustat 吸收</td><td class="td-warn">Vadadustat 服藥前 1h 或服藥後 2h</td></tr>
+            <tr><td>Trimethoprim</td><td>抑制 CYP2C8（Daprodustat 代謝路徑）</td><td>監測濃度 / 調整劑量</td></tr>
+            <tr><td>Statins（BCRP 受質）</td><td>Roxadustat 為 BCRP 抑制劑 → Statin 濃度↑</td><td>監測副作用</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 七、HIF-PHI vs ESA 臨床選擇摘要 -->
+  <div class="section">
+    <div class="section-title">⚖️ 七、HIF-PHI vs ESA 臨床選擇摘要</div>
+
+    <div class="subsection">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>比較面向</th>
+              <th>ESA（Epoetin / Darbepoetin）</th>
+              <th>Vadadustat（台灣唯一核准 HIF-PHI）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>台灣 TFDA 核准</td><td class="td-yes">✅ 有</td><td class="td-yes">✅ 有（限透析）</td></tr>
+            <tr><td>台灣健保給付</td><td class="td-yes">✅ 有給付</td><td class="td-no">❌ 無給付（自費）</td></tr>
+            <tr><td>給藥途徑</td><td>皮下 / 靜脈注射</td><td class="td-yes">口服 QD（每日一次）</td></tr>
+            <tr><td>起效時間</td><td>2–4 週</td><td class="td-warn">3–6 週（較慢）</td></tr>
+            <tr><td>炎症環境療效</td><td class="td-warn">易受 Hepcidin 抑制</td><td class="td-yes">可部分克服（↓ Hepcidin）</td></tr>
+            <tr><td>心血管安全（透析）</td><td class="td-yes">已建立</td><td class="td-yes">不劣於 ESA（INNO2VATE）</td></tr>
+            <tr><td>非透析 CKD</td><td class="td-yes">有適應症</td><td class="td-no">禁忌（台灣 / FDA 限制）</td></tr>
+            <tr><td>PD 患者</td><td>需注射（皮下）</td><td class="td-yes">口服優勢，但 PD 資料較少</td></tr>
+            <tr><td>KDIGO 2026 位階</td><td><span class="badge green">首選一線</span></td><td><span class="badge yellow">替代選項（特定情境）</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 八、台灣實務關鍵摘要 -->
+  <div class="section">
+    <div class="section-title">🔎 八、台灣實務關鍵摘要</div>
+
+    <div class="subsection">
+      <div class="highlight-box red">
+        <p style="font-size:.9rem"><strong>台灣可合法使用的 HIF-PHI：</strong>僅 <strong>Vadadustat（Vafseo）</strong>，且限<strong>透析患者</strong>，<strong>全自費</strong>。</p>
+      </div>
+
+      <div class="cond-block success">
+        <div class="cond-label">何時考慮 Vadadustat（自費情境）</div>
+        <div class="cond-text">
+          <ol class="styled" style="padding-left:20px">
+            <li>透析患者對注射有強烈排斥，口服依從性佳</li>
+            <li>ESA 低反應者（發炎性貧血、高 hsCRP）</li>
+            <li>ESA 造成血壓控制困難（Vadadustat 血壓影響不劣於 ESA）</li>
+            <li>腹膜透析患者（避免靜脈注射）</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="cond-block note">
+        <div class="cond-label">監測重點（Vadadustat）</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>Hb：每月監測，目標 <strong>10–11 g/dL</strong>，<span style="color:var(--red)">勿超過 11 g/dL</span></li>
+            <li>ALT / AST / Bilirubin：開始後每月監測，連續 <strong>6 個月</strong></li>
+            <li>血壓：定期監測</li>
+            <li>血栓症狀：主動衛教患者回報（HD 通路、DVT、PE）</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="cond-block">
+        <div class="cond-label">建議查閱官方資料</div>
+        <div class="cond-text">
+          <ul class="styled">
+            <li>TFDA 藥品許可證：<a href="https://info.fda.gov.tw/MLMS/H0001.aspx" target="_blank" style="color:var(--accent)">https://info.fda.gov.tw/MLMS/H0001.aspx</a></li>
+            <li>健保給付規範：<a href="https://www.nhi.gov.tw" target="_blank" style="color:var(--accent)">https://www.nhi.gov.tw</a></li>
+            <li>KDIGO 2026：<a href="https://kdigo.org" target="_blank" style="color:var(--accent)">https://kdigo.org</a></li>
+            <li>FDA Vafseo 仿單：<a href="https://www.accessdata.fda.gov/drugsatfda_docs/label/2024/215192s000lbl.pdf" target="_blank" style="color:var(--accent)">FDA Vafseo PI PDF</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<footer>資料整理至 2026 年，依據 TFDA 藥品許可、FDA 核准（2024/3/27）及 KDIGO 2026 Anemia in CKD Guideline。關鍵試驗：INNO2VATE、PRO2TECT（Vadadustat）；ASCEND-D、ASCEND-ND（Daprodustat，NEJM 2021）。所有資訊僅供臨床參考，TFDA 核准狀態及健保規範以官方最新公告為準，最終決策由主治醫師負責。</footer>
+</body>
+</html>
